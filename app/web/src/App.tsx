@@ -1,14 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 import Benefits from "./pages/Benefits";
 import Services from "./pages/Services";
-import About from "./pages/AboutUs";
+import About from "./pages/About";
 import Contact from "./pages/Contact";
 import MemberArea from "./pages/MemberArea";
 import Dashboard from "./pages/Dashboard";
 import Inns from "./pages/Inns";
-import Layout from "./components/layout/Layout";
+
 // Scroll to top on route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -37,4 +38,3 @@ export default function App() {
     </Router>
   );
 }
-

@@ -1,4 +1,8 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
@@ -33,6 +37,10 @@ export class UsersService {
   }
 
   async findById(id: string) {
+    // 🔒 Validar id antes de consultar o banco
+    if (!id || typeof id !== 'string') {
+      throw new NotFoundException('Usuário não encontrado');
+    }
     return this.prisma.user.findUnique({
       where: { id },
       select: {
@@ -46,6 +54,8 @@ export class UsersService {
         status: true,
         org: true,
         since: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
   }

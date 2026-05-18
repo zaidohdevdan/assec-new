@@ -1,63 +1,103 @@
-
-import { useState } from "react";
-import { User, CreditCard, CalendarDays, ShieldCheck, Menu, X } from "lucide-react";
+// app/web/src/pages/Dashboard.tsx
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Menu, X, LayoutDashboard, CalendarDays, Wallet } from "lucide-react";
+import { dashboardService } from "../services/dashboard.service";
+import { User, Schedule } from "../types";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import OverviewTab from "../components/dashboard/tabs/OverviewTab";
-import WalletTab from "../components/dashboard/tabs/WalletTab";
 import SchedulesTab from "../components/dashboard/tabs/SchedulesTab";
+import WalletTab from "../components/dashboard/tabs/WalletTab";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("inicio");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const userData = {
-    name: "SGT. MARCOS OLIVEIRA",
-    id: "ASSEC-2024-8891",
-    status: "Ativo",
-    org: "Polícia Militar do Ceará",
-    since: "15/03/2010",
-    cpf: "XXX.XXX.XXX-XX",
-    rg: "200X002XXXX-X"
-  };
-
-  const schedules = [
-    { id: "1", type: "Clube - Churrasqueira 04", date: "15/05/2026", time: "09:00 - 18:00", info: "Reserva para 15 convidados", status: "Confirmado" },
-    { id: "2", type: "Assessoria Jurídica", date: "18/05/2026", time: "14:30", info: "Dr. André - Sala 02 (Sede)", status: "Agendado" },
-  ];
+  const [userData, setUserData] = useState<User | null>(null);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const menuItems = [
-    { id: "inicio", label: "Visão Geral", icon: <User className="w-5 h-5" /> },
-    { id: "carteira", label: "Carteira Digital", icon: <CreditCard className="w-5 h-5" /> },
+    { id: "inicio", label: "Visão Geral", icon: <LayoutDashboard className="w-5 h-5" /> },
     { id: "agendamentos", label: "Agendamentos", icon: <CalendarDays className="w-5 h-5" /> },
+    { id: "carteira", label: "Minha Carteira", icon: <Wallet className="w-5 h-5" /> },
   ];
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "inicio":
-        return <OverviewTab setActiveTab={setActiveTab} />;
-      case "carteira":
-        return <WalletTab userData={userData} />;
-      case "agendamentos":
-        return <SchedulesTab schedules={schedules} />;
-      default:
-        return null;
+  useEffect(() => {
+    const token = localStorage.getItem('@assec/token');
+    if (!token) {
+      navigate('/area-associado');
+      return;
     }
-  };
+
+    async function loadData() {
+      try {
+        const [user, userSchedules] = await Promise.all([
+          dashboardService.getUserProfile(),
+          dashboardService.getSchedules(),
+        ]);
+        setUserData(user);
+        setSchedules(userSchedules);
+        setError(null);
+      } catch (err) {
+        console.error("❌ Erro ao carregar dashboard:", err);
+
+        const message = err && typeof err === 'object' && 'message' in err
+          ? (err as any).message
+          : err instanceof Error
+            ? err.message
+            : 'Erro ao carregar dados';
+
+        setError(message);
+
+        const statusCode = err && typeof err === 'object' && (('statusCode' in err && (err as any).statusCode) || ('status' in err && (err as any).status));
+        if (statusCode === 401) {
+          localStorage.removeItem('@assec/token');
+          navigate('/area-associado');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 font-medium">Carregando dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !userData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">⚠️</span>
+          </div>
+          <h2 className="text-xl font-bold text-slate-800 mb-2">Erro ao carregar</h2>
+          <p className="text-slate-500 mb-6">{error || 'Não foi possível carregar seus dados'}</p>
+          <button
+            onClick={() => navigate('/area-associado')}
+            className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition"
+          >
+            Voltar para Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
-      {/* Mobile Header */}
-      <div className="lg:hidden bg-blue-950 text-white p-5 flex justify-between items-center sticky top-0 z-50 shadow-lg">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="text-yellow-400 w-6 h-6" />
-          <span className="font-black tracking-tighter text-xl italic uppercase">ASSEC</span>
-        </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 bg-white/10 rounded-xl">
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
-
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
+      {/* Sidebar */}
       <DashboardSidebar
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
@@ -66,23 +106,41 @@ export default function Dashboard() {
         menuItems={menuItems}
       />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600 blur-[150px] opacity-10 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+      {/* Overlay móvel */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 lg:hidden z-30"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
 
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
         <DashboardHeader userData={userData} />
 
-        {/* Scrollable Body */}
-        <main className="flex-1 p-6 md:p-12 overflow-y-auto w-full max-w-6xl mx-auto scroll-smooth relative z-10">
-          {/* Section Header */}
-          <div className="mb-12">
-            <p className="text-blue-600 font-black text-xs uppercase tracking-[0.4em] mb-2">{activeTab}</p>
-            <h2 className="text-4xl md:text-5xl font-black text-blue-950 tracking-tight leading-none">
-              {menuItems.find(i => i.id === activeTab)?.label}
-            </h2>
-          </div>
+        {/* Mobile Menu Button */}
+        <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+          <h1 className="text-xl font-bold text-blue-950">ASSEC</h1>
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 hover:bg-slate-100 rounded-lg transition"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
 
-          {renderContent()}
+        {/* Content Area */}
+        <main className="flex-1 overflow-y-auto px-6 lg:px-12 py-8">
+          {activeTab === "inicio" && (
+            <OverviewTab setActiveTab={setActiveTab} />
+          )}
+          {activeTab === "agendamentos" && (
+            <SchedulesTab schedules={schedules}/>
+          )}
+          {activeTab === "carteira" && (
+            <WalletTab userData={userData} />
+          )}
         </main>
       </div>
     </div>

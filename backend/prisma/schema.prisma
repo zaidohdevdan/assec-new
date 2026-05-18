@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -32,6 +33,17 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
+model Schedule {
+  id        String   @id @default(uuid())
+  type      String   // 'clube' | 'pousada' | 'juridico' | 'saude'
+  title     String
+  date      String
+  time      String
+  info      String
+  status    String   @default("Agendado") // 'Confirmado' | 'Agendado' | 'Cancelado'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 enum Role {
   USER
   ADMIN
