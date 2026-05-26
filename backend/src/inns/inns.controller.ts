@@ -1,0 +1,52 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
+import { Role } from '@prisma/client';
+import { InnsService } from './inns.service';
+import { AuthGuard } from '../auth/auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Prisma } from '@prisma/client';
+
+@Controller('inns')
+export class InnsController {
+  constructor(private readonly innsService: InnsService) {}
+
+  @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  create(@Body() data: Prisma.InnCreateInput) {
+    return this.innsService.create(data);
+  }
+
+  @Get()
+  findAll() {
+    return this.innsService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.innsService.findOne(id);
+  }
+
+  @Put(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  update(@Param('id') id: string, @Body() data: Prisma.InnUpdateInput) {
+    return this.innsService.update(id, data);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  remove(@Param('id') id: string) {
+    return this.innsService.remove(id);
+  }
+}

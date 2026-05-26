@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: assec-postgres
+    environment:
+      POSTGRES_USER: assec
+      POSTGRES_PASSWORD: assec_password
+      POSTGRES_DB: assec_db
+    ports:
+      - "15432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
