@@ -1,4 +1,5 @@
 import React from "react";
+import { useAuthStore } from "../../store/useAuthStore";
 import { Link } from "react-router-dom";
 import { ShieldCheck, LogOut } from "lucide-react";
 
@@ -17,6 +18,14 @@ export default function DashboardSidebar({
   setActiveTab,
   menuItems
 }: DashboardSidebarProps) {
+  const { user } = useAuthStore();
+  const visibleMenuItems = menuItems.filter(item => {
+    // Assuming admin-specific items have ids prefixed with 'admin-'
+    if (item.id.startsWith('admin-')) {
+      return user?.role === 'ADMIN';
+    }
+    return true;
+  });
   return (
     <aside className={`
       ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} 
@@ -30,7 +39,7 @@ export default function DashboardSidebar({
       </div>
 
       <nav className="space-y-3 grow">
-        {menuItems.map(item => (
+        {visibleMenuItems.map(item => (
           <button 
             key={item.id}
             onClick={() => {

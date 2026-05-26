@@ -8,8 +8,11 @@ import Contact from "./pages/Contact";
 import MemberArea from "./pages/MemberArea";
 import Dashboard from "./pages/Dashboard";
 import Inns from "./pages/Inns";
+import AdminRoute from "./components/layout/AdminRoute";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import UsersManagement from "./pages/admin/UsersManagement";
+import ContactMessages from "./pages/admin/ContactMessages";
 import Layout from "./components/layout/Layout";
-import ProtectedRoute from "./components/layout/ProtectedRoute";
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -26,6 +29,7 @@ export default function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
+          {/* Rotas Públicas */}
           <Route index element={<Home />} />
           <Route path="sobre" element={<About />} />
           <Route path="beneficios" element={<Benefits />} />
@@ -36,9 +40,11 @@ export default function App() {
 
         </Route>
 
-        {/* Rotas Protegidas */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="dashboard" element={<Dashboard />} />
+        {/* Rotas Protegidas (admin) */}
+        <Route element={<AdminRoute />}>
+          <Route path="admin-dashboard" element={<AdminDashboard />} />
+          <Route path="admin-usuarios" element={<UsersManagement />} />
+          <Route path="admin-mensagens" element={<ContactMessages />} />
         </Route>
       </Routes>
     </Router>

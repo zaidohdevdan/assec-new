@@ -1,14 +1,12 @@
 
 import { motion } from "motion/react";
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
+import {
+  Phone,
+  Mail,
+  MapPin,
   MessageSquare,
   Instagram,
-  Facebook,
-  Youtube
- } from "lucide-react";
+} from "lucide-react";
 
 export default function Contact() {
   return (
@@ -31,25 +29,17 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">WhatsApp / Plantão</h4>
-                  <a href="https://wa.me/558532267677" target="_blank" rel="noreferrer" className="text-2xl font-bold text-blue-950 tracking-tight hover:text-green-600 transition-colors">(85) 3226-7677</a>
+                  <a href="https://wa.me/5585999411411" target="_blank" rel="noreferrer" className="text-2xl font-bold text-blue-950 tracking-tight hover:text-green-600 transition-colors">(85) 99941-1411</a>
                 </div>
               </div>
-              <div className="flex gap-6 items-center">
-                <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 shrink-0">
-                  <Phone className="w-7 h-7" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Telefone Fixo</h4>
-                  <p className="text-2xl font-bold text-blue-950 tracking-tight">(85) 3217-1234</p>
-                </div>
-              </div>
+
               <div className="flex gap-6 items-center">
                 <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 shrink-0">
                   <Mail className="w-7 h-7" />
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">E-mail institucional</h4>
-                  <p className="text-2xl font-bold text-blue-950 tracking-tight">contato@assec.org.br</p>
+                  <p className="text-2xl font-bold text-blue-950 tracking-tight">contato@assecce.com.br</p>
                 </div>
               </div>
               <div className="flex gap-6 items-center">
@@ -58,16 +48,20 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Onde Estamos</h4>
-                  <p className="text-lg font-bold text-blue-950 tracking-tight leading-tight">Rua Exemplo de Fortaleza, 123 - Centro, Fortaleza/CE</p>
+                  <p className="text-lg font-bold text-blue-950 tracking-tight leading-tight">
+                    Av. Santos Dumont, 1510, sala 805, Aldeota, Fortaleza/CE</p>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <a href="#" className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><Instagram /></a>
-              <a href="#" className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><Facebook /></a>
-              <a href="#" className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><Youtube /></a>
-            </div>
+            <div className="flex gap-4 items-center flex-wrap">
+              <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Siga nossas Redes Sociais:</h4>
+              <a href="https://www.instagram.com/assec.ceara/"
+                target="_blank" rel="noreferrer"
+                className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all">
+                <Instagram /></a>
+
+              </div>
           </motion.div>
 
           <motion.div
