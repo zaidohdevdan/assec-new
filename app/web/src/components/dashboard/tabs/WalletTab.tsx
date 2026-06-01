@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { ShieldCheck, QrCode, Download } from "lucide-react";
+import Card from "../../ui/Card";
 
 interface WalletTabProps {
   userData: {
