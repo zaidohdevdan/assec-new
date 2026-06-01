@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuthStore } from "../../store/useAuthStore";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, LogOut } from "lucide-react";
 
 interface DashboardSidebarProps {
@@ -18,7 +18,14 @@ export default function DashboardSidebar({
   setActiveTab,
   menuItems
 }: DashboardSidebarProps) {
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   const visibleMenuItems = menuItems.filter(item => {
     // Assuming admin-specific items have ids prefixed with 'admin-'
     if (item.id.startsWith('admin-')) {
@@ -40,7 +47,7 @@ export default function DashboardSidebar({
 
       <nav className="space-y-3 grow">
         {visibleMenuItems.map(item => (
-          <button 
+          <button
             key={item.id}
             onClick={() => {
               setActiveTab(item.id);
@@ -54,9 +61,12 @@ export default function DashboardSidebar({
       </nav>
 
       <div className="pt-8 border-t border-white/10 mt-auto">
-        <Link to="/" className="flex items-center gap-4 p-4 text-red-300 hover:text-red-100 font-bold transition-colors group">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-4 p-4 text-red-300 hover:text-red-100 font-bold transition-colors group"
+        >
           <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" /> Sair do Portal
-        </Link>
+        </button>
       </div>
     </aside>
   );

@@ -26,36 +26,56 @@ export default function UsersManagement() {
   }, []);
 
   return (
-    <div className="p-8 bg-slate-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">Gestão de Usuários</h1>
-      <table className="w-full table-auto border-collapse">
-        <thead className="bg-blue-100">
-          <tr>
-            <th className="p-2 text-left">ID</th>
-            <th className="p-2 text-left">Nome</th>
-            <th className="p-2 text-left">E‑mail</th>
-            <th className="p-2 text-left">Perfil</th>
-            <th className="p-2 text-left">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u: any) => (
-            <tr key={u.id} className="border-b">
-              <td className="p-2">{u.id}</td>
-              <td className="p-2 flex items-center gap-2">
-                <UserIcon className="w-4 h-4" /> {u.name}
-              </td>
-              <td className="p-2">{u.email}</td>
-              <td className="p-2">{u.role}</td>
-              <td className="p-2">
-                {/* Placeholder buttons – implement edit/delete later */}
-                <button className="px-3 py-1 mr-2 bg-green-500 text-white rounded">Editar</button>
-                <button className="px-3 py-1 bg-red-500 text-white rounded">Excluir</button>
-              </td>
+    <div className="w-full">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <table className="w-full table-auto">
+          <thead className="bg-slate-50 border-b border-slate-100">
+            <tr>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">ID</th>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">Nome</th>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">E‑mail</th>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">Perfil</th>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.length > 0 ? (
+              users.map((u: any) => (
+                <tr key={u.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="p-4 text-sm text-slate-600">{u.id}</td>
+                  <td className="p-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <UserIcon className="w-4 h-4 text-slate-400" />
+                      <span className="font-medium text-slate-900">{u.name}</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-sm text-slate-600">{u.email}</td>
+                  <td className="p-4 text-sm">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${u.role === 'ADMIN'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-blue-100 text-blue-700'
+                      }`}>
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className="p-4 text-sm">
+                    <div className="flex gap-2">
+                      <button className="px-3 py-1.5 text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors">Editar</button>
+                      <button className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors">Excluir</button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className="p-8 text-center text-slate-500">
+                  Nenhum usuário encontrado
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

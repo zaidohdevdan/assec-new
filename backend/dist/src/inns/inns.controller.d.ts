@@ -8,8 +8,8 @@ export declare class InnsController {
         name: string;
         createdAt: Date;
         updatedAt: Date;
-        description: string;
         location: string;
+        description: string;
         image: string;
         amenities: string[];
         active: boolean;
@@ -19,8 +19,8 @@ export declare class InnsController {
         name: string;
         createdAt: Date;
         updatedAt: Date;
-        description: string;
         location: string;
+        description: string;
         image: string;
         amenities: string[];
         active: boolean;
@@ -30,8 +30,8 @@ export declare class InnsController {
         name: string;
         createdAt: Date;
         updatedAt: Date;
-        description: string;
         location: string;
+        description: string;
         image: string;
         amenities: string[];
         active: boolean;
@@ -41,8 +41,8 @@ export declare class InnsController {
         name: string;
         createdAt: Date;
         updatedAt: Date;
-        description: string;
         location: string;
+        description: string;
         image: string;
         amenities: string[];
         active: boolean;
@@ -52,8 +52,8 @@ export declare class InnsController {
         name: string;
         createdAt: Date;
         updatedAt: Date;
-        description: string;
         location: string;
+        description: string;
         image: string;
         amenities: string[];
         active: boolean;

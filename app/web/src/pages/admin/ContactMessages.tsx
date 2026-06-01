@@ -15,32 +15,38 @@ export default function ContactMessages() {
   }, []);
 
   return (
-    <div className="p-8 bg-slate-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">Mensagens de Contato</h1>
-      <table className="w-full table-auto border-collapse">
-        <thead className="bg-blue-100">
-          <tr>
-            <th className="p-2 text-left">ID</th>
-            <th className="p-2 text-left">Nome</th>
-            <th className="p-2 text-left">E‑mail</th>
-            <th className="p-2 text-left">Assunto</th>
-            <th className="p-2 text-left">Mensagem</th>
-            <th className="p-2 text-left">Data</th>
-          </tr>
-        </thead>
-        <tbody>
-          {messages.map((msg) => (
-            <tr key={msg.id} className="border-b">
-              <td className="p-2">{msg.id}</td>
-              <td className="p-2 flex items-center gap-2"><Mail className="w-4 h-4" /> {msg.name}</td>
-              <td className="p-2">{msg.email}</td>
-              <td className="p-2">{msg.subject}</td>
-              <td className="p-2">{msg.message}</td>
-              <td className="p-2">{msg.createdAt}</td>
+    <div className="w-full">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <table className="w-full table-auto">
+          <thead className="bg-slate-50 border-b border-slate-100">
+            <tr>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">ID</th>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">Nome</th>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">E‑mail</th>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">Assunto</th>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">Mensagem</th>
+              <th className="p-4 text-left text-sm font-bold text-slate-600">Data</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {messages.map((msg) => (
+              <tr key={msg.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td className="p-4 text-sm text-slate-600">{msg.id}</td>
+                <td className="p-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-slate-400" />
+                    <span className="font-medium text-slate-900">{msg.name}</span>
+                  </div>
+                </td>
+                <td className="p-4 text-sm text-slate-600">{msg.email}</td>
+                <td className="p-4 text-sm text-slate-600">{msg.subject}</td>
+                <td className="p-4 text-sm text-slate-600 max-w-xs truncate">{msg.message}</td>
+                <td className="p-4 text-sm text-slate-600">{msg.createdAt}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

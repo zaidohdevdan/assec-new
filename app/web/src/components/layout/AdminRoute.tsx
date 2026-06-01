@@ -3,7 +3,8 @@ import { useAuthStore } from '../../store/useAuthStore';
 
 // Guard component that ensures the user is authenticated and has role ADMIN
 export default function AdminRoute() {
-  const { token, user } = useAuthStore((state) => ({ token: state.token, user: state.user }));
+  const token = useAuthStore((state) => state.token);
+  const user = useAuthStore((state) => state.user);
 
   if (!token) {
     // Not logged in – redirect to login/associate area

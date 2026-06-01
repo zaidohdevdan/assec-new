@@ -7,45 +7,45 @@ export declare class NoticesController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
-        title: string;
         active: boolean;
+        title: string;
         content: string;
+        type: string;
     }>;
     findAll(): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
-        title: string;
         active: boolean;
+        title: string;
         content: string;
+        type: string;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
-        title: string;
         active: boolean;
+        title: string;
         content: string;
+        type: string;
     }>;
     update(id: string, data: Prisma.NoticeUpdateInput): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
-        title: string;
         active: boolean;
+        title: string;
         content: string;
+        type: string;
     }>;
     remove(id: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
-        title: string;
         active: boolean;
+        title: string;
         content: string;
+        type: string;
     }>;
 }

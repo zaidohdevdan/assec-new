@@ -17,7 +17,7 @@ export default function WalletTab({ userData }: WalletTabProps) {
   return (
     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center">
       <div className="w-full max-w-md space-y-6">
-          <div className="bg-linear-to-br from-blue-900 via-blue-800 to-blue-950 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden aspect-[1.6/1]">
+          <div className="bg-linear-to-br from-blue-900 via-blue-800 to-blue-950 rounded-2xl p-8 text-white shadow-sm relative overflow-hidden">
             <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat"></div>
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
@@ -44,7 +44,7 @@ export default function WalletTab({ userData }: WalletTabProps) {
             </div>
           </div>
 
-          <div className="bg-white p-8 rounded-4xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+          <Card className="divide-y divide-slate-100">
             <div className="pb-4 mb-4 flex justify-between">
                 <span className="text-slate-400 text-xs font-bold uppercase">CPF</span>
                 <span className="text-slate-700 font-bold">{userData.cpf}</span>

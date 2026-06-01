@@ -5,6 +5,9 @@ import DashboardHeader from "../components/dashboard/DashboardHeader";
 import OverviewTab from "../components/dashboard/tabs/OverviewTab";
 import WalletTab from "../components/dashboard/tabs/WalletTab";
 import SchedulesTab from "../components/dashboard/tabs/SchedulesTab";
+import AdminDashboard from "./admin/AdminDashboard";
+import UsersManagement from "./admin/UsersManagement";
+import ContactMessages from "./admin/ContactMessages";
 import { useAuthStore } from "../store/useAuthStore";
 import { scheduleService } from "../services/scheduleService";
 
@@ -49,15 +52,15 @@ function Dashboard() {
   const isAdmin = user?.role === "ADMIN";
   const menuItems = isAdmin
     ? [
-        { id: "admin-dashboard", label: "Painel Admin", icon: <LayoutDashboard className="w-5 h-5" /> },
-        { id: "admin-usuarios", label: "Gestão de Usuários", icon: <User className="w-5 h-5" /> },
-        { id: "admin-mensagens", label: "Mensagens de Contato", icon: <Mail className="w-5 h-5" /> },
-      ]
+      { id: "admin-dashboard", label: "Painel Admin", icon: <LayoutDashboard className="w-5 h-5" /> },
+      { id: "admin-usuarios", label: "Gestão de Usuários", icon: <User className="w-5 h-5" /> },
+      { id: "admin-mensagens", label: "Mensagens de Contato", icon: <Mail className="w-5 h-5" /> },
+    ]
     : [
-        { id: "inicio", label: "Visão Geral", icon: <User className="w-5 h-5" /> },
-        { id: "carteira", label: "Carteira Digital", icon: <CreditCard className="w-5 h-5" /> },
-        { id: "agendamentos", label: "Agendamentos", icon: <CalendarDays className="w-5 h-5" /> },
-      ];
+      { id: "inicio", label: "Visão Geral", icon: <User className="w-5 h-5" /> },
+      { id: "carteira", label: "Carteira Digital", icon: <CreditCard className="w-5 h-5" /> },
+      { id: "agendamentos", label: "Agendamentos", icon: <CalendarDays className="w-5 h-5" /> },
+    ];
 
   const renderContent = () => {
     switch (activeTab) {
@@ -67,8 +70,14 @@ function Dashboard() {
         return <WalletTab userData={userData} />;
       case "agendamentos":
         return <SchedulesTab schedules={schedules} />;
+      case "admin-dashboard":
+        return <AdminDashboard />;
+      case "admin-usuarios":
+        return <UsersManagement />;
+      case "admin-mensagens":
+        return <ContactMessages />;
       default:
-        return null;
+        return <OverviewTab setActiveTab={setActiveTab} />;
     }
   };
 
@@ -98,7 +107,8 @@ function Dashboard() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600 blur-[150px] opacity-10 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
         <DashboardHeader userData={userData} />
         {/* Scrollable Body */}
-        <main className="flex-1 p-6 md:p-12 overflow-y-auto w-full max-w-6xl mx-auto scroll-smooth relative z-10">
+        <main className="flex-1 p-6 md:p-12 overflow-y-auto w-full scroll-smooth relative z-10">
+          <div className="w-full max-w-6xl mx-auto">
           <div className="mb-12">
             <p className="text-blue-600 font-black text-xs uppercase tracking-[0.4em] mb-2">{activeTab}</p>
             <h2 className="text-4xl md:text-5xl font-black text-blue-950 tracking-tight leading-none">
@@ -106,6 +116,7 @@ function Dashboard() {
             </h2>
           </div>
           {renderContent()}
+        </div>
         </main>
       </div>
     </div>

@@ -18,7 +18,7 @@ interface SchedulesTabProps {
 export default function SchedulesTab({ schedules }: SchedulesTabProps) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-      <div className="flex justify-between items-center bg-white p-6 rounded-4xl border border-slate-100 shadow-sm">
+      <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
         <div>
           <h2 className="text-xl font-black text-blue-950">Meus Agendamentos</h2>
           <p className="text-slate-400 text-sm font-medium">Gerencie suas reservas e horários da semana.</p>
@@ -30,7 +30,7 @@ export default function SchedulesTab({ schedules }: SchedulesTabProps) {
 
       <div className="grid md:grid-cols-2 gap-6">
           {schedules.map(schedule => (
-            <div key={schedule.id} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
+            <Card className="relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4">
                   <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-full border ${schedule.status === 'Confirmado' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
                     {schedule.status}
@@ -58,7 +58,7 @@ export default function SchedulesTab({ schedules }: SchedulesTabProps) {
           ))}
       </div>
 
-      <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white overflow-hidden relative">
+      <Card className="bg-slate-900 text-white p-6">
           <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat"></div>
           <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-12">
             <div className="text-center lg:text-left">

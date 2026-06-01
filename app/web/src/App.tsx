@@ -9,6 +9,7 @@ import MemberArea from "./pages/MemberArea";
 import Dashboard from "./pages/Dashboard";
 import Inns from "./pages/Inns";
 import AdminRoute from "./components/layout/AdminRoute";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UsersManagement from "./pages/admin/UsersManagement";
 import ContactMessages from "./pages/admin/ContactMessages";
@@ -38,6 +39,11 @@ export default function App() {
           <Route path="contato" element={<Contact />} />
           <Route path="area-associado" element={<MemberArea />} />
 
+        </Route>
+
+        {/* Rotas Protegidas (usuários autenticados) */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="dashboard" element={<Dashboard />} />
         </Route>
 
         {/* Rotas Protegidas (admin) */}
