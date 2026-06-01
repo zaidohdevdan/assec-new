@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { Mail } from "lucide-react";
+import api from "../../services/api";
 
-// Mock data – replace with real API call to /admin/contact-messages
-const mockMessages = [
-  { id: "1", name: "Cliente A", email: "a@example.com", subject: "Dúvida", message: "Preciso de ajuda...", createdAt: "2026-05-20" },
-  { id: "2", name: "Cliente B", email: "b@example.com", subject: "Orçamento", message: "Solicito orçamento para...", createdAt: "2026-05-22" },
-];
+const fetchMessages = async () => {
+  const response = await api.get("/contact");
+  return response.data;
+};
 
 export default function ContactMessages() {
-  const [messages, setMessages] = useState(mockMessages);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    // fetchMessages().then(setMessages);
+    const load = async () => {
+      try {
+        const data = await fetchMessages();
+        setMessages(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error("Failed to load contact messages", e);
+      }
+    };
+    load();
   }, []);
 
   return (
@@ -29,21 +37,29 @@ export default function ContactMessages() {
             </tr>
           </thead>
           <tbody>
-            {messages.map((msg) => (
-              <tr key={msg.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                <td className="p-4 text-sm text-slate-600">{msg.id}</td>
-                <td className="p-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-slate-400" />
-                    <span className="font-medium text-slate-900">{msg.name}</span>
-                  </div>
+            {messages.length > 0 ? (
+              messages.map((msg: any) => (
+                <tr key={msg.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="p-4 text-sm text-slate-600">{msg.id}</td>
+                  <td className="p-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-slate-400" />
+                      <span className="font-medium text-slate-900">{msg.name}</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-sm text-slate-600">{msg.email}</td>
+                  <td className="p-4 text-sm text-slate-600">{msg.subject}</td>
+                  <td className="p-4 text-sm text-slate-600 max-w-xs truncate">{msg.message}</td>
+                  <td className="p-4 text-sm text-slate-600">{new Date(msg.createdAt).toLocaleDateString('pt-BR')}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="p-8 text-center text-slate-500">
+                  Nenhuma mensagem encontrada
                 </td>
-                <td className="p-4 text-sm text-slate-600">{msg.email}</td>
-                <td className="p-4 text-sm text-slate-600">{msg.subject}</td>
-                <td className="p-4 text-sm text-slate-600 max-w-xs truncate">{msg.message}</td>
-                <td className="p-4 text-sm text-slate-600">{msg.createdAt}</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

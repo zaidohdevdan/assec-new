@@ -5,7 +5,7 @@ import api from "../../services/api";
 
 // Service functions
 const fetchUsers = async () => {
-  const response = await api.get("/admin/users");
+  const response = await api.get("/users");
   return response.data;
 };
 
