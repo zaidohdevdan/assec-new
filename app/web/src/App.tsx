@@ -10,9 +10,6 @@ import Dashboard from "./pages/Dashboard";
 import Inns from "./pages/Inns";
 import AdminRoute from "./components/layout/AdminRoute";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import UsersManagement from "./pages/admin/UsersManagement";
-import ContactMessages from "./pages/admin/ContactMessages";
 import Layout from "./components/layout/Layout";
 
 // Scroll to top on route change
@@ -48,9 +45,7 @@ export default function App() {
 
         {/* Rotas Protegidas (admin) */}
         <Route element={<AdminRoute />}>
-          <Route path="admin-dashboard" element={<AdminDashboard />} />
-          <Route path="admin-usuarios" element={<UsersManagement />} />
-          <Route path="admin-mensagens" element={<ContactMessages />} />
+          <Route path="dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
     </Router>

@@ -64,8 +64,8 @@ export default function MemberArea() {
       const data = await authService.login(payload);
       console.log("[DEBUG] Login response:", data);
       setAuth(data.user, data.access_token);
-      // Direcionar baseado no role do usuário
-      const destination = data.user.role === "ADMIN" ? "/admin-dashboard" : "/dashboard";
+      // Todos vão para /dashboard (a role diferencia o conteúdo lá)
+      const destination = "/dashboard";
       navigate(destination, { replace: true });
     } catch (err: any) {
       console.error("[DEBUG] Login error full:", err);
