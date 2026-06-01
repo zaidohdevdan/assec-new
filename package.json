@@ -1,0 +1,11 @@
+{
+  "name": "assec",
+  "version": "1.0.0",
+  "description": "ASSEC — Sistema de Gestão de Pousadas",
+  "scripts": {
+    "dev:all": "./run-all.sh --verbose",
+    "dev:backend": "cd backend && npm run start:dev",
+    "dev:frontend": "cd app/web && npm run dev",
+    "build:all": "cd backend && npm run build && cd ../app/web && npm run build"
+  }
+}

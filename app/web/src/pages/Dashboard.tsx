@@ -49,15 +49,15 @@ function Dashboard() {
   const isAdmin = user?.role === "ADMIN";
   const menuItems = isAdmin
     ? [
-        { id: "admin-dashboard", label: "Painel Admin", icon: <LayoutDashboard className="w-5 h-5" /> },
-        { id: "admin-usuarios", label: "Gestão de Usuários", icon: <User className="w-5 h-5" /> },
-        { id: "admin-mensagens", label: "Mensagens de Contato", icon: <Mail className="w-5 h-5" /> },
-      ]
+      { id: "admin-dashboard", label: "Painel Admin", icon: <LayoutDashboard className="w-5 h-5" /> },
+      { id: "admin-usuarios", label: "Gestão de Usuários", icon: <User className="w-5 h-5" /> },
+      { id: "admin-mensagens", label: "Mensagens de Contato", icon: <Mail className="w-5 h-5" /> },
+    ]
     : [
-        { id: "inicio", label: "Visão Geral", icon: <User className="w-5 h-5" /> },
-        { id: "carteira", label: "Carteira Digital", icon: <CreditCard className="w-5 h-5" /> },
-        { id: "agendamentos", label: "Agendamentos", icon: <CalendarDays className="w-5 h-5" /> },
-      ];
+      { id: "inicio", label: "Visão Geral", icon: <User className="w-5 h-5" /> },
+      { id: "carteira", label: "Carteira Digital", icon: <CreditCard className="w-5 h-5" /> },
+      { id: "agendamentos", label: "Agendamentos", icon: <CalendarDays className="w-5 h-5" /> },
+    ];
 
   const renderContent = () => {
     switch (activeTab) {

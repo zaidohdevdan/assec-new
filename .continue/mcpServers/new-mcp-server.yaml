@@ -1,0 +1,22 @@
+$schema: "https://raw.githubusercontent.com/continue-dev/continue/main/config-yaml-schema.json"
+models:
+  - name: Qwen Flash
+    provider: openai
+    model: qwen-flash
+    apiKey: "${QWEN_API_KEY}"
+    apiBase: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+
+mcpServers:
+  filesystem:
+    command: "npx"
+    args: ["-y", "@modelcontextprotocol/server-filesystem", "/home/zaidoh/dsw/assec"]
+  
+  postgres:
+    command: "npx"
+    args: ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
+
+  git:
+    command: "npx"
+    args: ["-y", "@modelcontextprotocol/server-git", "/home/zaidoh/dsw/assec"]
+
+allowAnonymousTelemetry: false

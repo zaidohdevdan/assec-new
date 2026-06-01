@@ -7,13 +7,18 @@ import {
   Body,
   Param,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { NoticesService } from './notices.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { Prisma } from '@prisma/client';
+import {
+  NoticeCreateSchema,
+  NoticeUpdateSchema,
+} from '../common/zod/notice.schema';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
 @Controller('notices')
 export class NoticesController {
@@ -22,7 +27,8 @@ export class NoticesController {
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  create(@Body() data: Prisma.NoticeCreateInput) {
+  @UsePipes(new ZodValidationPipe(NoticeCreateSchema))
+  create(@Body() data: any) {
     return this.noticesService.create(data);
   }
 
@@ -39,7 +45,8 @@ export class NoticesController {
   @Put(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  update(@Param('id') id: string, @Body() data: Prisma.NoticeUpdateInput) {
+  @UsePipes(new ZodValidationPipe(NoticeUpdateSchema))
+  update(@Param('id') id: string, @Body() data: any) {
     return this.noticesService.update(id, data);
   }
 

@@ -30,6 +30,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           {/* Rotas Públicas */}
+          <Route path="dashboard" element={<Dashboard />} />
           <Route index element={<Home />} />
           <Route path="sobre" element={<About />} />
           <Route path="beneficios" element={<Benefits />} />
@@ -42,6 +43,7 @@ export default function App() {
 
         {/* Rotas Protegidas (admin) */}
         <Route element={<AdminRoute />}>
+
           <Route path="admin-dashboard" element={<AdminDashboard />} />
           <Route path="admin-usuarios" element={<UsersManagement />} />
           <Route path="admin-mensagens" element={<ContactMessages />} />

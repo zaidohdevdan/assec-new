@@ -19,7 +19,8 @@ const inns_service_1 = require("./inns.service");
 const auth_guard_1 = require("../auth/auth.guard");
 const roles_guard_1 = require("../auth/roles.guard");
 const roles_decorator_1 = require("../auth/roles.decorator");
-const client_2 = require("@prisma/client");
+const inn_schema_1 = require("../common/zod/inn.schema");
+const zod_validation_pipe_1 = require("../common/pipes/zod-validation.pipe");
 let InnsController = class InnsController {
     innsService;
     constructor(innsService) {
@@ -46,6 +47,7 @@ __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
+    (0, common_1.UsePipes)(new zod_validation_pipe_1.ZodValidationPipe(inn_schema_1.InnCreateSchema)),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -68,6 +70,7 @@ __decorate([
     (0, common_1.Put)(':id'),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.Role.ADMIN),
+    (0, common_1.UsePipes)(new zod_validation_pipe_1.ZodValidationPipe(inn_schema_1.InnUpdateSchema)),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

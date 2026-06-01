@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
+import api from "../../services/api";
 import { Mail } from "lucide-react";
 
-// Mock data – replace with real API call to /admin/contact-messages
-const mockMessages = [
-  { id: "1", name: "Cliente A", email: "a@example.com", subject: "Dúvida", message: "Preciso de ajuda...", createdAt: "2026-05-20" },
-  { id: "2", name: "Cliente B", email: "b@example.com", subject: "Orçamento", message: "Solicito orçamento para...", createdAt: "2026-05-22" },
-];
+
+const fetchMessages = async () => {
+  const response = await api.get("/contact");
+  return response.data;
+};
 
 export default function ContactMessages() {
-  const [messages, setMessages] = useState(mockMessages);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    // fetchMessages().then(setMessages);
+    fetchMessages().then(setMessages).catch(console.error);
   }, []);
 
   return (

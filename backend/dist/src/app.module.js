@@ -18,6 +18,7 @@ const contact_module_1 = require("./contact/contact.module");
 const schedules_module_1 = require("./schedules/schedules.module");
 const inns_module_1 = require("./inns/inns.module");
 const notices_module_1 = require("./notices/notices.module");
+const health_controller_1 = require("./health/health.controller");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -33,7 +34,7 @@ exports.AppModule = AppModule = __decorate([
             inns_module_1.InnsModule,
             notices_module_1.NoticesModule,
         ],
-        controllers: [app_controller_1.AppController],
+        controllers: [app_controller_1.AppController, health_controller_1.HealthController],
         providers: [app_service_1.AppService],
     })
 ], AppModule);

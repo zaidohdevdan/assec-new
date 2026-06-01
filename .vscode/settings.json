@@ -1,13 +1,17 @@
 {
     "claudeCode.claudeProcessWrapper": "/home/zaidoh/.nvm/versions/node/v22.22.0/bin/openclaude",
     "remote.autoForwardPortsFallback": 0,
-    "yaml.schemas": {
-        "file:///c%3A/Users/luxav/.vscode/extensions/continue.continue-1.2.22-win32-x64/config-yaml-schema.json": [
-            ".continue/**/*.yaml"
-        ],
-        "file:///c%3A/Users/luxav/.vscode/extensions/continue.continue-1.3.38-win32-x64/config-yaml-schema.json": [
-            ".continue/**/*.yaml"
-        ],
-        "file:///c:/Users/luxav/.vscode/extensions/continue.continue-1.2.22-win32-x64/config-yaml-schema.json": "vscode-local:/c%3A/Users/luxav/.continue/config.yaml"
+    "workbench.secondarySideBar.showLabels": true,
+
+  "models": [
+    {
+      "title": "Qwen Plus",
+      "provider": "openai",
+      "model": "qwen-plus",
+      "apiKey": "sk-ws-H.HLXIEL.TL0K.MEYCIQCBelTpic97tDgrhqTPiE4aly044ApgK9DoUEyEAakHMgIhAOfH5FBlp_KN8QfIvArTwgLhVdohMtoVwm1BBFKteKlo",
+      "apiBase": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
     }
+  ],
+  "allowAnonymousTelemetry": false
+
 }

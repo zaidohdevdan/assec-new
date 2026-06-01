@@ -7,7 +7,8 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const config = app.get(config_1.ConfigService);
     const port = config.get('PORT', 3001);
-    const frontendUrl = config.get('FRONTEND_URL', 'http://localhost:5173');
+    const frontendUrl = config.get('FRONTEND_URL', 'http://localhost:3000');
+    console.log(`Frontend URL: ${frontendUrl}`);
     app.enableCors({
         origin: true,
         credentials: true,

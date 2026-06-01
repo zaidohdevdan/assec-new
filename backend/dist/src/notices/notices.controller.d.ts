@@ -1,9 +1,8 @@
 import { NoticesService } from './notices.service';
-import { Prisma } from '@prisma/client';
 export declare class NoticesController {
     private readonly noticesService;
     constructor(noticesService: NoticesService);
-    create(data: Prisma.NoticeCreateInput): Promise<{
+    create(data: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -30,7 +29,7 @@ export declare class NoticesController {
         active: boolean;
         content: string;
     }>;
-    update(id: string, data: Prisma.NoticeUpdateInput): Promise<{
+    update(id: string, data: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;

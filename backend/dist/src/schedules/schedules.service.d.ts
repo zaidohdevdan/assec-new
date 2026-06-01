@@ -17,8 +17,8 @@ export declare class SchedulesService {
         updatedAt: Date;
         type: string;
         title: string;
-        date: string;
-        time: string;
+        date: Date;
+        time: Date;
         userId: string;
     }>;
     findByUser(userId: string): Promise<{
@@ -29,8 +29,8 @@ export declare class SchedulesService {
         updatedAt: Date;
         type: string;
         title: string;
-        date: string;
-        time: string;
+        date: Date;
+        time: Date;
         userId: string;
     }[]>;
     findOne(id: string): Promise<{
@@ -41,8 +41,8 @@ export declare class SchedulesService {
         updatedAt: Date;
         type: string;
         title: string;
-        date: string;
-        time: string;
+        date: Date;
+        time: Date;
         userId: string;
     }>;
     update(id: string, userId: string, data: Partial<{
@@ -60,8 +60,8 @@ export declare class SchedulesService {
         updatedAt: Date;
         type: string;
         title: string;
-        date: string;
-        time: string;
+        date: Date;
+        time: Date;
         userId: string;
     }>;
     remove(id: string, userId: string): Promise<{
@@ -72,8 +72,8 @@ export declare class SchedulesService {
         updatedAt: Date;
         type: string;
         title: string;
-        date: string;
-        time: string;
+        date: Date;
+        time: Date;
         userId: string;
     }>;
 }

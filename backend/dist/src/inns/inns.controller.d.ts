@@ -1,9 +1,8 @@
 import { InnsService } from './inns.service';
-import { Prisma } from '@prisma/client';
 export declare class InnsController {
     private readonly innsService;
     constructor(innsService: InnsService);
-    create(data: Prisma.InnCreateInput): Promise<{
+    create(data: any): Promise<{
         id: string;
         name: string;
         createdAt: Date;
@@ -36,7 +35,7 @@ export declare class InnsController {
         amenities: string[];
         active: boolean;
     }>;
-    update(id: string, data: Prisma.InnUpdateInput): Promise<{
+    update(id: string, data: any): Promise<{
         id: string;
         name: string;
         createdAt: Date;

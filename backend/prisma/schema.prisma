@@ -37,15 +37,16 @@ model ContactMessage {
 model Schedule {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      String
   title     String
-  date      String
-  time      String
+  date      DateTime
+  time      DateTime
   info      String?
   status    String   @default("Agendado")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+   @@map("schedule")
 }
 
 model Inn {
