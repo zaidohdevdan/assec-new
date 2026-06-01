@@ -57,7 +57,7 @@ export default function WalletTab({ userData }: WalletTabProps) {
                 <span className="text-slate-400 text-xs font-bold uppercase">Associado Desde</span>
                 <span className="text-slate-700 font-bold">{userData.since}</span>
             </div>
-          </div>
+          </Card>
 
           <div className="flex gap-4">
             <button className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-blue-700 transition-all active:scale-95">

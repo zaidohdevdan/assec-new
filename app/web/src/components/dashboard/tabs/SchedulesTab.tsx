@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { CalendarDays, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import Card from "../../ui/Card";
 
 interface Schedule {
   id: string;
@@ -54,7 +55,7 @@ export default function SchedulesTab({ schedules }: SchedulesTabProps) {
                     <button className="flex-1 py-3 bg-red-50 text-red-600 rounded-xl font-bold text-sm hover:bg-red-100 transition-all active:scale-95 border border-red-100">Cancelar</button>
                   </div>
               </div>
-            </div>
+            </Card>
           ))}
       </div>
 
@@ -69,7 +70,7 @@ export default function SchedulesTab({ schedules }: SchedulesTabProps) {
               Ver Pousadas
             </Link>
           </div>
-      </div>
+      </Card>
     </motion.div>
   );
 }
