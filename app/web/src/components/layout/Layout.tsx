@@ -9,9 +9,18 @@ import Footer from "./Footer";
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "var(--bg)",
+        color: "var(--ink)",
+        fontFamily: "var(--font-sans)",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Navbar />
-      <main>
+      <main style={{ flex: 1 }}>
         <Outlet />
       </main>
       <Footer />

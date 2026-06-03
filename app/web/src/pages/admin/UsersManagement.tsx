@@ -27,48 +27,48 @@ export default function UsersManagement() {
 
   return (
     <div className="w-full">
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-[var(--border)] overflow-hidden">
         <table className="w-full table-auto">
-          <thead className="bg-slate-50 border-b border-slate-100">
+          <thead className="bg-slate-50 border-b border-[var(--border)]">
             <tr>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">ID</th>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">Nome</th>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">E‑mail</th>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">Perfil</th>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">Ações</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">ID</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">Nome</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">E‑mail</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">Perfil</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">Ações</th>
             </tr>
           </thead>
           <tbody>
             {users.length > 0 ? (
               users.map((u: any) => (
-                <tr key={u.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                  <td className="p-4 text-sm text-slate-600">{u.id}</td>
+                <tr key={u.id} className="border-b border-[var(--border)] hover:bg-[var(--gold-glow)]/40 transition-colors">
+                  <td className="p-4 text-sm text-[var(--ink-muted)]">{u.id}</td>
                   <td className="p-4 text-sm">
                     <div className="flex items-center gap-2">
-                      <UserIcon className="w-4 h-4 text-slate-400" />
-                      <span className="font-medium text-slate-900">{u.name}</span>
+                       <UserIcon className="w-4 h-4 text-slate-400" />
+                      <span className="font-bold text-[var(--ink)]">{u.name}</span>
                     </div>
                   </td>
-                  <td className="p-4 text-sm text-slate-600">{u.email}</td>
+                  <td className="p-4 text-sm text-[var(--ink-muted)]">{u.email}</td>
                   <td className="p-4 text-sm">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${u.role === 'ADMIN'
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-blue-100 text-blue-700'
+                        ? 'bg-red-50 text-red-600 border border-red-100'
+                        : 'bg-[var(--gold-glow)] text-[var(--gold)] border border-[var(--border-gold)]'
                       }`}>
                       {u.role}
                     </span>
                   </td>
                   <td className="p-4 text-sm">
                     <div className="flex gap-2">
-                      <button className="px-3 py-1.5 text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors">Editar</button>
-                      <button className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors">Excluir</button>
+                      <button className="px-3 py-1.5 text-xs font-bold bg-[var(--gold-glow)] text-[var(--gold)] hover:bg-[var(--gold)] hover:text-white border border-[var(--border-gold)] rounded-lg transition-colors cursor-pointer">Editar</button>
+                      <button className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-100 rounded-lg transition-colors cursor-pointer">Excluir</button>
                     </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="p-8 text-center text-slate-500">
+                <td colSpan={5} className="p-8 text-center text-[var(--ink-muted)]">
                   Nenhum usuário encontrado
                 </td>
               </tr>

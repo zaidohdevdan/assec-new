@@ -1,3 +1,7 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 import { motion } from "motion/react";
 import {
@@ -64,12 +68,10 @@ export default function MemberArea() {
       const data = await authService.login(payload);
       console.log("[DEBUG] Login response:", data);
       setAuth(data.user, data.access_token);
-      // Todos vão para /dashboard (a role diferencia o conteúdo lá)
       const destination = "/dashboard";
       navigate(destination, { replace: true });
     } catch (err: any) {
-      console.error("[DEBUG] Login error full:", err);
-      console.error("[DEBUG] Login error:", err.response?.status, err.response?.data);
+      console.error("[DEBUG] Login error:", err);
       setLoginError(err.response?.data?.message || "Erro ao fazer login. Verifique suas credenciais.");
     } finally {
       setIsLoading(false);
@@ -85,15 +87,12 @@ export default function MemberArea() {
 
     setIsLoading(true);
     const payload = { identifier: loginIdentifier, newPassword: loginPassword };
-    console.log("[DEBUG] Reset password payload:", JSON.stringify(payload));
     try {
       const result = await authService.resetPassword(payload);
-      console.log("[DEBUG] Reset response:", result);
       alert(`Senha alterada com sucesso! Você já pode fazer o login.`);
       setIsForgotPassword(false);
       setLoginPassword("");
     } catch (err: any) {
-      console.error("[DEBUG] Reset error:", err.response?.status, err.response?.data);
       if (err.response?.status === 401) {
         setLoginError("Usuário não encontrado. O e-mail ou CPF digitado não está cadastrado.");
       } else if (err.response?.status === 400) {
@@ -125,22 +124,62 @@ Aguardo retorno com as instruções para finalização.`;
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-20 px-4 bg-slate-50">
-      <div className="max-w-5xl w-full grid lg:grid-cols-2 bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100">
+    <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", paddingBlock: "5rem", paddingInline: "1rem" }}>
+      <div 
+        style={{
+          maxWidth: "1000px",
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          background: "var(--surface)",
+          borderRadius: "3rem",
+          border: "1px solid var(--border)",
+          overflow: "hidden"
+        }}
+      >
         {/* Left Side - Info */}
-        <div className="hidden lg:flex flex-col justify-between p-16 bg-blue-950 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600 blur-[100px] opacity-20 -translate-y-1/2 translate-x-1/2"></div>
-          <div className="relative z-10">
-            <h2 className="text-4xl font-bold mb-8 leading-tight">Bem-vindo à sua <br /><span className="text-yellow-400">Plataforma de Benefícios</span></h2>
-            <p className="text-blue-200 text-lg mb-12">No portal do associado você gerencia sua carteira digital, consulta convênios e solicita apoio jurídico com um clique.</p>
+        <div 
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            padding: "3rem",
+            background: "var(--surface-2)",
+            borderRight: "1px solid var(--border)",
+            position: "relative",
+            overflow: "hidden"
+          }}
+          className="nav-desktop"
+        >
+          <div 
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              width: "250px",
+              height: "250px",
+              background: "var(--gold)",
+              filter: "blur(100px)",
+              opacity: 0.05,
+              pointerEvents: "none"
+            }}
+          ></div>
+          <div style={{ position: "relative", zIndex: 10 }}>
+            <h2 style={{ fontSize: "2rem", fontWeight: 800, color: "var(--ink)", marginBottom: "2rem", lineHeight: 1.2 }}>
+              Bem-vindo à sua <br />
+              <span style={{ color: "var(--gold)", fontStyle: "italic", fontFamily: "Alumni Sans, sans-serif" }}>Plataforma de Benefícios</span>
+            </h2>
+            <p style={{ color: "var(--ink-muted)", fontSize: "1.125rem", marginBottom: "3rem", lineHeight: 1.5 }}>
+              No portal do associado você gerencia sua carteira digital, consulta convênios e solicita apoio jurídico com um clique.
+            </p>
 
-            <div className="space-y-6">
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
               {[
-                { icon: <CreditCard className="w-5 h-5" />, text: "Carteirinha Digital" },
-                { icon: <CalendarDays className="w-5 h-5" />, text: "Agendamento de Clubes" }
+                { icon: <CreditCard size={20} style={{ color: "var(--gold)" }} />, text: "Carteirinha Digital" },
+                { icon: <CalendarDays size={20} style={{ color: "var(--gold)" }} />, text: "Agendamento de Clubes" }
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-4 text-blue-100 font-medium">
-                  <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: "1rem", color: "var(--ink)", fontWeight: 500 }}>
+                  <div style={{ width: "2.5rem", height: "2.5rem", background: "rgba(224, 180, 100, 0.05)", border: "1px solid rgba(224, 180, 100, 0.15)", borderRadius: "0.75rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {item.icon}
                   </div>
                   {item.text}
@@ -149,86 +188,86 @@ Aguardo retorno com as instruções para finalização.`;
             </div>
           </div>
 
-          <div className="relative z-10 pt-12 border-t border-white/10">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="w-6 h-6 text-green-400" />
-              <span className="text-sm text-blue-200 font-medium">Conexão Segura e Criptografada</span>
+          <div style={{ position: "relative", zIndex: 10, paddingTop: "3rem", borderTop: "1px solid var(--border)", marginTop: "3rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <ShieldCheck size={20} style={{ color: "var(--gold)" }} />
+              <span style={{ fontSize: "0.875rem", color: "var(--ink-muted)", fontWeight: 500 }}>Conexão Segura e Criptografada</span>
             </div>
           </div>
         </div>
 
         {/* Right Side - Form */}
-        <div className="p-8 md:p-16 flex flex-col justify-center">
+        <div style={{ padding: "clamp(2rem, 5vw, 4rem)", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             key={isLogin ? 'login' : 'register'}
           >
-            <header className="mb-10 text-center lg:text-left">
-              <h1 className="text-3xl font-bold text-blue-950 mb-2">
+            <header style={{ marginBottom: "2.5rem", textAlign: "center" }}>
+              <h1 style={{ fontSize: "2rem", fontWeight: 800, color: "var(--ink)", marginBottom: "0.5rem" }}>
                 {!isLogin ? 'Novo Associado' : (isForgotPassword ? 'Recuperar Senha' : 'Acessar Conta')}
               </h1>
-              <p className="text-slate-500">
+              <p style={{ color: "var(--ink-muted)", fontSize: "1rem" }}>
                 {!isLogin ? 'Preencha o formulário para enviar seus dados via WhatsApp.' : (isForgotPassword ? 'Informe seu identificador para receber instruções de recuperação.' : 'Entre com seus dados de associado.')}
               </p>
             </header>
 
-            <form className="space-y-5" onSubmit={!isLogin ? handleRegister : (isForgotPassword ? handleForgotPassword : handleLogin)}>
+            <form style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }} onSubmit={!isLogin ? handleRegister : (isForgotPassword ? handleForgotPassword : handleLogin)}>
               {!isLogin ? (
                 <>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Nome Completo</label>
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 700, color: "var(--ink)", marginBottom: "0.5rem" }}>Nome Completo</label>
+                    <div style={{ position: "relative" }}>
+                      <User style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", width: "1.25rem", height: "1.25rem", color: "var(--ink-muted)", zIndex: 10, pointerEvents: "none" }} className="center-y-lucide" />
                       <input
                         type="text"
                         required
                         value={regData.nome}
                         onChange={(e) => setRegData({ ...regData, nome: e.target.value })}
                         placeholder="Nome Completo"
-                        className="w-full bg-slate-50 border border-slate-200 pl-12 p-4 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium"
+                        className="form-input has-icon"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">CPF</label>
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 700, color: "var(--ink)", marginBottom: "0.5rem" }}>CPF</label>
+                    <div style={{ position: "relative" }}>
+                      <User style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", width: "1.25rem", height: "1.25rem", color: "var(--ink-muted)", zIndex: 10, pointerEvents: "none" }} className="center-y-lucide" />
                       <input
                         type="text"
                         required
                         value={regData.cpf}
                         onChange={(e) => setRegData({ ...regData, cpf: e.target.value })}
                         placeholder="000.000.000-00"
-                        className="w-full bg-slate-50 border border-slate-200 pl-12 p-4 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium"
+                        className="form-input has-icon"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Telefone (WhatsApp)</label>
-                    <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 700, color: "var(--ink)", marginBottom: "0.5rem" }}>Telefone (WhatsApp)</label>
+                    <div style={{ position: "relative" }}>
+                      <Phone style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", width: "1.25rem", height: "1.25rem", color: "var(--ink-muted)", zIndex: 10, pointerEvents: "none" }} className="center-y-lucide" />
                       <input
                         type="tel"
                         required
                         value={regData.telefone}
                         onChange={(e) => setRegData({ ...regData, telefone: e.target.value })}
                         placeholder="(85) 9 9999-9999"
-                        className="w-full bg-slate-50 border border-slate-200 pl-12 p-4 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium"
+                        className="form-input has-icon"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Órgão / Lotação</label>
-                    <div className="relative">
-                      <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 700, color: "var(--ink)", marginBottom: "0.5rem" }}>Órgão / Lotação</label>
+                    <div style={{ position: "relative" }}>
+                      <Building2 style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", width: "1.25rem", height: "1.25rem", color: "var(--ink-muted)", zIndex: 10, pointerEvents: "none" }} className="center-y-lucide" />
                       <input
                         type="text"
                         required
                         value={regData.orgao}
                         onChange={(e) => setRegData({ ...regData, orgao: e.target.value })}
                         placeholder="Ex: Polícia Militar"
-                        className="w-full bg-slate-50 border border-slate-200 pl-12 p-4 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium"
+                        className="form-input has-icon"
                       />
                     </div>
                   </div>
@@ -236,41 +275,41 @@ Aguardo retorno com as instruções para finalização.`;
               ) : (
                 <>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Email (ou CPF/Matrícula)</label>
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 700, color: "var(--ink)", marginBottom: "0.5rem" }}>Email (ou CPF/Matrícula)</label>
+                    <div style={{ position: "relative" }}>
+                      <User style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", width: "1.25rem", height: "1.25rem", color: "var(--ink-muted)", zIndex: 10, pointerEvents: "none" }} className="center-y-lucide" />
                       <input
                         type="text"
                         required
                         value={loginIdentifier}
                         onChange={(e) => setLoginIdentifier(e.target.value)}
                         placeholder="Email ou 000.000.000-00"
-                        className="w-full bg-slate-50 border border-slate-200 pl-12 p-4 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium"
+                        className="form-input has-icon"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">{isForgotPassword ? 'Nova Senha' : 'Senha'}</label>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 700, color: "var(--ink)", marginBottom: "0.5rem" }}>{isForgotPassword ? 'Nova Senha' : 'Senha'}</label>
+                    <div style={{ position: "relative" }}>
+                      <Lock style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", width: "1.25rem", height: "1.25rem", color: "var(--ink-muted)", zIndex: 10, pointerEvents: "none" }} className="center-y-lucide" />
                       <input
                         type="password"
                         required
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full bg-slate-50 border border-slate-200 pl-12 p-4 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium"
+                        className="form-input has-icon"
                       />
                     </div>
                   </div>
 
                   {!isForgotPassword && (
-                    <div className="flex justify-end">
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
                       <button
                         type="button"
                         onClick={() => setIsForgotPassword(true)}
-                        className="text-sm font-bold text-blue-600 hover:underline"
+                        style={{ background: "none", border: "none", fontSize: "0.875rem", fontWeight: 700, color: "var(--gold)", cursor: "pointer" }}
                       >
                         Esqueceu a senha?
                       </button>
@@ -278,11 +317,11 @@ Aguardo retorno com as instruções para finalização.`;
                   )}
 
                   {isForgotPassword && (
-                    <div className="flex justify-end">
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
                       <button
                         type="button"
                         onClick={() => setIsForgotPassword(false)}
-                        className="text-sm font-bold text-blue-600 hover:underline"
+                        style={{ background: "none", border: "none", fontSize: "0.875rem", fontWeight: 700, color: "var(--gold)", cursor: "pointer" }}
                       >
                         Voltar ao Login
                       </button>
@@ -290,7 +329,7 @@ Aguardo retorno com as instruções para finalização.`;
                   )}
 
                   {loginError && (
-                    <div className="text-red-500 text-sm font-bold text-center">
+                    <div style={{ color: "#ef4444", fontSize: "0.875rem", fontWeight: 700, textAlign: "center" }}>
                       {loginError}
                     </div>
                   )}
@@ -299,22 +338,31 @@ Aguardo retorno com as instruções para finalização.`;
 
               <button
                 disabled={isLoading}
-                className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="btn btn-primary"
+                style={{
+                  width: "100%",
+                  paddingBlock: "1.125rem",
+                  fontSize: "1.125rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem"
+                }}
               >
                 {isLoading ? 'Carregando...' : (!isLogin ? 'Enviar via WhatsApp' : (isForgotPassword ? 'Recuperar Senha' : 'Entrar Agora'))}
-                {!isLoading && <ArrowRight className="w-6 h-6" />}
+                {!isLoading && <ArrowRight size={20} />}
               </button>
             </form>
 
-            <div className="mt-10 pt-10 border-t border-slate-100 text-center">
-              <p className="text-slate-500">
+            <div style={{ marginTop: "2.5rem", paddingTop: "2.5rem", borderTop: "1px solid var(--border)", textAlign: "center" }}>
+              <p style={{ color: "var(--ink-muted)" }}>
                 {isLogin ? 'Ainda não é associado?' : 'Já possui cadastro?'}
                 <button
                   onClick={() => {
                     setIsLogin(!isLogin);
                     setIsForgotPassword(false);
                   }}
-                  className="ml-2 font-bold text-blue-900 hover:underline"
+                  style={{ background: "none", border: "none", marginLeft: "0.5rem", fontWeight: 700, color: "var(--ink)", cursor: "pointer", textDecoration: "underline" }}
                 >
                   {isLogin ? 'Quero me Associar' : 'Fazer Login'}
                 </button>

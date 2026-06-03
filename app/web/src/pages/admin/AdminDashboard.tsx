@@ -9,10 +9,10 @@ const data = [
 ];
 
 const stats = [
-  { label: "Total de Usuários", value: "120", icon: Users, color: "bg-blue-500" },
-  { label: "Mensagens", value: "45", icon: Mail, color: "bg-purple-500" },
-  { label: "Pousadas", value: "30", icon: Building2, color: "bg-green-500" },
-  { label: "Taxa de Crescimento", value: "+12%", icon: TrendingUp, color: "bg-orange-500" },
+  { label: "Total de Usuários", value: "120", icon: Users, color: "bg-[var(--gold)]" },
+  { label: "Mensagens", value: "45", icon: Mail, color: "bg-stone-700" },
+  { label: "Pousadas", value: "30", icon: Building2, color: "bg-stone-800" },
+  { label: "Taxa de Crescimento", value: "+12%", icon: TrendingUp, color: "bg-[var(--gold-dim)]" },
 ];
 
 export default function AdminDashboard() {
@@ -23,11 +23,11 @@ export default function AdminDashboard() {
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
           return (
-            <div key={idx} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-lg transition-shadow">
+            <div key={idx} className="bg-white rounded-2xl shadow-sm border border-[var(--border)] p-6 hover:shadow-lg transition-shadow">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-slate-600 text-sm font-medium">{stat.label}</p>
-                  <p className="text-3xl font-bold text-blue-950 mt-2">{stat.value}</p>
+                  <p className="text-[var(--ink-muted)] text-sm font-medium">{stat.label}</p>
+                  <p className="text-3xl font-bold text-[var(--ink)] mt-2">{stat.value}</p>
                 </div>
                 <div className={`${stat.color} p-3 rounded-xl text-white`}>
                   <Icon className="w-6 h-6" />
@@ -39,33 +39,33 @@ export default function AdminDashboard() {
       </div>
 
       {/* Chart Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mb-8">
-        <h3 className="text-lg font-bold text-blue-950 mb-6">Estatísticas</h3>
+      <div className="bg-white rounded-2xl shadow-sm border border-[var(--border)] p-8 mb-8">
+        <h3 className="text-lg font-bold text-[var(--ink)] mb-6">Estatísticas</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="value" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+            <XAxis dataKey="name" stroke="var(--ink-muted)" />
+            <YAxis stroke="var(--ink-muted)" />
+            <Tooltip contentStyle={{ background: 'var(--surface)', borderColor: 'var(--border)' }} />
+            <Bar dataKey="value" fill="var(--gold)" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
-        <h3 className="text-lg font-bold text-blue-950 mb-6">Atividade Recente</h3>
+      <div className="bg-white rounded-2xl shadow-sm border border-[var(--border)] p-8">
+        <h3 className="text-lg font-bold text-[var(--ink)] mb-6">Atividade Recente</h3>
         <div className="space-y-4">
           {[
             { action: "Novo usuário registrado", time: "há 2 horas", user: "João Silva" },
             { action: "Mensagem de contato recebida", time: "há 4 horas", user: "Maria Santos" },
             { action: "Pousada adicionada", time: "há 1 dia", user: "Sistema" },
           ].map((activity, idx) => (
-            <div key={idx} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+            <div key={idx} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-[var(--gold-glow)] transition-colors border border-transparent hover:border-[var(--border-gold)]">
               <div>
-                <p className="font-medium text-slate-900">{activity.action}</p>
-                <p className="text-sm text-slate-500">{activity.user}</p>
+                <p className="font-bold text-[var(--ink)]">{activity.action}</p>
+                <p className="text-sm text-[var(--ink-muted)]">{activity.user}</p>
               </div>
-              <span className="text-xs font-medium text-slate-500 bg-slate-200 px-3 py-1 rounded-full">
+              <span className="text-xs font-bold text-[var(--gold)] bg-[var(--gold-glow)] px-3 py-1 rounded-full border border-[var(--border-gold)]">
                 {activity.time}
               </span>
             </div>

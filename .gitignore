@@ -1,0 +1,15 @@
+# IDEs and tools
+.gemini/
+.claude/
+.continue/
+.vscode/
+.openclaude-profile.json
+
+# Dependencies
+node_modules/
+
+# Environments
+.env*
+
+# Logs
+*.log

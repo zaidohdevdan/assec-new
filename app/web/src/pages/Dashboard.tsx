@@ -82,14 +82,14 @@ function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[var(--bg)] flex flex-col lg:flex-row">
       {/* Mobile Header */}
-      <div className="lg:hidden bg-blue-950 text-white p-5 flex justify-between items-center sticky top-0 z-50 shadow-lg">
+      <div className="lg:hidden bg-[var(--surface)] border-b border-[var(--border)] text-[var(--ink)] p-5 flex justify-between items-center sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="text-yellow-400 w-6 h-6" />
-          <span className="font-black tracking-tighter text-xl italic uppercase">ASSEC</span>
+          <img src="/logomarca.jpeg" className="w-8 h-8 rounded-md object-contain" />
+          <span className="font-black tracking-tighter text-xl italic uppercase text-[var(--ink)]">ASSEC</span>
         </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 bg-white/10 rounded-xl">
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 border border-[var(--border)] rounded-xl text-[var(--ink)]">
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -104,14 +104,14 @@ function Dashboard() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600 blur-[150px] opacity-10 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--gold)] blur-[150px] opacity-10 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
         <DashboardHeader userData={userData} />
         {/* Scrollable Body */}
         <main className="flex-1 p-6 md:p-12 overflow-y-auto w-full scroll-smooth relative z-10">
           <div className="w-full max-w-6xl mx-auto">
           <div className="mb-12">
-            <p className="text-blue-600 font-black text-xs uppercase tracking-[0.4em] mb-2">{activeTab}</p>
-            <h2 className="text-4xl md:text-5xl font-black text-blue-950 tracking-tight leading-none">
+            <p className="text-[var(--gold)] font-black text-xs uppercase tracking-[0.4em] mb-2">{activeTab}</p>
+            <h2 className="text-4xl md:text-5xl font-black text-[var(--ink)] tracking-tight leading-none">
               {menuItems.find(i => i.id === activeTab)?.label}
             </h2>
           </div>

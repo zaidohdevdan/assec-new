@@ -1,96 +1,249 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 import { motion } from "motion/react";
 import {
   History,
   Target,
-  Eye,
-  Users2,
   ShieldCheck,
+  Users2,
   Building2,
   Landmark,
   FileText
 } from "lucide-react";
 
-import { PremiumCard } from "../components/ui/PremiumCard";
-
 export default function About() {
   const values = [
-    { icon: <ShieldCheck className="w-6 h-6" />, title: "Integridade", desc: "Compromisso inabalável com a ética e a transparência em todas as nossas ações." },
-    { icon: <Users2 className="w-6 h-6" />, title: "União", desc: "Acreditamos que a força da nossa categoria reside na coesão de seus membros." },
-    { icon: <Target className="w-6 h-6" />, title: "Excelência", desc: "Busca constante pelos melhores serviços e representação para o associado." }
+    {
+      icon: <ShieldCheck size={24} style={{ color: "var(--gold)" }} />,
+      title: "Integridade",
+      desc: "Compromisso inabalável com a ética e a transparência em todas as nossas ações."
+    },
+    {
+      icon: <Users2 size={24} style={{ color: "var(--gold)" }} />,
+      title: "União",
+      desc: "Acreditamos que a força da nossa categoria reside na coesão de seus membros."
+    },
+    {
+      icon: <Target size={24} style={{ color: "var(--gold)" }} />,
+      title: "Excelência",
+      desc: "Busca constante pelos melhores serviços e representação para o associado."
+    }
   ];
 
   return (
-    <div className="pb-20">
+    <div style={{ paddingBottom: "5rem" }}>
       {/* Banner */}
-      <div className="h-[40vh] bg-blue-900 relative flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-black/40 z-10"></div>
+      <div
+        style={{
+          height: "40vh",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
+          borderBottom: "1px solid var(--border)"
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(to bottom, rgba(7,6,4,0.4), rgba(7,6,4,0.9))",
+            zIndex: 10
+          }}
+        ></div>
         <img
-          src="https://picsum.photos/seed/assec-about/1200/600"
-          className="absolute inset-0 w-full h-full object-cover grayscale opacity-50"
+          src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&q=80"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity: 0.25,
+            filter: "grayscale(100%)"
+          }}
           alt="ASSEC Background"
           referrerPolicy="no-referrer"
         />
-        <div className="relative z-20 text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">Nossa História, <span className="text-yellow-400">Sua Força</span></h1>
-          <PremiumCard title="Sobre a ASSEC">
-            Descubra a trajetória da ASSEC, construída com dedicação pelos servidores da segurança cearense, e como nossa ação fortalece a categoria.
-          </PremiumCard>
+        <div className="content" style={{ position: "relative", zIndex: 20, textAlign: "center" }}>
+          <h1
+            style={{
+              fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
+              fontWeight: 800,
+              color: "#ffffff",
+              marginBottom: "1rem",
+              letterSpacing: "-0.03em"
+            }}
+          >
+            Nossa História, <span style={{ color: "var(--gold)", fontStyle: "italic", fontFamily: "Alumni Sans, sans-serif" }}>Sua Força</span>
+          </h1>
+          <p
+            style={{
+              fontSize: "1.125rem",
+              color: "rgba(255, 255, 255, 0.8)",
+              maxWidth: "600px",
+              marginInline: "auto"
+            }}
+          >
+            Descubra a trajetória da ASSEC, construída com dedicação pelos servidores da segurança cearense.
+          </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-        <div className="grid lg:grid-cols-2 gap-20 items-center mb-32">
+      <div className="content" style={{ marginTop: "5rem" }}>
+        <div
+          className="grid-2col"
+          style={{
+            alignItems: "center",
+            marginBottom: "6rem",
+            gap: "4rem"
+          }}
+        >
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <div className="flex items-center gap-3 text-blue-600 font-bold mb-4">
-              <History className="w-5 h-5" />
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                color: "var(--gold)",
+                fontWeight: 700,
+                marginBottom: "1rem",
+                textTransform: "uppercase",
+                fontSize: "0.875rem",
+                letterSpacing: "0.1em"
+              }}
+            >
+              <History size={16} />
               <span>Desde 2026</span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold text-blue-950 mb-8 leading-tight tracking-tight text-balance">
-              Mais de duas décadas de compromisso e representatividade.
+            <h2
+              style={{
+                fontSize: "clamp(2rem, 4vw, 3rem)",
+                fontWeight: 800,
+                color: "var(--ink)",
+                marginBottom: "2rem",
+                lineHeight: 1.15,
+                letterSpacing: "-0.02em"
+              }}
+            >
+              Nosso compromisso e representatividade.
             </h2>
-            <div className="space-y-6 text-slate-600 text-lg leading-relaxed">
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.5rem",
+                color: "var(--ink-muted)",
+                fontSize: "1.125rem",
+                lineHeight: 1.6
+              }}
+            >
               <p>
                 A ASSEC nasceu da necessidade de representar e defender pautas essenciais e históricas dos profissionais da Segurança Pública do nosso Estado. Somos um grupo formado por pessoas comprometidas com a valorização da categoria, buscando caminhos concretos para construir diálogo com a sociedade e com os órgãos competentes, transformando reivindicações legítimas em conquistas reais.
-                Com esse propósito, iniciamos nossos trabalhos apresentando projetos e propostas voltados às diversas demandas dos profissionais da área, sempre abertos ao diálogo, à construção coletiva e à busca de soluções viáveis para a implementação dessas ideias. Nosso objetivo é contribuir para avanços concretos que tragam benefícios não apenas para os agentes da Segurança Pública, mas também para toda a população, que depende de um serviço cada vez mais fortalecido, valorizado e eficiente.
-                Acreditamos que somente por meio da união, da responsabilidade e da participação ativa será possível fortalecer a Segurança Pública e garantir melhores condições de trabalho, reconhecimento profissional e dignidade para aqueles que dedicam suas vidas à proteção da sociedade.
-
               </p>
               <p>
-                Hoje, não somos apenas uma entidade de representação política, mas um provedor completo de serviços, saúde e amparo para milhares de famílias de policiais, bombeiros e peritos.
+                Acreditamos que somente por meio da união, da responsabilidade e da participação ativa será possível fortalecer a Segurança Pública e garantir melhores condições de trabalho, reconhecimento profissional e dignidade para aqueles que dedicam suas vidas à proteção da sociedade.
               </p>
             </div>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 gap-4"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "1rem"
+            }}
           >
-            <div className="space-y-4 pt-12">
-              <div className="aspect-3/4 bg-slate-200 rounded-3xl overflow-hidden shadow-lg">
-                <img src="https://picsum.photos/seed/history1/400/500" alt="History" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            <div style={{ paddingTop: "3rem" }}>
+              <div
+                style={{
+                  aspectRatio: "3/4",
+                  borderRadius: "1.5rem",
+                  overflow: "hidden",
+                  border: "1px solid var(--border)",
+                  background: "var(--surface)"
+                }}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=400&q=80"
+                  alt="History"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(100%)" }}
+                  referrerPolicy="no-referrer"
+                />
               </div>
             </div>
-            <div className="space-y-4">
-              <div className="aspect-3/4 bg-slate-200 rounded-3xl overflow-hidden shadow-lg">
-                <img src="https://picsum.photos/seed/history2/400/500" alt="History" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div
+                style={{
+                  aspectRatio: "3/4",
+                  borderRadius: "1.5rem",
+                  overflow: "hidden",
+                  border: "1px solid var(--border)",
+                  background: "var(--surface)"
+                }}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=400&q=80"
+                  alt="History 2"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(100%)" }}
+                  referrerPolicy="no-referrer"
+                />
               </div>
-              <div className="aspect-square bg-blue-100 rounded-3xl p-8 flex flex-col justify-end">
-                <Building2 className="w-10 h-10 text-blue-600 mb-4" />
-                <p className="text-2xl font-bold text-blue-900 leading-none">Sede Própria</p>
-                <p className="text-sm text-blue-700">Infraestrutura completa</p>
-              </div>
+              {/*<div
+                style={{
+                  aspectRatio: "1/1",
+                  background: "var(--surface)",
+                  borderRadius: "1.5rem",
+                  padding: "2rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                  border: "1px solid var(--border)",
+                  position: "relative",
+                  overflow: "hidden"
+                }}
+              >
+                {/* <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    width: "80px",
+                    height: "80px",
+                    background: "var(--gold)",
+                    filter: "blur(40px)",
+                    opacity: 0.1,
+                    pointerEvents: "none"
+                  }}
+                ></div>
+                {/* <Building2 size={32} style={{ color: "var(--gold)", marginBottom: "1rem" }} /> */}
+              {/*  <p style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--ink)", lineHeight: 1.1 }}>Sede Própria</p> */}
+              {/* <p style={{ fontSize: "0.875rem", color: "var(--ink-muted)", marginTop: "0.25rem" }}>Infraestrutura completa</p> */}
+              {/* </div> */}
             </div>
           </motion.div>
         </div>
 
         {/* Mission/Vision/Values */}
-        <div className="grid md:grid-cols-3 gap-8 mb-32">
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "2rem",
+            marginBottom: "6rem"
+          }}
+        >
           {values.map((v, i) => (
             <motion.div
               key={i}
@@ -98,30 +251,85 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="p-10 bg-white rounded-3xl shadow-sm border border-slate-100 text-center"
+              style={{
+                padding: "2.5rem",
+                background: "var(--surface)",
+                borderRadius: "2rem",
+                border: "1px solid var(--border)",
+                textAlign: "center",
+                position: "relative",
+                overflow: "hidden"
+              }}
             >
-              <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <div
+                style={{
+                  width: "3.5rem",
+                  height: "3.5rem",
+                  background: "rgba(224, 180, 100, 0.05)",
+                  borderRadius: "1.25rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginInline: "auto",
+                  marginBottom: "1.5rem",
+                  border: "1px solid rgba(224, 180, 100, 0.15)"
+                }}
+              >
                 {v.icon}
               </div>
-              <h3 className="text-2xl font-bold text-blue-950 mb-4">{v.title}</h3>
-              <p className="text-slate-600">{v.desc}</p>
+              <h3 style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--ink)", marginBottom: "1rem" }}>{v.title}</h3>
+              <p style={{ color: "var(--ink-muted)", fontSize: "1rem", lineHeight: 1.5 }}>{v.desc}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Transparency */}
-        <section className="bg-slate-900 rounded-[3rem] p-12 md:p-20 text-white flex flex-col lg:flex-row gap-12 items-center">
-          <div className="flex-1">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Portal da Transparência</h2>
-            <p className="text-slate-400 text-lg mb-8">
+        <section
+          style={{
+            background: "var(--surface-2)",
+            borderRadius: "3rem",
+            padding: "3rem",
+            border: "1px solid var(--border)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "3rem",
+            position: "relative",
+            overflow: "hidden"
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              width: "300px",
+              height: "300px",
+              background: "var(--gold)",
+              filter: "blur(120px)",
+              opacity: 0.05,
+              pointerEvents: "none"
+            }}
+          ></div>
+          <div style={{ flex: 1, position: "relative", zIndex: 2 }}>
+            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, color: "var(--ink)", marginBottom: "1.5rem" }}>
+              Portal da Transparência
+            </h2>
+            <p style={{ color: "var(--ink-muted)", fontSize: "1.125rem", marginBottom: "2.5rem", maxWidth: "700px", lineHeight: 1.6 }}>
               Acreditamos que a confiança é o alicerce de qualquer associação. Disponibilizamos mensalmente nossos relatórios financeiros, atas de reuniões e planejamentos estratégicos para consulta de todos os associados.
             </p>
-            <button className="flex items-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-2xl font-bold hover:bg-slate-100 transition-all">
-              <FileText className="w-5 h-5" /> Acessar Documentos
+            <button
+              className="btn-primary"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem"
+              }}
+            >
+              <FileText size={18} /> Acessar Documentos
             </button>
           </div>
-          <div className="shrink-0">
-            <Landmark className="w-48 h-48 text-slate-800" />
+          <div className="nav-desktop" style={{ justifyContent: "center", opacity: 0.15, zIndex: 1 }}>
+            <Landmark size={180} style={{ color: "var(--ink)" }} />
           </div>
         </section>
       </div>

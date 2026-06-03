@@ -1,12 +1,32 @@
+[![CI](https://github.com/zaidohdevdan/assec-new/actions/workflows/ci.yml/badge.svg)](https://github.com/zaidohdevdan/assec-new/actions/workflows/ci.yml)
+[![Coverage](https://coveralls.io/repos/github/zaidohdevdan/assec-new/badge.svg?branch=main)](https://coveralls.io/github/zaidohdevdan/assec-new?branch=main)
 # CLAUDE.md - ASSEC Backend
 
-## Visao Geral
+- [Visão Geral](#visão-geral)
+- [Como Rodar](#como-rodar)
+- [Estrutura](#estrutura)
+- [Tasks (Prioridade)](#tasks-prioridade)
+
+## Visão Geral
 
 Backend NestJS 11 + Prisma + PostgreSQL para o sistema ASSEC.
+
+| Variável | Descrição | Obrigatória |
+|----------|-----------|------------|
+| JWT_SECRET | Secret usado para assinar JWTs | Sim |
+| FRONTEND_URL | URL da aplicação frontend (usado no CORS) | Sim |
+| DATABASE_URL | URL de conexão ao PostgreSQL | Sim |
+| PORT | Porta onde o backend roda (default 3001) | Não |
+
 Porta: 3001 | Banco: PostgreSQL (Docker, porta 15432)
 
 ## Como Rodar
 
+```bash
+# Verificar código
+npm run lint
+# Formatar código
+npm run format
 ```bash
 # Subir banco
 docker compose up -d
@@ -47,12 +67,12 @@ prisma/
 
 - [x] **Remover .env do historico do git** - .gitignore ja tem `.env`, repo sem commits anteriores
 - [x] **Usar @nestjs/config** - `ConfigModule.forRoot({ isGlobal: true })` no AppModule, `@nestjs/config` nas dependencias
-- [x] **Remover JWT secret hardcoded** - `auth.module.ts` usa `config.getOrThrow<string>('JWT_SECRET')` sem fallback
-- [x] **Corrigir CORS** - `main.ts` le de `FRONTEND_URL` via ConfigService
+- [x] **Remover JWT secret hardcoded** - [`auth.module.ts`](file:///home/zaidoh/dsw/assec/backend/src/auth/auth.module.ts) usa `config.getOrThrow<string>('JWT_SECRET')` sem fallback
+- [x] **Corrigir CORS** - [`main.ts`](file:///home/zaidoh/dsw/assec/backend/src/main.ts) lê de `FRONTEND_URL` via ConfigService
 - [x] **Proteger endpoints de Inns e Notices** - POST/PUT/DELETE com `AuthGuard + RolesGuard + @Roles(Role.ADMIN)`. GET aberto (leitura publica)
 - [x] **Proteger GET /users** - `@UseGuards(AuthGuard)` no nivel do controller
-- [x] **Implementar RolesGuard** - `RolesGuard` com decorator `@Roles()` usando `Reflector`
-- [x] **Verificar ownership em schedules** - `schedules.service.ts` verifica `schedule.userId !== userId` em update/remove e lanca `ForbiddenException`
+- [x] **Implementar RolesGuard** - [`RolesGuard`](file:///home/zaidoh/dsw/assec/backend/src/common/guards/roles.guard.ts) com decorator `@Roles()` usando `Reflector`
+- [x] **Verificar ownership em schedules** - [`schedules.service.ts`](file:///home/zaidoh/dsw/assec/backend/src/schedules/schedules.service.ts) verifica `schedule.userId !== userId` em update/remove e lança `ForbiddenException`
 
 ### P1 - Validacao e Correcoes
 

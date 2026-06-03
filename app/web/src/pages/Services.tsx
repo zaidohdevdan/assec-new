@@ -1,32 +1,36 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 import { motion } from "motion/react";
-import { 
-  Scale, 
-  Stethoscope, 
+import {
+  Scale,
+  Stethoscope,
   Heart,
   Handshake,
   ArrowRight,
   ClipboardCheck,
   ShieldAlert,
   Gavel
- } from "lucide-react";
+} from "lucide-react";
 
 export default function Services() {
   const mainServices = [
     {
-      icon: <Scale className="w-12 h-12 text-blue-600" />,
+      icon: <Scale size={40} style={{ color: "var(--gold)" }} />,
       title: "Assessoria Jurídica",
       desc: "Nossa equipe multidisciplinar atua em todas as esferas do direito, com foco especial em causas relacionadas ao exercício da função policial e administrativa.",
       features: ["Defesa Disciplinar", "Flagrantes Operacionais", "Ações de Promoção", "Direito de Família"]
     },
     {
-      icon: <Stethoscope className="w-12 h-12 text-red-500" />,
+      icon: <Stethoscope size={40} style={{ color: "var(--gold)" }} />,
       title: "Saúde e Convênios",
       desc: "Gerenciamos parcerias estratégicas para garantir que o associado tenha acesso ao melhor sistema de saúde do estado com custos reduzidos.",
       features: ["Planos de Saúde", "Odontologia Especializada", "Psicologia Social", "Farmácia Própria"]
     },
     {
-      icon: <Handshake className="w-12 h-12 text-green-500" />,
+      icon: <Handshake size={40} style={{ color: "var(--gold)" }} />,
       title: "Parcerias Corporativas",
       desc: "Rede ampla de descontos em serviços essenciais, lazer e educação para potencializar o poder de compra do servidor.",
       features: ["Faculdades e Escolas", "Lojas de Veículos", "Cursos de Tiro", "Academias"]
@@ -34,33 +38,68 @@ export default function Services() {
   ];
 
   return (
-    <div className="py-20 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="text-center max-w-3xl mx-auto mb-20">
-          <h1 className="text-4xl md:text-6xl font-bold text-blue-950 mb-6">Nossos <span className="text-blue-600">Serviços</span></h1>
-          <p className="text-xl text-slate-600">Trabalhamos incansavelmente para oferecer soluções que impactam positivamente a vida funcional e pessoal do servidor.</p>
+    <div style={{ paddingBlock: "5rem 8rem" }}>
+      <div className="content">
+        <header
+          style={{
+            textAlign: "center",
+            maxWidth: "700px",
+            marginInline: "auto",
+            marginBottom: "5rem"
+          }}
+        >
+          <h1
+            style={{
+              fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
+              fontWeight: 800,
+              color: "var(--ink)",
+              marginBottom: "1.5rem",
+              letterSpacing: "-0.03em"
+            }}
+          >
+            Nossos <span style={{ color: "var(--gold)", fontStyle: "italic", fontFamily: "Alumni Sans, sans-serif" }}>Serviços</span>
+          </h1>
+          <p style={{ fontSize: "1.25rem", color: "var(--ink-muted)", lineHeight: 1.5 }}>
+            Trabalhamos incansavelmente para oferecer soluções que impactam positivamente a vida funcional e pessoal do servidor.
+          </p>
         </header>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "2rem",
+            marginBottom: "6rem"
+          }}
+        >
           {mainServices.map((service, idx) => (
-            <motion.div 
+            <motion.div
               key={idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col"
+              style={{
+                background: "var(--surface)",
+                padding: "2.5rem",
+                borderRadius: "2.5rem",
+                border: "1px solid var(--border)",
+                display: "flex",
+                flexDirection: "column",
+                position: "relative",
+                overflow: "hidden"
+              }}
             >
-              <div className="mb-8">{service.icon}</div>
-              <h3 className="text-2xl font-bold text-blue-950 mb-4">{service.title}</h3>
-              <p className="text-slate-600 mb-8 grow leading-relaxed">{service.desc}</p>
-              <ul className="space-y-3 mb-10">
+              <div style={{ marginBottom: "1.5rem" }}>{service.icon}</div>
+              <h3 style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--ink)", marginBottom: "1rem" }}>{service.title}</h3>
+              <p style={{ color: "var(--ink-muted)", marginBottom: "2rem", flexGrow: 1, lineHeight: 1.6 }}>{service.desc}</p>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2.5rem 0", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                 {service.features.map((f, i) => (
-                  <li key={i} className="flex items-center gap-2 text-slate-700 font-medium text-sm">
-                    <ArrowRight className="w-4 h-4 text-blue-400" /> {f}
+                  <li key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--ink)", fontSize: "0.875rem", fontWeight: 500 }}>
+                    <ArrowRight size={14} style={{ color: "var(--gold)" }} /> {f}
                   </li>
                 ))}
               </ul>
-              <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+              <button className="btn-primary" style={{ width: "100%" }}>
                 Saber Mais
               </button>
             </motion.div>
@@ -68,55 +107,132 @@ export default function Services() {
         </div>
 
         {/* Specialized Legal Section */}
-        <section className="bg-blue-950 rounded-[3rem] p-8 md:p-20 text-white overflow-hidden relative">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <section
+          style={{
+            background: "var(--surface-2)",
+            borderRadius: "3rem",
+            padding: "3rem",
+            border: "1px solid var(--border)",
+            position: "relative",
+            overflow: "hidden"
+          }}
+        >
+          <div
+            className="grid-2col"
+            style={{ gap: "4rem", alignItems: "center" }}
+          >
             <div>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 bg-blue-600 rounded-xl">
-                  <Gavel className="w-8 h-8 text-white" />
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
+                <div
+                  style={{
+                    padding: "0.75rem",
+                    background: "rgba(224, 180, 100, 0.05)",
+                    border: "1px solid rgba(224, 180, 100, 0.15)",
+                    borderRadius: "1rem"
+                  }}
+                >
+                  <Gavel size={32} style={{ color: "var(--gold)" }} />
                 </div>
-                <h2 className="text-3xl font-bold tracking-tight">Plantão Jurídico 24h</h2>
+                <h2 style={{ fontSize: "2rem", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.025em" }}>
+                  Plantão Jurídico 24h
+                </h2>
               </div>
-              <p className="text-blue-200 text-lg mb-10 leading-relaxed">
+              <p style={{ color: "var(--ink-muted)", fontSize: "1.125rem", marginBottom: "2.5rem", lineHeight: 1.6 }}>
                 Entendemos que a segurança pública não para. Por isso, mantemos uma central de emergência jurídica ativa 24 horas por dia para casos de flagrantes e ocorrências disciplinares urgentes.
               </p>
-              <div className="space-y-6">
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 {[
-                  { icon: <ShieldAlert className="w-6 h-6 text-yellow-400" />, text: "Atendimento imediato em ocorrências operacionais." },
-                  { icon: <ClipboardCheck className="w-6 h-6 text-yellow-400" />, text: "Orientação técnica antes de depoimentos." },
-                  { icon: <Heart className="w-6 h-6 text-yellow-400" />, text: "Apoio humanizado para o servidor e família." }
+                  { icon: <ShieldAlert size={24} style={{ color: "var(--gold)" }} />, text: "Atendimento imediato em ocorrências operacionais." },
+                  { icon: <ClipboardCheck size={24} style={{ color: "var(--gold)" }} />, text: "Orientação técnica antes de depoimentos." },
+                  { icon: <Heart size={24} style={{ color: "var(--gold)" }} />, text: "Apoio humanizado para o servidor e família." }
                 ].map((item, i) => (
-                  <div key={i} className="flex gap-4 items-start">
+                  <div key={i} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                     {item.icon}
-                    <p className="text-white font-medium">{item.text}</p>
+                    <p style={{ color: "var(--ink)", fontWeight: 500 }}>{item.text}</p>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10">
-               <h4 className="text-xl font-bold mb-6">Solicitar Atendimento</h4>
-               <form className="space-y-4" onSubmit={async (e) => {
-                 e.preventDefault();
-                 const formData = new FormData(e.currentTarget);
-                 try {
-                   const { contactService } = await import('../services/contactService');
-                   await contactService.create({
-                     name: formData.get('name') as string,
-                     email: formData.get('email') as string || 'urgencia@assec.com.br',
-                     subject: 'URGÊNCIA JURÍDICA - ' + (formData.get('phone') as string),
-                     message: formData.get('message') as string
-                   });
-                   alert('Urgência enviada com sucesso! Aguarde contato.');
-                   (e.target as HTMLFormElement).reset();
-                 } catch (err) {
-                   alert('Erro ao enviar urgência. Tente ligar para o plantão diretamente.');
-                 }
-               }}>
-                  <input name="name" type="text" required placeholder="Seu nome operacional" className="w-full bg-white/10 border-white/20 border p-4 rounded-xl focus:outline-none focus:border-blue-500 text-white placeholder-white/50" />
-                  <input name="phone" type="tel" required placeholder="Telefone de contato" className="w-full bg-white/10 border-white/20 border p-4 rounded-xl focus:outline-none focus:border-blue-500 text-white placeholder-white/50" />
-                  <textarea name="message" required placeholder="Breve descrição da urgência" className="w-full bg-white/10 border-white/20 border p-4 rounded-xl h-32 focus:outline-none focus:border-blue-500 text-white placeholder-white/50"></textarea>
-                  <button type="submit" className="w-full py-4 bg-blue-600 rounded-xl font-black text-lg hover:bg-blue-500 transition-all text-white">Enviar Urgência</button>
-               </form>
+
+            <div
+              style={{
+                background: "var(--surface)",
+                borderRadius: "2rem",
+                padding: "2.5rem",
+                border: "1px solid var(--border)"
+              }}
+            >
+              <h4 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--ink)", marginBottom: "1.5rem" }}>Solicitar Atendimento</h4>
+              <form
+                style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  try {
+                    const { contactService } = await import('../services/contactService');
+                    await contactService.create({
+                      name: formData.get('name') as string,
+                      email: formData.get('email') as string || 'urgencia@assec.com.br',
+                      subject: 'URGÊNCIA JURÍDICA - ' + (formData.get('phone') as string),
+                      message: formData.get('message') as string
+                    });
+                    alert('Urgência enviada com sucesso! Aguarde contato.');
+                    (e.target as HTMLFormElement).reset();
+                  } catch (err) {
+                    alert('Erro ao enviar urgência. Tente ligar para o plantão diretamente.');
+                  }
+                }}
+              >
+                <input
+                  name="name"
+                  type="text"
+                  required
+                  placeholder="Seu nome operacional"
+                  style={{
+                    width: "100%",
+                    background: "var(--surface-2)",
+                    border: "1px solid var(--border)",
+                    padding: "1rem",
+                    borderRadius: "1rem",
+                    color: "var(--ink)",
+                    outline: "none"
+                  }}
+                />
+                <input
+                  name="phone"
+                  type="tel"
+                  required
+                  placeholder="Telefone de contato"
+                  style={{
+                    width: "100%",
+                    background: "var(--surface-2)",
+                    border: "1px solid var(--border)",
+                    padding: "1rem",
+                    borderRadius: "1rem",
+                    color: "var(--ink)",
+                    outline: "none"
+                  }}
+                />
+                <textarea
+                  name="message"
+                  required
+                  placeholder="Breve descrição da urgência"
+                  style={{
+                    width: "100%",
+                    background: "var(--surface-2)",
+                    border: "1px solid var(--border)",
+                    padding: "1rem",
+                    borderRadius: "1rem",
+                    color: "var(--ink)",
+                    outline: "none",
+                    height: "8rem",
+                    resize: "none"
+                  }}
+                ></textarea>
+                <button type="submit" className="btn-primary" style={{ width: "100%", paddingBlock: "1.125rem", fontSize: "1rem" }}>
+                  Enviar Urgência
+                </button>
+              </form>
             </div>
           </div>
         </section>

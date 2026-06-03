@@ -3,145 +3,271 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Shield, Menu, X, LogOut, User, LayoutDashboard } from "lucide-react";
-import { motion } from "motion/react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { useAuthStore } from "../../store/useAuthStore";
+
+const NAV_LINKS = [
+  { to: "/", label: "Início" },
+  { to: "/sobre", label: "Sobre Nós" },
+  { to: "/beneficios", label: "Benefícios" },
+  { to: "/servicos", label: "Serviços" },
+  { to: "/noticias", label: "Notícias" },
+  { to: "/contato", label: "Contato" },
+];
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { token, user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 16);
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => { setIsMenuOpen(false); }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
-    setIsMenuOpen(false);
     navigate("/", { replace: true });
   };
 
   const handleDashboardClick = () => {
-    setIsMenuOpen(false);
     const destination = user?.role === "ADMIN" ? "/admin-dashboard" : "/dashboard";
     navigate(destination);
   };
 
+  const navStyle: React.CSSProperties = {
+    position: "sticky",
+    top: 0,
+    zIndex: 50,
+    background: scrolled
+      ? "rgba(255, 255, 255, 0.72)"
+      : "rgba(255, 255, 255, 0.15)",
+    backdropFilter: "blur(16px)",
+    WebkitBackdropFilter: "blur(16px)",
+    borderBottom: scrolled 
+      ? "1px solid rgba(180, 138, 29, 0.08)" 
+      : "1px solid rgba(255, 255, 255, 0.1)",
+    boxShadow: scrolled 
+      ? "0 8px 32px rgba(180, 138, 29, 0.04)" 
+      : "none",
+    transition: "background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease",
+  };
+
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20 items-center">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center shadow-lg">
-              <Shield className="text-yellow-400 w-6 h-6" />
-            </div>
-            <div>
-              <span className="text-2xl font-bold tracking-tighter text-blue-900">ASSEC</span>
-              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold leading-none">
-                Associação dos Servidores da Segurança do Estado do Ceará
-              </p>
-            </div>
-          </Link>
-
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-            {!token ? (
-              <>
-                <Link to="/sobre" className="hover:text-blue-600 transition-colors">Sobre Nós</Link>
-                <Link to="/beneficios" className="hover:text-blue-600 transition-colors">Benefícios</Link>
-                <Link to="/servicos" className="hover:text-blue-600 transition-colors">Serviços</Link>
-                <Link to="/pousadas" className="hover:text-blue-600 transition-colors">Lazer</Link>
-                <Link to="/contato" className="hover:text-blue-600 transition-colors">Contato</Link>
-                <Link to="/area-associado" className="bg-blue-900 text-white px-6 py-2.5 rounded-full hover:bg-blue-800 transition-all shadow-md active:scale-95">
-                  Área do Associado
-                </Link>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={handleDashboardClick}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-900 rounded-full hover:bg-blue-200 transition-all font-bold"
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  Meu Painel
-                </button>
-
-                <div className="flex items-center gap-3 px-4 py-2 bg-slate-100 rounded-full">
-                  <div className="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center text-xs font-bold text-white">
-                    {user?.name?.charAt(0).toUpperCase() || "U"}
-                  </div>
-                  <span className="text-slate-900 font-bold text-sm">
-                    {user?.name?.split(' ')[0] || "Usuário"}
-                  </span>
-                </div>
-
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-all font-bold"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sair
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Toggle */}
-          <div className="md:hidden">
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
-              {isMenuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="md:hidden bg-white border-b border-slate-200 p-4 space-y-4 shadow-xl"
+    <nav style={navStyle} role="navigation" aria-label="Navegação principal">
+      <div className="container-lg" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "5.5rem" }}>
+        {/* Brand */}
+        <Link
+          to="/"
+          aria-label="ASSEC — página inicial"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.75rem",
+            textDecoration: "none",
+            color: "var(--ink)",
+          }}
         >
+          <motion.img
+            src="/logomarca.jpeg"
+            alt="ASSEC Logo"
+            whileHover={{ scale: 1.15 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            style={{
+              width: "3.25rem",
+              height: "3.25rem",
+              borderRadius: "0.5rem",
+              objectFit: "contain",
+              flexShrink: 0
+            }}
+          />
+          <div>
+            <span style={{ fontSize: "1.5rem", fontWeight: 900, letterSpacing: "-0.03em", lineHeight: 1 }}>
+              ASSEC
+            </span>
+            <p style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--ink-muted)", fontWeight: 700, lineHeight: 1.2, marginTop: "0.15rem" }}>
+              Associação dos Servidores da Segurança do Ceará
+            </p>
+          </div>
+        </Link>
+
+        {/* Desktop Nav */}
+        <div className="nav-desktop" style={{ gap: "2.25rem" }}>
           {!token ? (
             <>
-              <Link to="/beneficios" className="block text-lg font-medium p-2" onClick={() => setIsMenuOpen(false)}>Benefícios</Link>
-              <Link to="/servicos" className="block text-lg font-medium p-2" onClick={() => setIsMenuOpen(false)}>Serviços</Link>
-              <Link to="/sobre" className="block text-lg font-medium p-2" onClick={() => setIsMenuOpen(false)}>Sobre Nós</Link>
-              <Link to="/contato" className="block text-lg font-medium p-2" onClick={() => setIsMenuOpen(false)}>Contato</Link>
-              <Link to="/area-associado" className="block w-full bg-blue-900 text-white py-3 rounded-xl font-bold text-center" onClick={() => setIsMenuOpen(false)}>
+              {NAV_LINKS.map((l) => (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  style={{
+                    color: location.pathname === l.to ? "var(--gold)" : "var(--ink-muted)",
+                    textDecoration: "none",
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    transition: "color 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => { (e.target as HTMLAnchorElement).style.color = "var(--ink)"; }}
+                  onMouseLeave={(e) => { (e.target as HTMLAnchorElement).style.color = location.pathname === l.to ? "var(--gold)" : "var(--ink-muted)"; }}
+                >
+                  {l.label}
+                </Link>
+              ))}
+              <Link
+                to="/area-associado"
+                className="btn btn-primary"
+                style={{ fontSize: "0.9rem", padding: "0.65rem 1.35rem" }}
+              >
                 Área do Associado
               </Link>
             </>
           ) : (
             <>
-              <div className="flex items-center gap-3 p-3 bg-slate-100 rounded-xl mb-2">
-                <div className="w-10 h-10 rounded-full bg-blue-900 flex items-center justify-center text-sm font-bold text-white">
-                  {user?.name?.charAt(0).toUpperCase() || "U"}
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 font-bold uppercase">Conectado como</p>
-                  <p className="text-slate-900 font-bold">{user?.name || "Usuário"}</p>
-                </div>
-              </div>
-
               <button
+                id="navbar-dashboard-btn"
                 onClick={handleDashboardClick}
-                className="w-full flex items-center gap-2 px-4 py-3 bg-blue-100 text-blue-900 rounded-xl hover:bg-blue-200 transition-all font-bold"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
+                  color: "var(--ink)",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.5rem",
+                  cursor: "pointer",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  transition: "border-color 0.15s ease",
+                }}
               >
-                <LayoutDashboard className="w-5 h-5" />
-                Ir para Meu Painel
+                <LayoutDashboard size={15} />
+                Meu Painel
               </button>
-
+              <span style={{ color: "var(--ink-muted)", fontSize: "0.875rem", fontWeight: 500 }}>
+                {user?.name?.split(" ")[0]}
+              </span>
               <button
+                id="navbar-logout-btn"
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-4 py-3 text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all font-bold"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--ink-muted)",
+                  cursor: "pointer",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  padding: "0.4rem",
+                  transition: "color 0.15s ease",
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--ink)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "var(--ink-muted)"; }}
               >
-                <LogOut className="w-5 h-5" />
-                Sair do Portal
+                <LogOut size={15} />
+                Sair
               </button>
             </>
           )}
-        </motion.div>
-      )}
+        </div>
+
+        {/* Mobile Toggle */}
+        <button
+          id="navbar-mobile-toggle"
+          className="nav-mobile-btn"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-nav-panel"
+          aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
+          style={{
+            background: "transparent",
+            border: "1px solid var(--border)",
+            color: "var(--ink)",
+            borderRadius: "0.5rem",
+            padding: "0.4rem",
+            cursor: "pointer",
+            alignItems: "center",
+          }}
+        >
+          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            id="mobile-nav-panel"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
+            style={{
+              background: "var(--surface)",
+              borderTop: "1px solid var(--border)",
+              padding: "1.5rem",
+            }}
+          >
+            {!token ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                {NAV_LINKS.map((l) => (
+                  <Link
+                    key={l.to}
+                    to={l.to}
+                    style={{
+                      color: "var(--ink)",
+                      textDecoration: "none",
+                      fontSize: "1.05rem",
+                      fontWeight: 500,
+                      padding: "0.75rem 0.5rem",
+                      borderBottom: "1px solid var(--border)",
+                    }}
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+                <Link
+                  to="/area-associado"
+                  className="btn btn-primary"
+                  style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
+                >
+                  Área do Associado
+                </Link>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <p style={{ color: "var(--ink-muted)", fontSize: "0.85rem" }}>
+                  Conectado como <strong style={{ color: "var(--ink)" }}>{user?.name}</strong>
+                </p>
+                <button
+                  onClick={handleDashboardClick}
+                  className="btn btn-ghost"
+                  style={{ width: "100%", justifyContent: "center" }}
+                >
+                  <LayoutDashboard size={16} /> Meu Painel
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-ghost"
+                  style={{ width: "100%", justifyContent: "center", color: "var(--ink-muted)" }}
+                >
+                  <LogOut size={16} /> Sair
+                </button>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

@@ -1,57 +1,225 @@
 import { motion } from "motion/react";
-import { Plus, ChevronRight } from "lucide-react";
+import { ChevronRight, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import InstagramFeed from "./InstagramFeed";
 
 export default function HeroSection() {
+
   return (
-    <section className="relative pt-16 pb-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+    <section
+      style={{
+        position: "relative",
+        paddingTop: "clamp(5rem, 10vw, 9rem)",
+        paddingBottom: "clamp(4rem, 8vw, 7rem)",
+        overflow: "hidden",
+      }}
+    >
+      {/* Ambient glow */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "-10%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "60vw",
+          height: "40vw",
+          maxWidth: "800px",
+          maxHeight: "500px",
+          background: "radial-gradient(ellipse at center, oklch(0.75 0.12 72 / 0.06) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      {/* Security radar / geometric lines watermark */}
+      <svg
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "10%",
+          left: "2%",
+          width: "min(35vw, 400px)",
+          height: "min(35vw, 400px)",
+          opacity: 0.06,
+          pointerEvents: "none",
+          zIndex: 0,
+          color: "var(--gold)",
+        }}
+        viewBox="0 0 100 100"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.5"
+      >
+        <circle cx="50" cy="50" r="40" strokeDasharray="2 2" />
+        <circle cx="50" cy="50" r="30" />
+        <circle cx="50" cy="50" r="20" strokeDasharray="4 2" />
+        <path d="M50 0 V100 M0 50 H100 M15 15 L85 85 M15 85 L85 15" strokeDasharray="1 3" />
+      </svg>
+
+      {/* Decorative shield watermark on the right */}
+      <svg
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          bottom: "5%",
+          right: "2%",
+          width: "min(30vw, 350px)",
+          height: "min(30vw, 350px)",
+          opacity: 0.05,
+          pointerEvents: "none",
+          zIndex: 0,
+          color: "var(--gold)",
+        }}
+        viewBox="0 0 100 100"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.75"
+      >
+        <path d="M50 10 C65 10 80 15 85 25 C85 55 50 85 50 90 C50 85 15 55 15 25 C20 15 35 10 50 10 Z" />
+        <path d="M50 20 C60 20 72 24 75 32 C75 55 50 78 50 82 C50 78 25 55 25 32 C28 24 40 20 50 20 Z" strokeDasharray="2 2" />
+      </svg>
+
+      <div className="container-lg" style={{ position: "relative", zIndex: 1 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))",
+            gap: "clamp(3rem, 6vw, 5rem)",
+            alignItems: "center",
+          }}
+        >
+          {/* Left — Copy */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold uppercase tracking-wider mb-6">
-              <Plus className="w-3 h-3" /> Juntos somos mais fortes
+            {/* Badge */}
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                border: "1px solid var(--border-gold)",
+                borderRadius: "999px",
+                padding: "0.3rem 0.875rem",
+                marginBottom: "2rem",
+                color: "var(--gold)",
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+              }}
+            >
+              <span
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  borderRadius: "50%",
+                  background: "var(--gold)",
+                  flexShrink: 0,
+                }}
+              />
+              unidos pela segurança pública do ceará!
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] text-blue-950 mb-6 tracking-tight">
-              Protegendo quem <br />
-              <span className="text-blue-600 italic font-serif">protege o Ceará.</span>
+
+            <h1
+              style={{
+                color: "var(--ink)",
+                marginBottom: "1.5rem",
+                fontWeight: 900,
+              }}
+            >
+              Quem protege o Ceará{" "}
+              <span
+                style={{
+                  color: "var(--gold)",
+                  fontStyle: "italic",
+                  display: "block",
+                }}
+              >
+                merece ser protegido.
+              </span>
             </h1>
-            <p className="text-xl text-slate-600 mb-8 max-w-lg leading-relaxed">
-              A ASSEC é a casa do servidor da segurança pública. Oferecemos suporte jurídico, benefícios exclusivos e a representação que você merece.
+
+            <p
+              style={{
+                fontSize: "clamp(1rem, 1.5vw + 0.5rem, 1.125rem)",
+                color: "var(--ink-muted)",
+                lineHeight: 1.7,
+                marginBottom: "2.5rem",
+                maxWidth: "54ch",
+              }}
+            >
+              A ASSEC nasceu da união dos servidores da segurança pública para defender direitos, conquistar avanços e fortalecer nossos laços. Somos a voz ativa de quem está na linha de frente, trabalhando por reconhecimento, valorização e dignidade para as categorias da Polícia Militar, Polícia Civil, Polícia Penal, Bombeiros Militares e Peritos Criminais.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/area-associado?mode=register" className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2 text-center">
-                Quero me Associar <ChevronRight className="w-5 h-5" />
+
+            {/* CTAs */}
+            <div className="cta-actions" style={{ display: "flex", flexWrap: "wrap", gap: "0.875rem" }}>
+              <Link
+                to="/area-associado?mode=register"
+                id="hero-cta-primary"
+                className="btn btn-primary"
+                style={{ fontSize: "1rem" }}
+              >
+                Quero me Associar
+                <ChevronRight size={18} />
               </Link>
-              <Link to="/beneficios" className="px-8 py-4 bg-white border border-slate-200 text-slate-700 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all text-center">
-                Conhecer Vantagens
+              <Link
+                to="/beneficios"
+                id="hero-cta-secondary"
+                className="btn btn-ghost"
+                style={{ fontSize: "1rem" }}
+              >
+                Ver Benefícios
               </Link>
+            </div>
+
+            {/* Stat row */}
+            <div className="hero-stats">
+              {[
+                { value: "+15.000", label: "Associados Ativos" },
+                { value: "24h", label: "Suporte Jurídico" },
+                { value: "26", label: "Anos de História" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <p
+                    style={{
+                      fontSize: "clamp(1.5rem, 2.5vw, 2rem)",
+                      fontWeight: 900,
+                      color: "var(--gold)",
+                      letterSpacing: "-0.04em",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {stat.value}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--ink-muted)",
+                      fontWeight: 600,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                      marginTop: "0.25rem",
+                    }}
+                  >
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
           </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="relative"
+
+          {/* Right — Instagram Feed */}
+          <motion.div
+            className="hero-image-col"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="aspect-4/3 rounded-3xl overflow-hidden shadow-2xl relative">
-              <div className="absolute inset-0 bg-blue-900/10 mix-blend-overlay"></div>
-              <img 
-                src="https://picsum.photos/seed/assec-security/800/600" 
-                alt="Segurança Pública Ceará" 
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-            {/* Floating Stat */}
-            <div className="absolute -bottom-8 -left-8 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 hidden md:block">
-              <p className="text-3xl font-black text-blue-900">+15.000</p>
-              <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Associados Ativos</p>
-            </div>
+            <InstagramFeed />
           </motion.div>
         </div>
       </div>

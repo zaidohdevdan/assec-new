@@ -3,55 +3,194 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Shield, Phone, Mail, MapPin, ChevronRight } from "lucide-react";
+import { Phone, Mail, MapPin, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+
+const QUICK_LINKS = [
+  { to: "/transparencia", label: "Transparência" },
+  { to: "/beneficios", label: "Clube de Vantagens" },
+  { to: "/servicos", label: "Convênios" },
+  { to: "/contato", label: "Contato" },
+];
+
+const CONTACT_ITEMS = [
+  { icon: Phone, text: "(85) 3217-1234" },
+  { icon: Mail, text: "contato@assecce.com.br" },
+  { icon: MapPin, text: "Fortaleza, Ceará" },
+];
 
 export default function Footer() {
   return (
-    <footer id="contato" className="bg-slate-900 text-white pt-20 pb-10 border-t border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+    <footer
+      id="contato"
+      style={{
+        background: "var(--ink)",
+        borderTop: "1px solid var(--border-gold)",
+        paddingTop: "clamp(4rem, 8vw, 6rem)",
+        paddingBottom: "3rem",
+        color: "rgba(255, 255, 255, 0.9)",
+        position: "relative",
+      }}
+    >
+      {/* Decorative subtle background pattern */}
+      <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat pointer-events-none"></div>
+
+      <div className="container-lg relative z-10">
+        {/* Grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "3rem",
+            marginBottom: "4rem",
+          }}
+        >
+          {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-6">
-              <Shield className="text-yellow-400 w-6 h-6" />
-              <span className="text-2xl font-bold tracking-tighter">ASSEC</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
+              <img
+                src="/logomarca.jpeg"
+                alt="ASSEC Logo"
+                style={{
+                  width: "2.75rem",
+                  height: "2.75rem",
+                  borderRadius: "0.5rem",
+                  objectFit: "contain",
+                  flexShrink: 0,
+                  border: "1px solid var(--border-gold)",
+                }}
+              />
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <span style={{ fontSize: "1.3rem", fontWeight: 900, letterSpacing: "-0.03em", color: "#fff", lineHeight: 1 }}>ASSEC</span>
+                <span style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em", color: "var(--gold)", textTransform: "uppercase", marginTop: "0.2rem" }}>DESDE 2026</span>
+              </div>
             </div>
-            <p className="text-slate-400 leading-relaxed mb-6">
-              Associação dos Servidores da Segurança Pública do Ceará. Fundada em 1999 para garantir os direitos e o bem-estar de nossos heróis.
+            <p style={{ color: "rgba(255, 255, 255, 0.6)", fontSize: "0.875rem", lineHeight: 1.7, maxWidth: "28ch" }}>
+              Associação dos Servidores da Segurança Pública do Ceará. Protegendo e defendendo quem protege o nosso estado.
             </p>
           </div>
-          
+
+          {/* Quick Links */}
           <div>
-            <h4 className="font-bold text-lg mb-6">Links Rápidos</h4>
-            <ul className="space-y-4 text-slate-400">
-              <li><Link to="/transparencia" className="hover:text-white transition-colors">Transparência</Link></li>
-              <li><Link to="/beneficios" className="hover:text-white transition-colors">Clube de Vantagens</Link></li>
-              <li><Link to="/noticias" className="hover:text-white transition-colors">Notícias</Link></li>
-              <li><Link to="/servicos" className="hover:text-white transition-colors">Convênios</Link></li>
+            <h4 style={{ fontWeight: 800, fontSize: "0.875rem", marginBottom: "1.5rem", color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Links Rápidos
+            </h4>
+            <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+              {QUICK_LINKS.map((l) => (
+                <li key={l.to}>
+                  <Link
+                    to={l.to}
+                    style={{
+                      color: "rgba(255, 255, 255, 0.6)",
+                      textDecoration: "none",
+                      fontSize: "0.9rem",
+                      transition: "all 0.2s ease",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.color = "var(--gold)";
+                      (e.currentTarget as HTMLAnchorElement).style.transform = "translateX(4px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255, 255, 255, 0.6)";
+                      (e.currentTarget as HTMLAnchorElement).style.transform = "translateX(0)";
+                    }}
+                  >
+                    <ChevronRight size={12} className="opacity-50" />
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Contact */}
           <div>
-            <h4 className="font-bold text-lg mb-6">Fale Conosco</h4>
-            <ul className="space-y-4 text-slate-400">
-              <li className="flex items-center gap-3"><Phone className="w-5 h-5 text-blue-500" /> (85) 3217-1234</li>
-              <li className="flex items-center gap-3"><Mail className="w-5 h-5 text-blue-500" /> contato@assec.org.br</li>
-              <li className="flex items-center gap-3"><MapPin className="w-5 h-5 text-blue-500" /> Fortaleza, Ceará - Rua Exemplo, 123</li>
+            <h4 style={{ fontWeight: 800, fontSize: "0.875rem", marginBottom: "1.5rem", color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Fale Conosco
+            </h4>
+            <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {CONTACT_ITEMS.map(({ icon: Icon, text }) => (
+                <li key={text} style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
+                  <Icon size={16} style={{ color: "var(--gold)", flexShrink: 0, marginTop: "0.2rem" }} />
+                  <span style={{ color: "rgba(255, 255, 255, 0.6)", fontSize: "0.9rem", lineHeight: 1.4 }}>{text}</span>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Newsletter */}
           <div>
-            <h4 className="font-bold text-lg mb-6">Newsletter</h4>
-            <p className="text-slate-400 mb-4 text-sm">Receba informativos e notícias da categoria.</p>
-            <div className="flex gap-2">
-              <input type="email" placeholder="Seu e-mail" className="bg-slate-800 border-slate-700 border p-3 rounded-xl flex-1 focus:outline-none focus:border-blue-500" />
-              <button className="p-3 bg-blue-600 rounded-xl"><ChevronRight className="w-5 h-5" /></button>
-            </div>
+            <h4 style={{ fontWeight: 800, fontSize: "0.875rem", marginBottom: "0.75rem", color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Newsletter
+            </h4>
+            <p style={{ color: "rgba(255, 255, 255, 0.6)", fontSize: "0.875rem", marginBottom: "1.25rem", lineHeight: 1.6 }}>
+              Receba atualizações e notícias diretamente da nossa diretoria.
+            </p>
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="footer-newsletter-form"
+              style={{ display: "flex", gap: "0.5rem" }}
+            >
+              <input
+                id="footer-newsletter-email"
+                type="email"
+                placeholder="Seu e-mail profissional"
+                aria-label="Endereço de e-mail para newsletter"
+                style={{
+                  flex: 1,
+                  background: "rgba(255, 255, 255, 0.04)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  color: "#fff",
+                  borderRadius: "0.75rem",
+                  padding: "0.75rem 1rem",
+                  fontSize: "0.875rem",
+                  outline: "none",
+                  transition: "all 0.2s ease",
+                  fontFamily: "var(--font-sans)",
+                }}
+                onFocus={(e) => {
+                  (e.target as HTMLInputElement).style.borderColor = "var(--gold)";
+                  (e.target as HTMLInputElement).style.background = "rgba(255, 255, 255, 0.08)";
+                }}
+                onBlur={(e) => {
+                  (e.target as HTMLInputElement).style.borderColor = "rgba(255, 255, 255, 0.1)";
+                  (e.target as HTMLInputElement).style.background = "rgba(255, 255, 255, 0.04)";
+                }}
+              />
+              <button
+                id="footer-newsletter-submit"
+                type="submit"
+                className="btn bg-[var(--gold)] hover:bg-[var(--gold-dim)] text-white"
+                style={{ padding: "0.75rem 1.25rem", borderRadius: "0.75rem", flexShrink: 0, cursor: "pointer" }}
+                aria-label="Inscrever-se na newsletter"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </form>
           </div>
         </div>
-        
-        <div className="text-center pt-8 border-t border-slate-800 text-slate-500 text-sm">
-          <p>© 2026 ASSEC - Associação dos Servidores da Segurança do Ceará. Todos os direitos reservados.</p>
+
+        {/* Divider & Copyright */}
+        <div
+          style={{
+            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+            paddingTop: "2rem",
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "1rem",
+          }}
+        >
+          <p style={{ color: "rgba(255, 255, 255, 0.4)", fontSize: "0.8rem" }}>
+            © {new Date().getFullYear()} ASSEC — Associação dos Servidores da Segurança do Ceará. Todos os direitos reservados.
+          </p>
+          <p style={{ color: "rgba(255, 255, 255, 0.3)", fontSize: "0.8rem", fontFamily: "monospace" }}>
+            CNPJ: 03.541.222/0001-90
+          </p>
         </div>
       </div>
     </footer>

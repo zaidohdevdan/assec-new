@@ -1,7 +1,382 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&family=Alumni+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+/* ─────────────────────────────────────────────
+   ASSEC Design Tokens — Dark (Impeccable-style)
+   Palette: OKLCH, warm near-black + amber/gold
+   ───────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --bg:         #fafafa;   /* clean off-white background */
+  --surface:    #ffffff;   /* elevated surface (cards, nav background) */
+  --surface-2:  #f4f4f5;   /* double-elevated (light gray) */
+
+  /* Ink */
+  --ink: #1c1917;
+  /* warm charcoal primary text */
+  --ink-muted: #78716c;
+  /* secondary gray text */
+  --ink-faint: #d6d3d1;
+  /* dividers, placeholder */
+
+  /* Accent — amber/gold (darkened for accessible contrast on light backgrounds) */
+  --gold: #b48a1d;
+  /* primary accent gold */
+  --gold-dim: #926f14;
+  /* hover / pressed */
+  --gold-glow: rgba(180, 138, 29, 0.08);
+  /* glow layer */
+
+  /* Borders */
+  --border: #e7e5e4;
+  --border-gold: rgba(180, 138, 29, 0.25);
+
+  /* Typography */
+  --font-sans: "Albert Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Alumni Sans", "Albert Sans", ui-sans-serif, sans-serif;
+
+  /* Spacing rhythm */
+  --section-gap: clamp(4rem, 8vw, 8rem);
+  --content-max: 1400px;
+}
+
+/* ─────────────────────────────────────────────
+   Global Reset & Base
+   ───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--gold-glow);
+  color: var(--ink);
+}
+
+/* ─────────────────────────────────────────────
+   Grain Overlay (noise texture — like impeccable.style)
+   Applied via body::before pseudo-element
+   ───────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  background-repeat: repeat;
+}
+
+/* Ensure content sits above grain */
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─────────────────────────────────────────────
+   Layout Container
+   ───────────────────────────────────────────── */
+.container-lg,
+.content {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 3rem);
+  width: 100%;
+}
+
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .grid-2col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+/* ─────────────────────────────────────────────
+   Typography Scale
+   ───────────────────────────────────────────── */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-sans);
+  line-height: 1.1;
+  color: var(--ink);
+  font-weight: 800;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5vw + 1rem, 5.5rem);
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: clamp(2rem, 3.5vw + 0.5rem, 3.75rem);
+  letter-spacing: -0.025em;
+}
+
+h3 {
+  font-size: clamp(1.25rem, 2vw + 0.25rem, 1.75rem);
+  letter-spacing: -0.015em;
+}
+
+p {
+  max-width: 68ch;
+}
+
+/* ─────────────────────────────────────────────
+   Gold Accent Utilities
+   ───────────────────────────────────────────── */
+.text-gold {
+  color: var(--gold);
+}
+
+.bg-gold {
+  background-color: var(--gold);
+}
+
+.border-gold {
+  border-color: var(--border-gold);
+}
+
+/* ─────────────────────────────────────────────
+   Button Base
+   ───────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.875rem 2rem;
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease, transform 0.12s ease;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: oklch(0.08 0.008 60);
+  border-color: var(--gold);
+}
+
+.btn-primary:hover {
+  background: var(--gold-dim);
+  border-color: var(--gold-dim);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--surface);
+  border-color: var(--border-gold);
+  color: var(--gold);
+}
+
+/* ─────────────────────────────────────────────
+   Card Base
+   ───────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 2rem;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.card:hover {
+  border-color: var(--border-gold);
+  background: var(--surface-2);
+}
+
+/* ─────────────────────────────────────────────
+   Section rhythm
+   ───────────────────────────────────────────── */
+.section {
+  padding-block: var(--section-gap);
+}
+
+/* ─────────────────────────────────────────────
+   Reduced motion
+   ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Responsive — Mobile First
+   ───────────────────────────────────────────── */
+
+/* Stat row: wrap on narrow viewports */
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 2.5rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Hero image: hide on very small screens to keep copy front-and-center */
+@media (max-width: 480px) {
+  .hero-image-col {
+    display: none;
+  }
+
+  .hero-stats {
+    gap: 1rem 2rem;
+  }
+}
+
+/* Navbar: desktop nav vs mobile toggle */
+.nav-desktop {
+  display: none;
+}
+
+.nav-mobile-btn {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  .nav-desktop {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .nav-mobile-btn {
+    display: none;
+  }
+}
+
+/* Buttons: full-width on narrow screens inside sections */
+@media (max-width: 480px) {
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cta-actions {
+    flex-direction: column;
+  }
+}
+
+/* Footer newsletter form: stack on very narrow */
+@media (max-width: 380px) {
+  .footer-newsletter-form {
+    flex-direction: column;
+  }
+
+  .footer-newsletter-form input,
+  .footer-newsletter-form button {
+    width: 100%;
+  }
+}
+
+/* Service section: center visual on mobile */
+@media (max-width: 640px) {
+  .service-visual {
+    width: min(100%, 260px);
+  }
+}
+
+/* Inns layouts: flex rows on desktop */
+@media (min-width: 1024px) {
+  .lg-flex-row {
+    flex-direction: row !important;
+  }
+
+  .lg-flex-row-reverse {
+    flex-direction: row-reverse !important;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Form Fields (Premium Usability)
+   ───────────────────────────────────────────── */
+.form-input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 1rem;
+  color: var(--ink);
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.form-input.has-icon {
+  padding-left: 3rem;
+}
+
+.form-input:focus {
+  border-color: var(--gold);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px var(--gold-glow);
+}
+
+/* ─────────────────────────────────────────────
+   Portal Layout (News page grid)
+   ───────────────────────────────────────────── */
+.portal-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3.5rem;
+}
+
+@media (min-width: 1024px) {
+  .portal-grid {
+    grid-template-columns: 2.3fr 1fr;
+  }
 }

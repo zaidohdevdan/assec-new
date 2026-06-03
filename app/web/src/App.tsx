@@ -7,7 +7,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import MemberArea from "./pages/MemberArea";
 import Dashboard from "./pages/Dashboard";
-import Inns from "./pages/Inns";
+import News from "./pages/News";
 import AdminRoute from "./components/layout/AdminRoute";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import Layout from "./components/layout/Layout";
@@ -32,7 +32,7 @@ export default function App() {
           <Route path="sobre" element={<About />} />
           <Route path="beneficios" element={<Benefits />} />
           <Route path="servicos" element={<Services />} />
-          <Route path="pousadas" element={<Inns />} />
+          <Route path="noticias" element={<News />} />
           <Route path="contato" element={<Contact />} />
           <Route path="area-associado" element={<MemberArea />} />
 

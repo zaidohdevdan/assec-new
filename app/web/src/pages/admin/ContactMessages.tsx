@@ -24,38 +24,38 @@ export default function ContactMessages() {
 
   return (
     <div className="w-full">
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-[var(--border)] overflow-hidden">
         <table className="w-full table-auto">
-          <thead className="bg-slate-50 border-b border-slate-100">
+          <thead className="bg-slate-50 border-b border-[var(--border)]">
             <tr>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">ID</th>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">Nome</th>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">E‑mail</th>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">Assunto</th>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">Mensagem</th>
-              <th className="p-4 text-left text-sm font-bold text-slate-600">Data</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">ID</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">Nome</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">E‑mail</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">Assunto</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">Mensagem</th>
+              <th className="p-4 text-left text-sm font-bold text-[var(--ink-muted)]">Data</th>
             </tr>
           </thead>
           <tbody>
             {messages.length > 0 ? (
               messages.map((msg: any) => (
-                <tr key={msg.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                  <td className="p-4 text-sm text-slate-600">{msg.id}</td>
+                <tr key={msg.id} className="border-b border-[var(--border)] hover:bg-[var(--gold-glow)]/40 transition-colors">
+                  <td className="p-4 text-sm text-[var(--ink-muted)]">{msg.id}</td>
                   <td className="p-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-slate-400" />
-                      <span className="font-medium text-slate-900">{msg.name}</span>
+                      <span className="font-bold text-[var(--ink)]">{msg.name}</span>
                     </div>
                   </td>
-                  <td className="p-4 text-sm text-slate-600">{msg.email}</td>
-                  <td className="p-4 text-sm text-slate-600">{msg.subject}</td>
-                  <td className="p-4 text-sm text-slate-600 max-w-xs truncate">{msg.message}</td>
-                  <td className="p-4 text-sm text-slate-600">{new Date(msg.createdAt).toLocaleDateString('pt-BR')}</td>
+                  <td className="p-4 text-sm text-[var(--ink-muted)]">{msg.email}</td>
+                  <td className="p-4 text-sm text-[var(--ink-muted)]">{msg.subject}</td>
+                  <td className="p-4 text-sm text-[var(--ink-muted)] max-w-xs truncate">{msg.message}</td>
+                  <td className="p-4 text-sm text-[var(--ink-muted)]">{new Date(msg.createdAt).toLocaleDateString('pt-BR')}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="p-8 text-center text-slate-500">
+                <td colSpan={6} className="p-8 text-center text-[var(--ink-muted)]">
                   Nenhuma mensagem encontrada
                 </td>
               </tr>
