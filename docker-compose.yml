@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: assec-postgres-prod
+    environment:
+      POSTGRES_USER: assec
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-DefinaUmaSenhaForteAqui}
+      POSTGRES_DB: assec_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U assec -d assec_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - db-net
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assec-backend-prod
+    environment:
+      DATABASE_URL: postgresql://assec:${DB_PASSWORD:-DefinaUmaSenhaForteAqui}@db:5432/assec_db?schema=public
+      JWT_SECRET: ${JWT_SECRET:-DefinaUmaChaveSuperSecreta}
+      JWT_EXPIRES_IN: 1h
+      PORT: 3001
+      NODE_ENV: production
+      FRONTEND_URL: https://assecce.com.br
+    ports:
+      - "3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - db-net
+      - web-net
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./app/web
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=/api
+    container_name: assec-frontend-prod
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    networks:
+      - web-net
+    restart: unless-stopped
+
+volumes:
+  postgres_prod_data:
+
+networks:
+  db-net:
+    driver: bridge
+  web-net:
+    driver: bridge

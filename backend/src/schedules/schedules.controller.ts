@@ -11,6 +11,9 @@ import {
 } from '@nestjs/common';
 import { SchedulesService } from './schedules.service';
 import { AuthGuard } from '../auth/auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from '@prisma/client';
 import { type AuthenticatedRequest } from '../auth/auth.types';
 
 @Controller('schedules')
@@ -18,19 +21,29 @@ import { type AuthenticatedRequest } from '../auth/auth.types';
 export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
+  @Get('admin/list')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  findAllAdmin() {
+    return this.schedulesService.findAll();
+  }
+
   @Post()
   create(
     @Body()
     body: {
-      type: string;
+      slotId: string;
       title: string;
-      date: string;
-      time: string;
       info?: string;
     },
     @Request() req: AuthenticatedRequest,
   ) {
-    return this.schedulesService.create({ ...body, userId: req.user.sub });
+    return this.schedulesService.create({
+      userId: req.user.sub,
+      slotId: body.slotId,
+      title: body.title,
+      info: body.info,
+    });
   }
 
   @Get()

@@ -135,6 +135,69 @@ async function main() {
     console.log('Dan user already exists');
   }
 
+  // Professionals
+  const professionals = [
+    { email: 'fisioterapeuta@assec.com.br', name: 'Dr. Roberto Santos (Fisioterapia)', specialty: 'Fisioterapia' },
+    { email: 'advogado@assec.com.br', name: 'Dr. André Sousa (Advocacia)', specialty: 'Assistência Jurídica' },
+    { email: 'enfermeiro@assec.com.br', name: 'Dra. Cláudia Lima (Enfermagem)', specialty: 'Enfermaria' },
+    { email: 'psicologo@assec.com.br', name: 'Dra. Patrícia Mota (Psicologia)', specialty: 'Psicologia' },
+    { email: 'administrativo@assec.com.br', name: 'Mariana Alves (Administrativo)', specialty: 'Administrativo' },
+  ];
+
+  for (const prof of professionals) {
+    const existingProf = await prisma.user.findUnique({
+      where: { email: prof.email },
+    });
+
+    if (!existingProf) {
+      const hashedPassword = await bcrypt.hash('123456', 10);
+      const createdProf = await prisma.user.create({
+        data: {
+          email: prof.email,
+          password: hashedPassword,
+          name: prof.name,
+          role: 'PROFESSIONAL',
+          specialty: prof.specialty,
+          status: 'Ativo',
+        },
+      });
+      console.log(`Professional created: ${createdProf.email} (${createdProf.specialty})`);
+
+      // Seed some slots for this professional
+      await prisma.scheduleSlot.createMany({
+        data: [
+          {
+            professionalId: createdProf.id,
+            date: '2026-06-15',
+            time: '09:00',
+            status: 'Disponível',
+          },
+          {
+            professionalId: createdProf.id,
+            date: '2026-06-15',
+            time: '10:00',
+            status: 'Disponível',
+          },
+          {
+            professionalId: createdProf.id,
+            date: '2026-06-16',
+            time: '14:00',
+            status: 'Disponível',
+          },
+          {
+            professionalId: createdProf.id,
+            date: '2026-06-16',
+            time: '15:00',
+            status: 'Disponível',
+          },
+        ],
+      });
+      console.log(`Slots created for ${createdProf.email}`);
+    } else {
+      console.log(`Professional ${prof.email} already exists`);
+    }
+  }
+
   // Notices
   const noticesCount = await prisma.notice.count();
   if (noticesCount === 0) {

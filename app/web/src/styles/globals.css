@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #071A2D;
+  --color-primary-light: #0a2439;
+  --color-secondary: #0E2B47;
+  --color-accent: #D4AF37;
+  --color-accent-dark: #B8960C;
+  --color-accent-light: #F0C75E;
+  --color-support: #1E7A46;
+  --color-support-light: #2cb568;
+  --bg-page: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --text-primary: #1F2937;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
+  --border-default: #E5E7EB;
+  --border-focus: #0E2B47;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(14, 43, 71, 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

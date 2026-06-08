@@ -1,198 +1,165 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import * as React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { FileText, Phone, Mail, MapPin, Instagram } from "lucide-react";
 
-import { Phone, Mail, MapPin, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+const Footer = () => {
+  const currentYear = new Date().getFullYear();
 
-const QUICK_LINKS = [
-  { to: "/transparencia", label: "Transparência" },
-  { to: "/beneficios", label: "Clube de Vantagens" },
-  { to: "/servicos", label: "Convênios" },
-  { to: "/contato", label: "Contato" },
-];
-
-const CONTACT_ITEMS = [
-  { icon: Phone, text: "(85) 3217-1234" },
-  { icon: Mail, text: "contato@assecce.com.br" },
-  { icon: MapPin, text: "Fortaleza, Ceará" },
-];
-
-export default function Footer() {
   return (
-    <footer
-      id="contato"
-      style={{
-        background: "var(--ink)",
-        borderTop: "1px solid var(--border-gold)",
-        paddingTop: "clamp(4rem, 8vw, 6rem)",
-        paddingBottom: "3rem",
-        color: "rgba(255, 255, 255, 0.9)",
-        position: "relative",
-      }}
-    >
-      {/* Decorative subtle background pattern */}
-      <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat pointer-events-none"></div>
-
-      <div className="container-lg relative z-10">
-        {/* Grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "3rem",
-            marginBottom: "4rem",
-          }}
-        >
-          {/* Brand */}
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
-              <img
-                src="/logomarca.jpeg"
+    <footer className="bg-primary text-gray-300 border-t border-primary-light font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Column 1: Institution */}
+          <div className="flex flex-col gap-4">
+            <Link href="/" className="flex items-center gap-3.5 text-white focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none p-0.5 rounded group w-fit">
+              <Image
+                src="/logo-transparent.png"
                 alt="ASSEC Logo"
-                style={{
-                  width: "2.75rem",
-                  height: "2.75rem",
-                  borderRadius: "0.5rem",
-                  objectFit: "contain",
-                  flexShrink: 0,
-                  border: "1px solid var(--border-gold)",
-                }}
+                width={56}
+                height={56}
+                className="h-14 w-auto transition-transform duration-300 group-hover:scale-105"
               />
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <span style={{ fontSize: "1.3rem", fontWeight: 900, letterSpacing: "-0.03em", color: "#fff", lineHeight: 1 }}>ASSEC</span>
-                <span style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em", color: "var(--gold)", textTransform: "uppercase", marginTop: "0.2rem" }}>DESDE 2026</span>
+              
+              {/* Vertical Divider Art */}
+              <div className="h-10 w-[1.5px] bg-gradient-to-b from-accent via-accent/40 to-transparent self-center rounded-full opacity-85" />
+              
+              <div className="flex flex-col justify-center">
+                <span className="font-serif font-extrabold text-lg leading-none tracking-wider text-white group-hover:text-accent transition-colors duration-300">
+                  ASSEC
+                </span>
+                <span className="text-[7.5px] font-sans font-bold uppercase tracking-wider text-accent mt-1 block max-w-[150px] leading-tight">
+                  Segurança do Ceará
+                </span>
+              </div>
+            </Link>
+            <p className="text-xs leading-relaxed text-gray-400 font-normal pr-4">
+              Associação dos Servidores da Segurança do Ceará. Transparência, representatividade e força para a nossa categoria.
+            </p>
+            <div className="flex flex-col gap-2 text-xs text-gray-400">
+              <div className="flex items-start gap-2.5">
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-accent mt-0.5" />
+                <span className="leading-relaxed">Av. Santos Dumont, 1510, Sala 805, Aldeota, Fortaleza - CE, CEP 60.150-161</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Phone className="h-3.5 w-3.5 shrink-0 text-accent" />
+                <a href="tel:85999411411" className="hover:text-accent-light transition-colors duration-200 font-medium">(85) 99941-1411</a>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Mail className="h-3.5 w-3.5 shrink-0 text-accent" />
+                <a href="mailto:contato@assecce.com.br" className="hover:text-accent-light transition-colors duration-200 font-medium">contato@assecce.com.br</a>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Instagram className="h-3.5 w-3.5 shrink-0 text-accent" />
+                <a 
+                  href="https://instagram.com/assec.ceara" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-accent-light transition-colors duration-200 font-medium"
+                >
+                  @assec.ceara
+                </a>
               </div>
             </div>
-            <p style={{ color: "rgba(255, 255, 255, 0.6)", fontSize: "0.875rem", lineHeight: 1.7, maxWidth: "28ch" }}>
-              Associação dos Servidores da Segurança Pública do Ceará. Protegendo e defendendo quem protege o nosso estado.
-            </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Column 2: Quick Links */}
           <div>
-            <h4 style={{ fontWeight: 800, fontSize: "0.875rem", marginBottom: "1.5rem", color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Links Rápidos
-            </h4>
-            <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-              {QUICK_LINKS.map((l) => (
-                <li key={l.to}>
-                  <Link
-                    to={l.to}
-                    style={{
-                      color: "rgba(255, 255, 255, 0.6)",
-                      textDecoration: "none",
-                      fontSize: "0.9rem",
-                      transition: "all 0.2s ease",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.25rem",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color = "var(--gold)";
-                      (e.currentTarget as HTMLAnchorElement).style.transform = "translateX(4px)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255, 255, 255, 0.6)";
-                      (e.currentTarget as HTMLAnchorElement).style.transform = "translateX(0)";
-                    }}
-                  >
-                    <ChevronRight size={12} className="opacity-50" />
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
+            <h3 className="text-white font-bold text-xs uppercase tracking-widest mb-5 border-l-2 border-l-accent pl-2.5 py-0.5">
+              Institucional
+            </h3>
+            <ul className="space-y-3 text-xs">
+              <li>
+                <Link href="/sobre" className="hover:text-accent transition-all hover:translate-x-1 duration-200 inline-block focus-visible:outline-none focus-visible:underline">
+                  Sobre Nós
+                </Link>
+              </li>
+              <li>
+                <Link href="/beneficios" className="hover:text-accent transition-all hover:translate-x-1 duration-200 inline-block focus-visible:outline-none focus-visible:underline">
+                  Benefícios e Convênios
+                </Link>
+              </li>
+              <li>
+                <Link href="/noticias" className="hover:text-accent transition-all hover:translate-x-1 duration-200 inline-block focus-visible:outline-none focus-visible:underline">
+                  Notícias e Avisos
+                </Link>
+              </li>
+              <li>
+                <Link href="/associe-se" className="text-accent hover:text-accent-light font-bold transition-all hover:translate-x-1 duration-200 inline-block focus-visible:outline-none focus-visible:underline">
+                  Quero me Associar
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Column 3: Transparency */}
           <div>
-            <h4 style={{ fontWeight: 800, fontSize: "0.875rem", marginBottom: "1.5rem", color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Fale Conosco
-            </h4>
-            <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {CONTACT_ITEMS.map(({ icon: Icon, text }) => (
-                <li key={text} style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
-                  <Icon size={16} style={{ color: "var(--gold)", flexShrink: 0, marginTop: "0.2rem" }} />
-                  <span style={{ color: "rgba(255, 255, 255, 0.6)", fontSize: "0.9rem", lineHeight: 1.4 }}>{text}</span>
-                </li>
-              ))}
+            <h3 className="text-white font-bold text-xs uppercase tracking-widest mb-5 border-l-2 border-l-accent pl-2.5 py-0.5">
+              Transparência
+            </h3>
+            <ul className="space-y-3 text-xs">
+              <li>
+                <Link href="/transparencia" className="hover:text-accent transition-all hover:translate-x-1 duration-200 flex items-center gap-1.5 focus-visible:outline-none focus-visible:underline">
+                  <FileText className="h-3.5 w-3.5 text-accent shrink-0" />
+                  <span>Relatórios Anuais</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/transparencia?tab=financeiro" className="hover:text-accent transition-all hover:translate-x-1 duration-200 inline-block focus-visible:outline-none focus-visible:underline">
+                  Demonstrativos Financeiros
+                </Link>
+              </li>
+              <li>
+                <Link href="/transparencia?tab=estatutos" className="hover:text-accent transition-all hover:translate-x-1 duration-200 inline-block focus-visible:outline-none focus-visible:underline">
+                  Estatuto Social e Regimentos
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Column 4: Accessibility and LGPD */}
           <div>
-            <h4 style={{ fontWeight: 800, fontSize: "0.875rem", marginBottom: "0.75rem", color: "#fff", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Newsletter
-            </h4>
-            <p style={{ color: "rgba(255, 255, 255, 0.6)", fontSize: "0.875rem", marginBottom: "1.25rem", lineHeight: 1.6 }}>
-              Receba atualizações e notícias diretamente da nossa diretoria.
-            </p>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="footer-newsletter-form"
-              style={{ display: "flex", gap: "0.5rem" }}
-            >
-              <input
-                id="footer-newsletter-email"
-                type="email"
-                placeholder="Seu e-mail profissional"
-                aria-label="Endereço de e-mail para newsletter"
-                style={{
-                  flex: 1,
-                  background: "rgba(255, 255, 255, 0.04)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  color: "#fff",
-                  borderRadius: "0.75rem",
-                  padding: "0.75rem 1rem",
-                  fontSize: "0.875rem",
-                  outline: "none",
-                  transition: "all 0.2s ease",
-                  fontFamily: "var(--font-sans)",
-                }}
-                onFocus={(e) => {
-                  (e.target as HTMLInputElement).style.borderColor = "var(--gold)";
-                  (e.target as HTMLInputElement).style.background = "rgba(255, 255, 255, 0.08)";
-                }}
-                onBlur={(e) => {
-                  (e.target as HTMLInputElement).style.borderColor = "rgba(255, 255, 255, 0.1)";
-                  (e.target as HTMLInputElement).style.background = "rgba(255, 255, 255, 0.04)";
-                }}
-              />
-              <button
-                id="footer-newsletter-submit"
-                type="submit"
-                className="btn bg-[var(--gold)] hover:bg-[var(--gold-dim)] text-white"
-                style={{ padding: "0.75rem 1.25rem", borderRadius: "0.75rem", flexShrink: 0, cursor: "pointer" }}
-                aria-label="Inscrever-se na newsletter"
-              >
-                <ChevronRight size={18} />
-              </button>
-            </form>
+            <h3 className="text-white font-bold text-xs uppercase tracking-widest mb-5 border-l-2 border-l-accent pl-2.5 py-0.5">
+              Legal e Acessibilidade
+            </h3>
+            <ul className="space-y-3.5 text-xs">
+              <li>
+                <span className="text-[11px] text-gray-400 block mb-1.5 leading-normal">Este site cumpre a Lei Geral de Proteção de Dados (LGPD).</span>
+                <Link href="/politica-de-privacidade" className="text-accent hover:text-accent-light font-semibold transition-colors focus-visible:outline-none focus-visible:underline text-[11px]">
+                  Política de Privacidade
+                </Link>
+              </li>
+              <li className="pt-1.5">
+                <Link href="/acessibilidade" className="hover:text-accent transition-all hover:translate-x-1 duration-200 flex items-center gap-1.5 focus-visible:outline-none focus-visible:underline">
+                  <span className="inline-block px-1 border border-accent rounded text-[9px] text-accent font-mono uppercase font-bold">WCAG 2.2 AA</span>
+                  <span className="text-[11px]">Declaração de Acessibilidade</span>
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Divider & Copyright */}
-        <div
-          style={{
-            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
-            paddingTop: "2rem",
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "1rem",
-          }}
-        >
-          <p style={{ color: "rgba(255, 255, 255, 0.4)", fontSize: "0.8rem" }}>
-            © {new Date().getFullYear()} ASSEC — Associação dos Servidores da Segurança do Ceará. Todos os direitos reservados.
-          </p>
-          <p style={{ color: "rgba(255, 255, 255, 0.3)", fontSize: "0.8rem", fontFamily: "monospace" }}>
-            CNPJ: 03.541.222/0001-90
-          </p>
+        {/* Bottom Bar */}
+        <div className="border-t border-primary-light mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-500">
+          <p>© {currentYear} ASSEC. Todos os direitos reservados.</p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6">
+            <span className="hover:text-white transition-colors cursor-default">CNPJ: 67.901.120/0001-78</span>
+            <span className="hidden sm:inline text-gray-700">|</span>
+            <span>
+              Desenvolvido por{" "}
+              <a 
+                href="mailto:danfealmeidafilho@gmail.com" 
+                className="text-accent hover:text-accent-light font-semibold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent rounded px-1"
+              >
+                Daniel de Almeida
+              </a>
+            </span>
+          </div>
         </div>
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;
+

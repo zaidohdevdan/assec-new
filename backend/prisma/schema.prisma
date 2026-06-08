@@ -22,6 +22,12 @@ model User {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   schedules  Schedule[]
+  photoUrl   String?
+
+  // Professional fields
+  specialty  String?
+  slots      ScheduleSlot[] @relation("ProfessionalSlots")
+  notifications Notification[]
 }
 
 model ContactMessage {
@@ -34,10 +40,24 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
+model ScheduleSlot {
+  id             String     @id @default(uuid())
+  professionalId String
+  professional   User       @relation("ProfessionalSlots", fields: [professionalId], references: [id])
+  date           String     // e.g. "2026-06-15"
+  time           String     // e.g. "09:00"
+  status         String     @default("Disponível") // "Disponível", "Reservado", "Cancelado"
+  schedule       Schedule?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
 model Schedule {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+  slotId    String?  @unique
+  slot      ScheduleSlot? @relation(fields: [slotId], references: [id], onDelete: Cascade)
   type      String
   title     String
   date      String
@@ -61,16 +81,31 @@ model Inn {
 }
 
 model Notice {
-  id        String   @id @default(uuid())
-  title     String
-  content   String
-  type      String   @default("info")
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  title       String
+  summary     String?
+  content     String
+  type        String   @default("Institucional")
+  tags        String[]
+  coverImage  String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum Role {
   USER
   ADMIN
+  PROFESSIONAL
 }
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+

@@ -46,7 +46,35 @@ export class UsersService {
         status: true,
         org: true,
         since: true,
+        photoUrl: true,
+        specialty: true,
       },
+    });
+  }
+
+  async update(
+    id: string,
+    data: Partial<{
+      email: string;
+      password?: string;
+      name: string;
+      role: 'USER' | 'ADMIN' | 'PROFESSIONAL';
+      cpf: string;
+      rg: string;
+      matricula: string;
+      status: string;
+      org: string;
+      photoUrl: string;
+      specialty: string;
+    }>,
+  ) {
+    const updateData = { ...data };
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
+    return this.prisma.user.update({
+      where: { id },
+      data: updateData,
     });
   }
 
@@ -58,7 +86,14 @@ export class UsersService {
         name: true,
         role: true,
         status: true,
+        cpf: true,
+        rg: true,
+        matricula: true,
         org: true,
+        specialty: true,
+        photoUrl: true,
+        createdAt: true,
+        since: true,
       },
     });
   }
@@ -83,5 +118,11 @@ export class UsersService {
     });
 
     return true;
+  }
+
+  async deleteUser(id: string) {
+    return this.prisma.user.delete({
+      where: { id },
+    });
   }
 }

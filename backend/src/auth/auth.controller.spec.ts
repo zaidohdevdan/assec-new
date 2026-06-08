@@ -107,8 +107,11 @@ describe('AuthController', () => {
   });
 
   describe('login', () => {
-    it('should return login result when credentials are valid', async () => {
+    it('should return login result when credentials are valid and set cookie', async () => {
       const loginDto = { email: 'dan@gmail.com', password: 'daniel@123' };
+      const mockResponse = {
+        cookie: jest.fn(),
+      } as any;
 
       authService.validateUser.mockResolvedValue(mockUserWithoutPassword);
       authService.login.mockReturnValue({
@@ -116,26 +119,96 @@ describe('AuthController', () => {
         user: mockUserWithoutPassword,
       });
 
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockResponse);
 
       expect(authService.validateUser).toHaveBeenCalledWith(
         'dan@gmail.com',
         'daniel@123',
       );
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        '__Host-assec_session',
+        'jwt-token',
+        expect.objectContaining({
+          httpOnly: true,
+          sameSite: 'lax',
+          path: '/',
+        }),
+      );
       expect(result).toEqual({
         access_token: 'jwt-token',
-        user: mockUserWithoutPassword,
+        user: expect.objectContaining({
+          id: mockUserWithoutPassword.id,
+          name: mockUserWithoutPassword.name,
+          email: mockUserWithoutPassword.email,
+          role: mockUserWithoutPassword.role,
+        }),
       });
     });
 
     it('should throw UnauthorizedException when credentials are invalid', async () => {
       const loginDto = { email: 'dan@gmail.com', password: 'wrong' };
+      const mockResponse = {} as any;
 
       authService.validateUser.mockResolvedValue(null);
 
-      await expect(controller.login(loginDto)).rejects.toThrow(
+      await expect(controller.login(loginDto, mockResponse)).rejects.toThrow(
         UnauthorizedException,
       );
+    });
+
+    it('should throw UnauthorizedException when account is suspended/inactive', async () => {
+      const loginDto = { email: 'dan@gmail.com', password: 'daniel@123' };
+      const mockResponse = {} as any;
+
+      authService.validateUser.mockResolvedValue('BLOCKED');
+
+      await expect(controller.login(loginDto, mockResponse)).rejects.toThrow(
+        new UnauthorizedException(
+          'Conta suspensa ou inativa. Entre em contato com o administrador.',
+        ),
+      );
+    });
+  });
+
+  describe('logout', () => {
+    it('should clear the session cookie and return success', async () => {
+      const mockResponse = {
+        clearCookie: jest.fn(),
+      } as any;
+
+      const result = await controller.logout(mockResponse);
+
+      expect(mockResponse.clearCookie).toHaveBeenCalledWith(
+        '__Host-assec_session',
+        expect.objectContaining({
+          httpOnly: true,
+          sameSite: 'lax',
+          path: '/',
+        }),
+      );
+      expect(result).toEqual({ success: true, message: 'Sessão encerrada com sucesso.' });
+    });
+  });
+
+  describe('getCsrfToken', () => {
+    it('should set csrf cookie and return token', () => {
+      const mockResponse = {
+        cookie: jest.fn(),
+      } as any;
+
+      const result = controller.getCsrfToken(mockResponse);
+
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        'assec_csrf',
+        expect.any(String),
+        expect.objectContaining({
+          httpOnly: false,
+          sameSite: 'lax',
+          path: '/',
+        }),
+      );
+      expect(result).toHaveProperty('csrfToken');
+      expect(typeof result.csrfToken).toBe('string');
     });
   });
 

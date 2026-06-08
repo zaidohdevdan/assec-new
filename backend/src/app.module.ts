@@ -9,6 +9,9 @@ import { ContactModule } from './contact/contact.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { InnsModule } from './inns/inns.module';
 import { NoticesModule } from './notices/notices.module';
+import { SlotsModule } from './slots/slots.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { NetworkModule } from './network/network.module';
 
 @Module({
   imports: [
@@ -20,6 +23,9 @@ import { NoticesModule } from './notices/notices.module';
     SchedulesModule,
     InnsModule,
     NoticesModule,
+    SlotsModule,
+    NotificationsModule,
+    NetworkModule,
   ],
   controllers: [AppController],
   providers: [AppService],
