@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci
 
 # Stage 2: Build
 FROM node:20-alpine AS builder
@@ -57,4 +57,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=40s \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
 # Start the server
-CMD ["npm", "server.js"]
+CMD ["node", "server.js"]

@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci  --only=production && npm cache clean --force
+RUN npm ci && npm cache clean --force
 
 # Copy prisma directory
 COPY prisma/ ./prisma/
@@ -30,11 +30,8 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
 
 # Copia apenas o necessário do estágio de build
-COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
-# Opcional, mas recomendado: copiar o schema para caso precise rodar migrações manuais no container
-COPY --from=builder --chown=nestjs:nodejs /app/prisma ./prisma 
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
 # Set environment variables
 USER nestjs

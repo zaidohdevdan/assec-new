@@ -5,6 +5,10 @@
 .vscode/
 .openclaude-profile.json
 
+# Ignorar arquivos de compose de desenvolvimento local
+*.dev.yml
+docker-compose.override.yml
+
 # Dependencies
 node_modules/
 
