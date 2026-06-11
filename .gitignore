@@ -13,3 +13,19 @@ node_modules/
 
 # Logs
 *.log
+
+# Next.js
+.next/
+
+# Distribution
+dist/
+
+
+# SSL certificates
+nginx/ssl/
+
+# Backups
+backups/
+
+# macOS
+.DS_Store
