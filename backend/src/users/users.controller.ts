@@ -14,7 +14,8 @@ import { UsersService } from './users.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role, Prisma } from '@prisma/client';
+import type { AuthenticatedRequest } from '../auth/auth.types';
 
 @Controller('users')
 @UseGuards(AuthGuard)
@@ -23,43 +24,43 @@ export class UsersController {
 
   @Put('me')
   async updateProfile(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body()
     data: Partial<{
       name: string;
-      cpf: string;
-      rg: string;
-      matricula: string;
-      org: string;
-      photoUrl: string;
+      avatarUrl: string;
     }>,
   ) {
     const userId = req.user.sub;
-    return this.usersService.update(userId, data);
+    const updatePayload: Partial<{ name: string; avatarUrl: string }> = {};
+    if (data.name !== undefined) updatePayload.name = data.name;
+    if (data.avatarUrl !== undefined) updatePayload.avatarUrl = data.avatarUrl;
+    
+    return this.usersService.update(userId, updatePayload);
   }
 
   @Get('me/export')
-  async exportMyData(@Request() req: any) {
+  async exportMyData(@Request() req: AuthenticatedRequest) {
     const userId = req.user.sub;
     return this.usersService.findById(userId);
   }
 
   @Delete('me')
-  async deleteMyAccount(@Request() req: any) {
+  async deleteMyAccount(@Request() req: AuthenticatedRequest) {
     const userId = req.user.sub;
     return this.usersService.deleteUser(userId);
   }
 
   @Get()
   @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.PRESIDENT)
   async findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req: any) {
-    if (req.user.role !== Role.ADMIN && req.user.sub !== id) {
+  async findOne(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
+    if (req.user.role !== Role.ADMIN && req.user.role !== Role.PRESIDENT && req.user.sub !== id) {
       throw new ForbiddenException('Acesso negado');
     }
     return this.usersService.findById(id);
@@ -68,14 +69,14 @@ export class UsersController {
   @Post()
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  async create(@Body() data: any) {
+  async create(@Body() data: Prisma.UserCreateInput) {
     return this.usersService.create(data);
   }
 
   @Put(':id')
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  async update(@Param('id') id: string, @Body() data: any) {
+  async update(@Param('id') id: string, @Body() data: Parameters<UsersService['update']>[1]) {
     return this.usersService.update(id, data);
   }
 

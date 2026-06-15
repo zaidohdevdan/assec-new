@@ -8,7 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { type AuthenticatedRequest } from './auth.types';
 
-const SESSION_COOKIE = '__Host-assec_session';
+const isProduction = process.env.NODE_ENV === 'production';
+const SESSION_COOKIE = isProduction ? '__Host-assec_session' : 'assec_session';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

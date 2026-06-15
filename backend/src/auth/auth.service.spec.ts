@@ -26,6 +26,9 @@ describe('AuthService', () => {
     since: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
+    photoUrl: null,
+    avatarUrl: null,
+    specialty: null,
   };
 
   beforeEach(async () => {
@@ -82,6 +85,9 @@ describe('AuthService', () => {
         since: mockUser.since,
         createdAt: mockUser.createdAt,
         updatedAt: mockUser.updatedAt,
+        photoUrl: null,
+        avatarUrl: null,
+        specialty: null,
       });
       expect(result).not.toHaveProperty('password');
     });

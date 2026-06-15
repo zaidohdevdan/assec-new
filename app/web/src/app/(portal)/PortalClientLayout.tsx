@@ -3,26 +3,36 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, CreditCard, User, Users, LogOut, ArrowLeft, Loader2, Menu, X, Bell, Check, Shield, Terminal } from "lucide-react";
+import { LayoutDashboard, Calendar, CreditCard, User, Users, LogOut, ArrowLeft, Loader2, Menu, X, Bell, Check, Shield, Terminal, FileText, Landmark, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
+import { User as UserType, Notification } from "@/lib/types";
+
+let lastAuthCheck = 0;
+const AUTH_CHECK_COOLDOWN = 15000; // 15 segundos de cooldown para chamadas de validação de rede
+
+interface PortalClientLayoutProps {
+  children: React.ReactNode;
+  initialUser?: UserType;
+  initialAuthorized?: boolean;
+}
 
 export default function PortalClientLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  initialUser,
+  initialAuthorized = false,
+}: PortalClientLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [authorized, setAuthorized] = React.useState(false);
-  const [userName, setUserName] = React.useState("");
-  const [userPhoto, setUserPhoto] = React.useState<string | null>(null);
-  const [userRole, setUserRole] = React.useState<string>("USER");
-  const [userSpecialty, setUserSpecialty] = React.useState<string | null>(null);
+  const [authorized, setAuthorized] = React.useState(initialAuthorized);
+  const [userName, setUserName] = React.useState(initialUser?.name || "");
+  const [userPhoto, setUserPhoto] = React.useState<string | null>(initialUser?.avatarUrl || null);
+  const [userRole, setUserRole] = React.useState<string>(initialUser?.role || "USER");
+  const [userSpecialty, setUserSpecialty] = React.useState<string | null>(initialUser?.specialty || null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   // Notifications state
-  const [notifications, setNotifications] = React.useState<any[]>([]);
+  const [notifications, setNotifications] = React.useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = React.useState(false);
 
   const fetchNotifications = React.useCallback(async () => {
@@ -80,35 +90,48 @@ export default function PortalClientLayout({
         try {
           const user = JSON.parse(userStr);
           setUserName(user.name ?? "");
-          setUserPhoto(user.photoUrl ?? null);
+          setUserPhoto(user.avatarUrl ?? null);
           setUserRole(user.role ?? "USER");
           setUserSpecialty(user.specialty ?? null);
+          setAuthorized(true); // Autoriza imediatamente com base no cache para evitar tela de loading Piscando
         } catch {
           // ignore malformed cached data
         }
+      }
+
+      // Evita chamadas de rede redundantes caso tenha sido verificado muito recentemente (cooldown)
+      const now = Date.now();
+      if (userStr && (now - lastAuthCheck < AUTH_CHECK_COOLDOWN)) {
+        return;
       }
 
       // Then validate the session against the backend (uses cookie automatically)
       try {
         const res = await apiFetch("/auth/me");
         if (res.ok) {
+          lastAuthCheck = Date.now(); // Atualiza o timestamp de sucesso
           const user = await res.json();
           setUserName(user.name ?? "");
-          setUserPhoto(user.photoUrl ?? null);
+          setUserPhoto(user.avatarUrl ?? null);
           setUserRole(user.role ?? "USER");
           setUserSpecialty(user.specialty ?? null);
           // Sync localStorage display cache with fresh data
           localStorage.setItem("user", JSON.stringify(user));
+          const secureFlag = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : "";
+          document.cookie = `assec_user_profile=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
           setAuthorized(true);
+          window.dispatchEvent(new Event("user-profile-updated"));
         } else {
           // Session expired or account suspended — force re-login
           localStorage.removeItem("user");
           localStorage.removeItem("token");
+          document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           router.push("/login");
         }
       } catch {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
+        document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         router.push("/login");
       }
     };
@@ -123,7 +146,7 @@ export default function PortalClientLayout({
         try {
           const user = JSON.parse(userStr);
           setUserName(user.name);
-          setUserPhoto(user.photoUrl || null);
+          setUserPhoto(user.avatarUrl || null);
           setUserRole(user.role || "USER");
           setUserSpecialty(user.specialty || null);
         } catch (e) {
@@ -146,6 +169,8 @@ export default function PortalClientLayout({
     // Clear the non-sensitive display cache from localStorage
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    // Clear profile cookie
+    document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     // Full redirect to trigger clean browser state
     window.location.href = "/login";
   };
@@ -163,24 +188,33 @@ export default function PortalClientLayout({
 
   const menuItems = userRole === "ADMIN"
     ? [
+      { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
+      { label: "Gerenciar Usuários", href: "/portal/usuarios", icon: Users },
+      { label: "Terminal Root", href: "/portal/terminal", icon: Terminal },
+      { label: "Painel Administrativo", href: "/dashboard", icon: Shield },
+      { label: "Avisos/Notícias", href: "/dashboard/notices", icon: FileText },
+      { label: "Gerenciar Benefícios", href: "/dashboard/benefits", icon: Heart },
+      { label: "Meu Perfil", href: "/portal/perfil", icon: User },
+    ]
+    : userRole === "PRESIDENT"
+      ? [
         { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
-        { label: "Gerenciar Usuários", href: "/portal/usuarios", icon: Users },
-        { label: "Terminal Root", href: "/portal/terminal", icon: Terminal },
-        { label: "Gerenciar Avisos & Pousadas", href: "/dashboard", icon: Shield },
+        { label: "Fluxo Financeiro", href: "/portal/financas", icon: CreditCard },
+        { label: "Relatório de Demandas", href: "/portal/demandas", icon: Calendar },
         { label: "Meu Perfil", href: "/portal/perfil", icon: User },
       ]
-    : userRole === "PROFESSIONAL"
-    ? [
-        { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
-        { label: "Minha Agenda", href: "/portal/agenda", icon: Calendar },
-        { label: "Meu Perfil", href: "/portal/perfil", icon: User },
-      ]
-    : [
-        { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
-        { label: "Meus Agendamentos", href: "/portal/agendamentos", icon: Calendar },
-        { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
-        { label: "Meu Perfil", href: "/portal/perfil", icon: User },
-      ];
+      : userRole === "PROFESSIONAL"
+        ? [
+          { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
+          { label: "Minha Agenda", href: "/portal/agenda", icon: Calendar },
+          { label: "Meu Perfil", href: "/portal/perfil", icon: User },
+        ]
+        : [
+          { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
+          { label: "Meus Agendamentos", href: "/portal/agendamentos", icon: Calendar },
+          { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
+          { label: "Meu Perfil", href: "/portal/perfil", icon: User },
+        ];
 
   return (
     <div className="flex min-h-screen bg-bg-page text-text-primary">
@@ -197,7 +231,13 @@ export default function PortalClientLayout({
                 ASSEC
               </span>
               <span className="text-[9px] uppercase tracking-widest text-accent-light mt-1">
-                {userRole === "PROFESSIONAL" ? "Portal do Profissional" : "Portal do Associado"}
+                {userRole === "ADMIN"
+                  ? "Portal do Admin"
+                  : userRole === "PRESIDENT"
+                  ? "Painel da Diretoria"
+                  : userRole === "PROFESSIONAL"
+                  ? "Portal do Profissional"
+                  : "Portal do Associado"}
               </span>
             </div>
           </div>
@@ -220,7 +260,11 @@ export default function PortalClientLayout({
                 {userName}
               </span>
               <span className="text-[10px] text-accent-light uppercase tracking-wider mt-0.5">
-                {userRole === "PROFESSIONAL"
+                {userRole === "ADMIN"
+                  ? "Administrador"
+                  : userRole === "PRESIDENT"
+                  ? "Presidente"
+                  : userRole === "PROFESSIONAL"
                   ? `Profissional${userSpecialty ? ` (${userSpecialty})` : ""}`
                   : "Associado Ativo"}
               </span>
@@ -236,11 +280,10 @@ export default function PortalClientLayout({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                    isActive
+                  className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isActive
                       ? "bg-accent text-primary font-semibold"
                       : "text-gray-300 hover:text-white hover:bg-primary-light"
-                  }`}
+                    }`}
                 >
                   <Icon className="h-5 w-5" />
                   <span>{item.label}</span>
@@ -320,7 +363,11 @@ export default function PortalClientLayout({
                     {userName}
                   </span>
                   <span className="text-[10px] text-accent-light uppercase tracking-wider mt-0.5">
-                    {userRole === "PROFESSIONAL"
+                    {userRole === "ADMIN"
+                      ? "Administrador"
+                      : userRole === "PRESIDENT"
+                      ? "Presidente"
+                      : userRole === "PROFESSIONAL"
                       ? `Profissional${userSpecialty ? ` (${userSpecialty})` : ""}`
                       : "Associado Ativo"}
                   </span>
@@ -336,11 +383,10 @@ export default function PortalClientLayout({
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${
-                        isActive
+                      className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${isActive
                           ? "bg-accent text-primary font-semibold"
                           : "text-gray-300 hover:text-white hover:bg-primary-light"
-                      }`}
+                        }`}
                     >
                       <Icon className="h-5 w-5" />
                       <span>{item.label}</span>
@@ -441,9 +487,8 @@ export default function PortalClientLayout({
                       notifications.map((notif) => (
                         <div
                           key={notif.id}
-                          className={`p-3 text-left transition-colors flex gap-2.5 items-start ${
-                            notif.read ? "bg-white" : "bg-blue-50/20 hover:bg-blue-50/30"
-                          }`}
+                          className={`p-3 text-left transition-colors flex gap-2.5 items-start ${notif.read ? "bg-white" : "bg-blue-50/20 hover:bg-blue-50/30"
+                            }`}
                         >
                           <div className="flex-1 min-w-0">
                             <h4 className={`text-xs font-bold truncate ${notif.read ? "text-primary/80" : "text-primary"}`}>

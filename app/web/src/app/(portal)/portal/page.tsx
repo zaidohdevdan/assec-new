@@ -4,8 +4,9 @@ import * as React from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, CreditCard, User, ShieldCheck, Clock, PlusCircle, ArrowRight } from "lucide-react";
+import { Calendar, CreditCard, User, ShieldCheck, Clock, PlusCircle, ArrowRight, TrendingUp, TrendingDown, Users, Scale, DollarSign, Activity } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { User as UserType, ScheduleSlot, FinancialStats, MonthlyStats } from "@/lib/types";
 
 interface ScheduleItem {
   id: string;
@@ -19,10 +20,11 @@ interface ScheduleItem {
 }
 
 export default function PortalPage() {
-  const [user, setUser] = React.useState<any>(null);
+  const [user, setUser] = React.useState<UserType | null>(null);
   const [schedules, setSchedules] = React.useState<ScheduleItem[]>([]);
-  const [slots, setSlots] = React.useState<any[]>([]);
-  const [users, setUsers] = React.useState<any[]>([]);
+  const [slots, setSlots] = React.useState<ScheduleSlot[]>([]);
+  const [users, setUsers] = React.useState<UserType[]>([]);
+  const [finStats, setFinStats] = React.useState<FinancialStats | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -39,6 +41,22 @@ export default function PortalPage() {
             if (res.ok) {
               const data = await res.json();
               setUsers(data);
+            }
+          } else if (parsedUser.role === "PRESIDENT") {
+            const resUsers = await apiFetch("/users");
+            if (resUsers.ok) {
+              const uData = await resUsers.json();
+              setUsers(uData);
+            }
+            const resScheds = await apiFetch("/schedules/admin/list");
+            if (resScheds.ok) {
+              const sData = await resScheds.json();
+              setSchedules(sData);
+            }
+            const resFin = await apiFetch("/financials/stats");
+            if (resFin.ok) {
+              const fData = await resFin.json();
+              setFinStats(fData);
             }
           } else if (parsedUser.role === "PROFESSIONAL") {
             const res = await apiFetch("/slots");
@@ -64,6 +82,24 @@ export default function PortalPage() {
     } else {
       setLoading(false);
     }
+  }, []);
+
+  React.useEffect(() => {
+    const handleProfileUpdate = () => {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        try {
+          setUser(JSON.parse(userStr));
+        } catch (e) {
+          console.error("Failed to parse user profile update:", e);
+        }
+      }
+    };
+
+    window.addEventListener("user-profile-updated", handleProfileUpdate);
+    return () => {
+      window.removeEventListener("user-profile-updated", handleProfileUpdate);
+    };
   }, []);
 
   if (!user) {
@@ -213,6 +249,201 @@ export default function PortalPage() {
                 <p className="text-xs text-text-secondary mt-1">Alterar papéis, e-mails ou senhas dos membros da associação.</p>
               </Link>
             </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // --- President Dashboard Render ---
+  if (user.role === "PRESIDENT") {
+    const associates = users.filter((u) => u.role === "USER").length;
+    
+    const recentSchedules = [...schedules]
+      .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+      .slice(0, 4);
+
+    return (
+      <div className="space-y-8 animate-none">
+        {/* Welcome Hero for President */}
+        <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 sm:p-8 rounded-xl text-white shadow-lg relative overflow-hidden border border-slate-700">
+          <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none">
+            <ShieldCheck className="h-64 w-64 text-white" />
+          </div>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <span className="bg-accent text-primary text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                Painel da Diretoria Executiva
+              </span>
+              <h1 className="font-serif font-bold text-2xl sm:text-3xl mt-3">
+                Olá, {user.name}!
+              </h1>
+              <p className="text-sm text-gray-300 mt-2 max-w-xl">
+                Acompanhe o crescimento dos associados, a estatística de demandas e a prestação de contas financeiras consolidadas da organização.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Link href="/portal/financas">
+                <Button className="bg-accent text-primary hover:bg-accent-light font-bold text-xs uppercase tracking-widest px-5 py-3 shadow border-none">
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Ver Finanças
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="flex items-center gap-4 p-6 bg-white border border-border shadow-sm">
+            <div className="p-4 bg-primary text-accent rounded-lg">
+              <Users className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-2xl font-extrabold text-primary block">
+                {loading ? "..." : associates}
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                Associados Ativos
+              </span>
+            </div>
+          </Card>
+
+          <Card className="flex items-center gap-4 p-6 bg-white border border-border shadow-sm">
+            <div className="p-4 bg-primary text-accent rounded-lg">
+              <Calendar className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-2xl font-extrabold text-primary block">
+                {loading ? "..." : schedules.length}
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                Demandas Totais
+              </span>
+            </div>
+          </Card>
+
+          <Card className="flex items-center gap-4 p-6 bg-white border border-border shadow-sm">
+            <div className="p-4 bg-primary text-accent rounded-lg">
+              <DollarSign className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-2xl font-extrabold text-primary block">
+                {loading ? "..." : finStats ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(finStats.balance) : "R$ 0,00"}
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                Balanço Geral em Caixa
+              </span>
+            </div>
+          </Card>
+        </div>
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Recent Cash Flow */}
+          <Card className="p-6 bg-white border border-border shadow-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="font-serif font-bold text-lg text-primary flex items-center gap-2">
+                <Activity className="h-5 w-5 text-accent-dark" />
+                <span>Fluxo Financeiro Recente</span>
+              </h2>
+              <Link href="/portal/financas" className="text-xs font-bold text-accent-dark hover:underline flex items-center gap-1">
+                <span>Ver fluxo completo</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            {loading && <div className="text-sm text-text-secondary">Carregando dados financeiros...</div>}
+            
+            {!loading && (!finStats || finStats.balance === 0) && (
+              <div className="text-sm text-text-muted py-6 text-center">Nenhum lançamento financeiro registrado.</div>
+            )}
+
+            {!loading && finStats && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-100 flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-emerald-600" />
+                    <div>
+                      <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider block">Receitas</span>
+                      <span className="text-sm font-extrabold text-emerald-800">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(finStats.totalIncome)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-3 bg-rose-50 rounded-lg border border-rose-100 flex items-center gap-2">
+                    <TrendingDown className="h-5 w-5 text-rose-600" />
+                    <div>
+                      <span className="text-[10px] text-rose-700 font-bold uppercase tracking-wider block">Despesas</span>
+                      <span className="text-sm font-extrabold text-rose-800">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(finStats.totalExpense)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-border pt-4">
+                  <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider block mb-2">Resumo de Lançamentos</span>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {finStats.monthly && finStats.monthly.slice(0, 4).map((m: MonthlyStats, idx: number) => (
+                      <div key={idx} className="flex justify-between items-center p-2.5 border border-border rounded-lg bg-gray-50/50">
+                        <span className="text-xs font-bold text-primary">{m.month}</span>
+                        <div className="flex gap-3 text-xs">
+                          <span className="text-emerald-600 font-semibold">+{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(m.income)}</span>
+                          <span className="text-rose-600 font-semibold">-{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(m.expense)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </Card>
+
+          {/* Recent Demands (Schedules) */}
+          <Card className="p-6 bg-white border border-border shadow-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="font-serif font-bold text-lg text-primary flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-accent-dark" />
+                <span>Demandas Recentes</span>
+              </h2>
+              <Link href="/portal/demandas" className="text-xs font-bold text-accent-dark hover:underline flex items-center gap-1">
+                <span>Ver todas as demandas</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            {loading && <div className="text-sm text-text-secondary">Carregando agendamentos...</div>}
+            
+            {!loading && recentSchedules.length === 0 && (
+              <div className="text-sm text-text-muted py-6 text-center">Nenhum agendamento ou demanda registrado.</div>
+            )}
+
+            {!loading && recentSchedules.length > 0 && (
+              <div className="space-y-3">
+                {recentSchedules.map((sched) => (
+                  <div key={sched.id} className="flex items-center justify-between p-3 border border-border rounded-lg bg-gray-50/50">
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-primary block truncate">{sched.title}</span>
+                      <div className="flex items-center gap-2 text-[10px] text-text-muted mt-1">
+                        <span>{sched.type}</span>
+                        <span>•</span>
+                        <span>{sched.date} às {sched.time}</span>
+                      </div>
+                    </div>
+                    <span className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full ${
+                      sched.status === "Confirmado" || sched.status === "Concluído"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : sched.status === "Cancelado"
+                        ? "bg-rose-50 text-rose-700 border border-rose-200"
+                        : "bg-amber-50 text-amber-700 border border-amber-200"
+                    }`}>
+                      {sched.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </Card>
         </div>
       </div>

@@ -125,8 +125,9 @@ describe('AuthController', () => {
         'dan@gmail.com',
         'daniel@123',
       );
+      const expectedCookieName = process.env.NODE_ENV === 'production' ? '__Host-assec_session' : 'assec_session';
       expect(mockResponse.cookie).toHaveBeenCalledWith(
-        '__Host-assec_session',
+        expectedCookieName,
         'jwt-token',
         expect.objectContaining({
           httpOnly: true,
@@ -178,8 +179,9 @@ describe('AuthController', () => {
 
       const result = await controller.logout(mockResponse);
 
+      const expectedCookieName = process.env.NODE_ENV === 'production' ? '__Host-assec_session' : 'assec_session';
       expect(mockResponse.clearCookie).toHaveBeenCalledWith(
-        '__Host-assec_session',
+        expectedCookieName,
         expect.objectContaining({
           httpOnly: true,
           sameSite: 'lax',

@@ -44,8 +44,10 @@ const resetPasswordSchema = z.object({
 });
 type ResetPasswordDto = z.infer<typeof resetPasswordSchema>;
 
-// Cookie name follows __Host- prefix convention for enhanced security
-const SESSION_COOKIE = '__Host-assec_session';
+const isProduction = process.env.NODE_ENV === 'production';
+// Cookie name follows __Host- prefix convention for enhanced security in production.
+// During development, we drop the prefix so browsers accept it over plain HTTP (e.g. when testing on mobile devices via local IP).
+const SESSION_COOKIE = isProduction ? '__Host-assec_session' : 'assec_session';
 
 @Controller('auth')
 export class AuthController {
@@ -81,7 +83,6 @@ export class AuthController {
 
     // Set the JWT in a secure, HttpOnly cookie (not accessible via JavaScript)
     // This is the primary defence against XSS token theft
-    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie(SESSION_COOKIE, access_token, {
       httpOnly: true,          // Not accessible via document.cookie (XSS protection)
       sameSite: 'lax',         // CSRF mitigation for same-site navigations
@@ -103,6 +104,7 @@ export class AuthController {
         role: userPublic.role,
         status: userPublic.status,
         photoUrl: (userPublic as any).photoUrl ?? null,
+        avatarUrl: (userPublic as any).avatarUrl ?? null,
         specialty: (userPublic as any).specialty ?? null,
         org: (userPublic as any).org ?? null,
         matricula: (userPublic as any).matricula ?? null,

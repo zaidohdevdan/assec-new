@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { Terminal as TerminalIcon, AlertCircle } from "lucide-react";
+import { User as UserType, Schedule } from "@/lib/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
@@ -45,9 +46,9 @@ export default function TerminalPage() {
   const [commandHistory, setCommandHistory] = React.useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = React.useState(-1);
 
-  const [users, setUsers] = React.useState<any[]>([]);
-  const [schedules, setSchedules] = React.useState<any[]>([]);
-  const [currentUser, setCurrentUser] = React.useState<any>(null);
+  const [users, setUsers] = React.useState<UserType[]>([]);
+  const [schedules, setSchedules] = React.useState<Schedule[]>([]);
+  const [currentUser, setCurrentUser] = React.useState<UserType | null>(null);
 
   const terminalEndRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -464,10 +465,10 @@ export default function TerminalPage() {
           const scanDuration = ((endScan - startScan) / 1000).toFixed(2);
 
           if (res.ok) {
-            const ports = await res.json();
+            const ports = await res.json() as { port: number; service: string; status: string }[];
             logOutput(`Nmap scan report for ${host}`, "info");
             logOutput("PORT      STATE    SERVICE", "info");
-            ports.forEach((p: any) => {
+            ports.forEach((p) => {
               const stateColor = p.status === "OPEN" ? "success" : p.status === "CLOSED" ? "error" : "info";
               const padding1 = `${p.port}/tcp`.padEnd(10, " ");
               const padding2 = p.status.toLowerCase().padEnd(9, " ");
@@ -502,13 +503,13 @@ export default function TerminalPage() {
             body: JSON.stringify({ host }),
           });
           if (res.ok) {
-            const records = await res.json();
+            const records = await res.json() as Record<string, unknown[]>;
             logOutput(";; ANSWER SECTION:", "info");
             let recordsFound = false;
-            Object.entries(records).forEach(([type, values]: [string, any]) => {
+            Object.entries(records).forEach(([type, values]) => {
               if (Array.isArray(values) && values.length > 0) {
                 recordsFound = true;
-                values.forEach((val: any) => {
+                values.forEach((val) => {
                   const recordStr = typeof val === "string" ? val : JSON.stringify(val);
                   logOutput(`${host}.        IN      ${type}      ${recordStr}`);
                 });

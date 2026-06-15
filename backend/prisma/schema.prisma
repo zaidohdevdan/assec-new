@@ -23,6 +23,7 @@ model User {
   updatedAt  DateTime   @updatedAt
   schedules  Schedule[]
   photoUrl   String?
+  avatarUrl  String?
 
   // Professional fields
   specialty  String?
@@ -68,13 +69,19 @@ model Schedule {
   updatedAt DateTime @updatedAt
 }
 
-model Inn {
+model Benefit {
   id          String   @id @default(uuid())
-  name        String
-  location    String
-  description String
-  image       String
-  amenities   String[]
+  title       String
+  tag         String   // Category/Type of benefit: "Jurídico", "Saúde", "Educação", "Lazer", "Assistência"
+  description String   // Short description
+  details     String?  // Detailed description (supports markdown/long text)
+  image       String?  // Base64 or image URL (optional)
+  icon        String?  // Lucide icon name, e.g. "Shield", "Heart", "Key", "ShieldCheck", "Landmark"
+  
+  // Specific for Inns/Pousadas (optional fields)
+  location    String?  // Location, e.g. "Beberibe - Praia das Fontes"
+  amenities   String[] // Array of amenities, e.g. ["Wi-Fi", "Piscina"]
+  
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -97,6 +104,7 @@ enum Role {
   USER
   ADMIN
   PROFESSIONAL
+  PRESIDENT
 }
 
 model Notification {
@@ -107,5 +115,16 @@ model Notification {
   content   String
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model FinancialRecord {
+  id          String   @id @default(uuid())
+  description String
+  amount      Float
+  type        String   // "INCOME" (Receita) ou "EXPENSE" (Despesa)
+  category    String   // Ex: "Mensalidades", "Lazer", "Jurídico", "Administrativo", "Eventos"
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 

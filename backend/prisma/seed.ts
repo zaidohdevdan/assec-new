@@ -77,40 +77,76 @@ async function main() {
     console.log('Demo user already exists');
   }
 
-  // Inns
-  const innsCount = await prisma.inn.count();
-  if (innsCount === 0) {
-    await prisma.inn.createMany({
+  // Benefits
+  const benefitsCount = await prisma.benefit.count();
+  if (benefitsCount === 0) {
+    await prisma.benefit.createMany({
       data: [
+        // Static Benefits
         {
-          name: 'Colônia de Férias Beberibe',
-          location: 'Beberibe - Praia das Fontes',
-          description:
-            'Nossa maior unidade, com 24 apartamentos mobiliados em frente ao mar, ideal para grandes grupos e famílias.',
+          title: 'Assessoria Jurídica Integral',
+          tag: 'Jurídico',
+          description: 'Nossa equipe jurídica especialista em direito militar e administrativo defende e acompanha os associados em sindicâncias e processos correlatos.',
+          details: 'A ASSEC oferece assistência jurídica completa em diversas instâncias. Nossos associados contam com plantões de atendimento presencial e virtual, representação em processos disciplinares, sindicâncias corporativas, além de assessoria em direito civil e familiar para resguardar todos os direitos dos servidores públicos militares.',
+          icon: 'Shield',
+        },
+        {
+          title: 'Convênios com Saúde e Odontologia',
+          tag: 'Saúde',
+          description: 'Parcerias de ampla cobertura com os maiores planos de saúde e odontologia do estado, oferecendo condições exclusivas de contratação.',
+          details: 'Nossos convênios de saúde e odontologia cobrem atendimentos clínicos, consultas com especialistas renomados, exames especializados de alta complexidade, procedimentos cirúrgicos e internações com valores e tabelas exclusivas negociados diretamente para a família associada da ASSEC.',
+          icon: 'Heart',
+        },
+        {
+          title: 'Convênios de Educação e Comércio',
+          tag: 'Educação',
+          description: 'Descontos expressivos em mensalidades de faculdades, escolas de idiomas, academias e hotéis parceiros.',
+          details: 'Parcerias sólidas com as maiores universidades, centros educacionais, escolas de idiomas, redes de academias e hotéis pelo país garantem aos associados e seus dependentes descontos expressivos de até 50% nas mensalidades e diárias.',
+          icon: 'Key',
+        },
+        {
+          title: 'Auxílio Emergencial e Seguro',
+          tag: 'Assistência',
+          description: 'Seguros de vida coletivos e programas assistenciais voltados a amparar a família do servidor em momentos de extrema necessidade.',
+          details: 'Com o objetivo de apoiar a família do associado nas horas mais delicadas, a ASSEC disponibiliza seguros de vida coletivos com coberturas amplas, auxílio financeiro emergencial imediato e assistência funeral completa de urgência.',
+          icon: 'ShieldCheck',
+        },
+        // Inns (Lazer Category Benefits)
+        {
+          title: 'Colônia de Férias Beberibe',
+          tag: 'Lazer',
+          description: 'Nossa maior unidade, com 24 apartamentos mobiliados em frente ao mar, ideal para grandes grupos e famílias.',
+          details: 'Desfrute de momentos de lazer e descanso na Colônia de Férias Beberibe, localizada na privilegiada região de Beberibe - Praia das Fontes. A pousada oferece suítes climatizadas, cozinha de apoio, área de lazer equipada com churrasqueira e piscinas. Diárias promocionais exclusivas para associados da ASSEC.',
           image: 'https://picsum.photos/seed/beberibe/800/600',
           amenities: ['Waves', 'Wifi', 'Coffee', 'Utensils'],
+          location: 'Beberibe - Praia das Fontes',
+          icon: 'Landmark',
         },
         {
-          name: 'Pousada Serrana - Guaramiranga',
-          location: 'Guaramiranga - Serra de Baturité',
-          description:
-            'Clima serrano e tranquilidade absoluta. Chalés privativos com lareira e vista privilegiada para o vale.',
+          title: 'Pousada Serrana - Guaramiranga',
+          tag: 'Lazer',
+          description: 'Clima serrano e tranquilidade absoluta. Chalés privativos com lareira e vista privilegiada para o vale.',
+          details: 'Desfrute de momentos de lazer e descanso na Pousada Serrana Guaramiranga, localizada na privilegiada região de Guaramiranga. A pousada oferece chalés aconchegantes com lareira e uma linda vista da serra. Diárias promocionais exclusivas para associados da ASSEC.',
           image: 'https://picsum.photos/seed/guaramiranga/800/600',
           amenities: ['Coffee', 'Tv', 'Info'],
+          location: 'Guaramiranga - Serra de Baturité',
+          icon: 'Landmark',
         },
         {
-          name: 'Unidade de Lazer Fortaleza',
-          location: 'Fortaleza - Porto das Dunas',
-          description:
-            'Localização estratégica próxima ao Beach Park, com estrutura de lazer completa e apartamentos confortáveis.',
+          title: 'Unidade de Lazer Fortaleza',
+          tag: 'Lazer',
+          description: 'Localização estratégica próxima ao Beach Park, com estrutura de lazer completa e apartamentos confortáveis.',
+          details: 'Desfrute de momentos de lazer e descanso na Unidade de Lazer Fortaleza, localizada próxima ao Beach Park. A unidade oferece quartos completos com ar-condicionado, piscina, Wi-Fi e área de convivência com cozinha. Diárias promocionais exclusivas para associados da ASSEC.',
           image: 'https://picsum.photos/seed/fortaleza-lazer/800/600',
           amenities: ['Waves', 'Wifi', 'Utensils', 'Tv'],
+          location: 'Fortaleza - Porto das Dunas',
+          icon: 'Landmark',
         },
       ],
     });
-    console.log('Inns seeded');
+    console.log('Benefits seeded');
   } else {
-    console.log('Inns already exist');
+    console.log('Benefits already exist');
   }
 
   // Dan user
@@ -220,6 +256,110 @@ async function main() {
     console.log('Notices seeded');
   } else {
     console.log('Notices already exist');
+  }
+
+  // President/Director user
+  const presidentEmail = 'presidente@assec.com.br';
+  const existingPresident = await prisma.user.findUnique({
+    where: { email: presidentEmail },
+  });
+
+  if (!existingPresident) {
+    const hashedPassword = await bcrypt.hash('presi123', 10);
+    const presidentUser = await prisma.user.create({
+      data: {
+        email: presidentEmail,
+        password: hashedPassword,
+        name: 'Maria Helena (Presidente ASSEC)',
+        role: 'PRESIDENT',
+        status: 'Ativo',
+      },
+    });
+    console.log(`President user created: ${presidentUser.email}`);
+  } else {
+    console.log('President user already exists');
+  }
+
+  // Financial records
+  const financialCount = await prisma.financialRecord.count();
+  if (financialCount === 0) {
+    await prisma.financialRecord.createMany({
+      data: [
+        {
+          description: 'Arrecadação de Mensalidades - Março/2026',
+          amount: 24500.00,
+          type: 'INCOME',
+          category: 'Mensalidades',
+          date: new Date('2026-03-10T00:00:00.000Z'),
+        },
+        {
+          description: 'Arrecadação de Mensalidades - Abril/2026',
+          amount: 25100.00,
+          type: 'INCOME',
+          category: 'Mensalidades',
+          date: new Date('2026-04-10T00:00:00.000Z'),
+        },
+        {
+          description: 'Arrecadação de Mensalidades - Maio/2026',
+          amount: 25800.00,
+          type: 'INCOME',
+          category: 'Mensalidades',
+          date: new Date('2026-05-10T00:00:00.000Z'),
+        },
+        {
+          description: 'Arrecadação de Mensalidades - Junho/2026',
+          amount: 26200.00,
+          type: 'INCOME',
+          category: 'Mensalidades',
+          date: new Date('2026-06-10T00:00:00.000Z'),
+        },
+        {
+          description: 'Manutenção Pousada Guaramiranga',
+          amount: -3200.00,
+          type: 'EXPENSE',
+          category: 'Lazer',
+          date: new Date('2026-05-15T00:00:00.000Z'),
+        },
+        {
+          description: 'Honorários Advocatícios - Assessoria Jurídica',
+          amount: -8500.00,
+          type: 'EXPENSE',
+          category: 'Jurídico',
+          date: new Date('2026-05-05T00:00:00.000Z'),
+        },
+        {
+          description: 'Seguro Coletivo de Vida - Convênio Bradesco',
+          amount: -4100.00,
+          type: 'EXPENSE',
+          category: 'Assistência',
+          date: new Date('2026-05-20T00:00:00.000Z'),
+        },
+        {
+          description: 'Suprimentos de Escritório e Sede',
+          amount: -1250.00,
+          type: 'EXPENSE',
+          category: 'Administrativo',
+          date: new Date('2026-06-02T00:00:00.000Z'),
+        },
+        {
+          description: 'Patrocínio Evento Esportivo Servidores',
+          amount: -2500.00,
+          type: 'EXPENSE',
+          category: 'Eventos',
+          date: new Date('2026-06-08T00:00:00.000Z'),
+        },
+        {
+          description: 'Parceria de Publicidade - Rede de Farmácias',
+          amount: 1500.00,
+          type: 'INCOME',
+          category: 'Eventos',
+          date: new Date('2026-06-11T00:00:00.000Z'),
+        },
+      ],
+    });
+    console.log('Financial records seeded');
+  } else {
+    console.log('Financial records already exist');
   }
 }
 

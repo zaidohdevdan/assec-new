@@ -76,11 +76,14 @@ export default function LoginPage() {
           role: body.user?.role ?? "USER",
           status: body.user?.status,
           photoUrl: body.user?.photoUrl ?? null,
+          avatarUrl: body.user?.avatarUrl ?? null,
           specialty: body.user?.specialty ?? null,
           org: body.user?.org ?? null,
           matricula: body.user?.matricula ?? null,
         };
         localStorage.setItem("user", JSON.stringify(userDisplay));
+        const secureFlag = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : "";
+        document.cookie = `assec_user_profile=${encodeURIComponent(JSON.stringify(userDisplay))}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
         // Also persist access_token for Root Terminal backward compatibility
         // TODO(security): Remove once terminal migrates to cookie-based auth
         if (body.access_token) {

@@ -8,7 +8,9 @@ import {
   Scale, 
   ClipboardCheck, 
   UserCheck, 
-  Users2
+  Users2,
+  FileText,
+  Download
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
@@ -342,6 +344,30 @@ export default function SobrePage() {
               </ul>
             </div>
           </div>
+        </div>
+
+        {/* Documentos Oficiais - Estatuto Social */}
+        <div className="mt-16 bg-slate-900 text-white rounded-xl border border-slate-800 p-6 sm:p-8 shadow-lg max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6">
+          <div className="flex gap-4 items-start text-left">
+            <div className="p-3 bg-white/10 text-accent rounded-lg shrink-0">
+              <FileText className="h-6 w-6 text-accent" />
+            </div>
+            <div>
+              <span className="text-[10px] text-accent-light uppercase font-bold tracking-widest block">Documentação Oficial</span>
+              <h3 className="font-serif font-bold text-xl mt-1">Estatuto Social da ASSEC</h3>
+              <p className="text-xs text-gray-300 mt-1.5 leading-relaxed">
+                Acesse e faça o download do Estatuto Social oficial da Associação dos Servidores da Segurança do Ceará, contendo as diretrizes, direitos e deveres dos associados.
+              </p>
+            </div>
+          </div>
+          <a
+            href="/estatuto-assec.pdf"
+            download
+            className="flex items-center gap-2 px-6 py-3 bg-accent text-primary hover:bg-accent-light font-bold text-xs uppercase tracking-widest rounded shadow border-none w-full sm:w-auto justify-center transition-colors shrink-0"
+          >
+            <Download className="h-4 w-4" />
+            <span>Baixar Estatuto (PDF)</span>
+          </a>
         </div>
 
       </div>

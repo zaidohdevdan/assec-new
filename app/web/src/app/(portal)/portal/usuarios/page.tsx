@@ -7,15 +7,16 @@ import * as z from "zod";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User, PlusCircle, Search, Edit3, Trash2, X, AlertCircle, CheckCircle2, ShieldAlert } from "lucide-react";
+import { User, PlusCircle, Search, Edit3, Trash2, X, AlertCircle, CheckCircle2, ShieldAlert, Camera } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { User as UserType } from "@/lib/types";
 
 // Form validation schema
 const userFormSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   email: z.string().email("E-mail inválido"),
   password: z.string().optional().or(z.literal("")),
-  role: z.enum(["USER", "PROFESSIONAL", "ADMIN"]),
+  role: z.enum(["USER", "PROFESSIONAL", "ADMIN", "PRESIDENT"]),
   status: z.string().min(1, "Selecione o status"),
   cpf: z.string().optional().or(z.literal("")),
   rg: z.string().optional().or(z.literal("")),
@@ -27,7 +28,7 @@ const userFormSchema = z.object({
 type UserFormData = z.infer<typeof userFormSchema>;
 
 export default function UsuariosManagerPage() {
-  const [users, setUsers] = React.useState<any[]>([]);
+  const [users, setUsers] = React.useState<UserType[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
   const [successMsg, setSuccessMsg] = React.useState<string | null>(null);
@@ -39,8 +40,35 @@ export default function UsuariosManagerPage() {
 
   // Modal states
   const [modalOpen, setModalOpen] = React.useState(false);
-  const [editingUser, setEditingUser] = React.useState<any | null>(null);
+  const [editingUser, setEditingUser] = React.useState<UserType | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+
+  // Card Photo States for Admin Edit
+  const [cardPhotoBase64, setCardPhotoBase64] = React.useState<string | null>(null);
+  const [cardPhotoError, setCardPhotoError] = React.useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleCardPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCardPhotoError(null);
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 1.2 * 1024 * 1024) {
+      setCardPhotoError("A imagem é muito grande. Escolha uma foto com até 1MB.");
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setCardPhotoError("Tipo de arquivo inválido.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setCardPhotoBase64(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const {
     register,
@@ -90,6 +118,8 @@ export default function UsuariosManagerPage() {
 
   const openCreateModal = () => {
     setEditingUser(null);
+    setCardPhotoBase64(null);
+    setCardPhotoError(null);
     reset({
       name: "",
       email: "",
@@ -107,8 +137,10 @@ export default function UsuariosManagerPage() {
     setModalOpen(true);
   };
 
-  const openEditModal = (user: any) => {
+  const openEditModal = (user: UserType) => {
     setEditingUser(user);
+    setCardPhotoBase64(user.photoUrl || null);
+    setCardPhotoError(null);
     reset({
       name: user.name || "",
       email: user.email || "",
@@ -132,7 +164,7 @@ export default function UsuariosManagerPage() {
     setSuccessMsg(null);
 
     // Prepare payload
-    const payload: any = {
+    const payload: Partial<UserType> & { password?: string } = {
       name: data.name,
       email: data.email,
       role: data.role,
@@ -142,6 +174,7 @@ export default function UsuariosManagerPage() {
       matricula: data.matricula || null,
       org: data.org || null,
       specialty: data.role === "PROFESSIONAL" ? data.specialty || null : null,
+      photoUrl: cardPhotoBase64,
     };
 
     if (data.password && data.password.trim().length > 0) {
@@ -182,7 +215,7 @@ export default function UsuariosManagerPage() {
     }
   };
 
-  const handleDeleteUser = async (user: any) => {
+  const handleDeleteUser = async (user: UserType) => {
     if (
       !window.confirm(
         `Deseja realmente EXCLUIR permanentemente o usuário "${user.name}"? Todos os agendamentos e registros dele serão deletados.`
@@ -280,6 +313,7 @@ export default function UsuariosManagerPage() {
               <option value="USER">Associado (USER)</option>
               <option value="PROFESSIONAL">Profissional (PROFESSIONAL)</option>
               <option value="ADMIN">Administrador (ADMIN)</option>
+              <option value="PRESIDENT">Presidente (PRESIDENT)</option>
             </select>
           </div>
 
@@ -328,9 +362,9 @@ export default function UsuariosManagerPage() {
                   <tr key={user.id} className="text-text-primary hover:bg-gray-50/30">
                     <td className="py-4 pr-4">
                       <div className="flex items-center gap-3">
-                        {user.photoUrl ? (
+                        {user.avatarUrl ? (
                           <img
-                            src={user.photoUrl}
+                            src={user.avatarUrl}
                             alt={user.name}
                             className="h-9 w-9 rounded-full object-cover border border-gray-200"
                           />
@@ -372,6 +406,17 @@ export default function UsuariosManagerPage() {
                       {user.rg && <p>RG: {user.rg}</p>}
                       {user.matricula && <p>Matr.: {user.matricula}</p>}
                       {!user.cpf && !user.rg && !user.matricula && <span className="text-text-muted">-</span>}
+                      {user.photoUrl ? (
+                        <div className="flex items-center gap-1 text-[9px] text-emerald-600 font-bold uppercase mt-1">
+                          <CheckCircle2 className="h-3 w-3 shrink-0" />
+                          <span>Foto Carteira OK</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-[9px] text-red-500 font-bold uppercase mt-1">
+                          <AlertCircle className="h-3 w-3 shrink-0" />
+                          <span>Sem Foto Carteira</span>
+                        </div>
+                      )}
                     </td>
                     <td className="py-4 px-4 text-xs font-medium text-text-secondary">
                       {user.role === "PROFESSIONAL" ? (
@@ -451,6 +496,71 @@ export default function UsuariosManagerPage() {
               )}
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                {/* Photo Edit Section (Official Card Photo) */}
+                <div className="flex flex-col items-center gap-2 border-b border-gray-100 pb-4">
+                  <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider block">Foto Oficial da Carteirinha</span>
+                  <div className="relative group">
+                    <div className="h-24 w-20 rounded border-2 border-accent bg-slate-900/50 overflow-hidden flex items-center justify-center shadow-md relative">
+                      {cardPhotoBase64 ? (
+                        <img
+                          src={cardPhotoBase64}
+                          alt="Foto da carteirinha"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-accent/60 w-full h-full p-2 text-center">
+                          <span className="text-[8px] font-bold uppercase">Sem Foto</span>
+                          <span className="text-[6px] text-text-muted mt-0.5">Oficial</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Photo Edit Overlay */}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute inset-0 bg-black/40 text-white rounded flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none"
+                      aria-label="Alterar foto da carteirinha"
+                    >
+                      <Camera className="h-5 w-5" />
+                      <span className="text-[8px] font-bold uppercase mt-1">Alterar</span>
+                    </button>
+                  </div>
+                  
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleCardPhotoChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-[10px] font-bold text-accent-dark hover:underline focus:outline-none"
+                    >
+                      Escolher Foto
+                    </button>
+                    {cardPhotoBase64 && (
+                      <>
+                        <span className="text-[10px] text-gray-300">|</span>
+                        <button
+                          type="button"
+                          onClick={() => setCardPhotoBase64(null)}
+                          className="text-[10px] font-bold text-red-600 hover:underline focus:outline-none"
+                        >
+                          Remover
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  {cardPhotoError && (
+                    <span className="text-xs text-red-600 font-semibold">{cardPhotoError}</span>
+                  )}
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
                     label="Nome Completo"
@@ -481,6 +591,7 @@ export default function UsuariosManagerPage() {
                       <option value="USER">Associado (USER)</option>
                       <option value="PROFESSIONAL">Profissional (PROFESSIONAL)</option>
                       <option value="ADMIN">Administrador (ADMIN)</option>
+                      <option value="PRESIDENT">Presidente (PRESIDENT)</option>
                     </select>
                     {errors.role?.message && (
                       <span className="text-xs text-red-600 font-medium mt-1 block">{errors.role.message}</span>

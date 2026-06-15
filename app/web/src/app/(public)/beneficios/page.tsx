@@ -5,91 +5,66 @@ import Image from "next/image";
 import { Shield, Key, Heart, ShieldCheck, Landmark } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { apiFetch } from "@/lib/api";
+import { useSearchParams } from "next/navigation";
 
 interface BenefitItem {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-  tag: string;
-  image?: string;
-  details?: string;
-}
-
-interface InnItem {
   id: string;
-  name: string;
-  location: string;
+  title: string;
+  tag: string;
   description: string;
-  image: string;
-  amenities: string[];
+  details?: string;
+  image?: string;
+  icon?: string;
+  location?: string;
+  amenities?: string[];
   active: boolean;
-  createdAt: string;
-  updatedAt: string;
 }
 
-const staticBenefits: BenefitItem[] = [
-  {
-    icon: Shield,
-    title: "Assessoria Jurídica Integral",
-    description: "Nossa equipe jurídica especialista em direito militar e administrativo defende e acompanha os associados em sindicâncias e processos correlatos.",
-    tag: "Jurídico",
-    details: "A ASSEC oferece assistência jurídica completa em diversas instâncias. Nossos associados contam com plantões de atendimento presencial e virtual, representação em processos disciplinares, sindicâncias corporativas, além de assessoria em direito civil e familiar para resguardar todos os direitos dos servidores públicos militares.",
-  },
-  {
-    icon: Heart,
-    title: "Convênios com Saúde e Odontologia",
-    description: "Parcerias de ampla cobertura com os maiores planos de saúde e odontologia do estado, oferecendo condições exclusivas de contratação.",
-    tag: "Saúde",
-    details: "Nossos convênios de saúde e odontologia cobrem atendimentos clínicos, consultas com especialistas renomados, exames especializados de alta complexidade, procedimentos cirúrgicos e internações com valores e tabelas exclusivas negociados diretamente para a família associada da ASSEC.",
-  },
-  {
-    icon: Key,
-    title: "Convênios de Educação e Comércio",
-    description: "Descontos expressivos em mensalidades de faculdades, escolas de idiomas, academias e hotéis parceiros.",
-    tag: "Educação",
-    details: "Parcerias sólidas com as maiores universidades, centros educacionais, escolas de idiomas, redes de academias e hotéis pelo país garantem aos associados e seus dependentes descontos expressivos de até 50% nas mensalidades e diárias.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Auxílio Emergencial e Seguro",
-    description: "Seguros de vida coletivos e programas assistenciais voltados a amparar a família do servidor em momentos de extrema necessidade.",
-    tag: "Assistência",
-    details: "Com o objetivo de apoiar a família do associado nas horas mais delicadas, a ASSEC disponibiliza seguros de vida coletivos com coberturas amplas, auxílio financeiro emergencial imediato e assistência funeral completa de urgência.",
-  },
-];
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Shield,
+  Heart,
+  Key,
+  ShieldCheck,
+  Landmark,
+};
 
 const categories = ["Todos", "Jurídico", "Saúde", "Educação", "Lazer", "Assistência"];
 
-export default function BeneficiosPage() {
+function BeneficiosContent() {
+  const searchParams = useSearchParams();
+  const catParam = searchParams.get("cat");
   const [activeCategory, setActiveCategory] = React.useState("Todos");
-  const [dynamicInns, setDynamicInns] = React.useState<BenefitItem[]>([]);
+
+  React.useEffect(() => {
+    if (catParam) {
+      const matchedCat = categories.find(
+        (c) => c.toLowerCase() === catParam.toLowerCase()
+      );
+      if (matchedCat) {
+        setActiveCategory(matchedCat);
+      }
+    }
+  }, [catParam]);
+  const [benefits, setBenefits] = React.useState<BenefitItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [selectedBenefit, setSelectedBenefit] = React.useState<BenefitItem | null>(null);
 
   React.useEffect(() => {
-    const fetchInns = async () => {
+    const fetchBenefits = async () => {
       try {
-        const res = await apiFetch("/inns");
+        const res = await apiFetch("/benefits");
         if (res.ok) {
-          const inns: InnItem[] = await res.json();
-          const mapped: BenefitItem[] = inns.map((inn) => ({
-            icon: Landmark,
-            title: `Pousada: ${inn.name}`,
-            description: `${inn.description} - Localização: ${inn.location}. Serviços: ${inn.amenities?.join(", ") || "Sem descrição"}`,
-            tag: "Lazer",
-            image: inn.image,
-            details: `Desfrute de momentos de lazer e descanso na Pousada ${inn.name}, localizada na privilegiada região de ${inn.location}. A pousada oferece suítes climatizadas, cozinha de apoio, área de lazer equipada com churrasqueira e piscinas. Serviços disponíveis: ${inn.amenities?.join(", ") || "Sem restrições adicionais"}. Diárias promocionais exclusivas para associados da ASSEC.`,
-          }));
-          setDynamicInns(mapped);
+          const data = await res.json();
+          setBenefits(data);
         }
       } catch (err) {
-        console.error("Failed to fetch inns, using fallback values", err);
+        console.error("Failed to fetch benefits:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchInns();
+    fetchBenefits();
   }, []);
 
   React.useEffect(() => {
@@ -102,23 +77,9 @@ export default function BeneficiosPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const fallbackLodging: BenefitItem = {
-    icon: Landmark,
-    title: "Hospedagem no Litoral (Pousadas)",
-    description: "Tarifas diferenciadas e pacotes de lazer exclusivos na pousada da associação. Quartos climatizados e piscinas para descanso.",
-    tag: "Lazer",
-    image: "https://picsum.photos/seed/assec-pousada/800/600",
-    details: "Nossa pousada de lazer no litoral do estado conta com infraestrutura ideal para acomodar você e seus dependentes com muito conforto. Desfrute de suítes mobiliadas e climatizadas, piscinas adulto e infantil, Wi-Fi integrado, churrasqueira e tarifas exclusivas com pacotes diferenciados durante todo o ano.",
-  };
-
-  const allBenefits = [
-    ...staticBenefits,
-    ...(dynamicInns.length > 0 ? dynamicInns : [fallbackLodging]),
-  ];
-
   const filteredBenefits = activeCategory === "Todos"
-    ? allBenefits
-    : allBenefits.filter((b) => b.tag.toLowerCase() === activeCategory.toLowerCase());
+    ? benefits
+    : benefits.filter((b) => b.tag.toLowerCase() === activeCategory.toLowerCase());
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-none">
@@ -130,6 +91,24 @@ export default function BeneficiosPage() {
         <p className="text-text-secondary max-w-2xl mx-auto mt-4 text-sm sm:text-base">
           Ser parceiro da ASSEC é contar com uma rede de proteção e vantagens projetadas para dar mais tranquilidade e qualidade de vida no seu dia a dia.
         </p>
+      </div>
+
+      {/* Starting Phase Hero Banner */}
+      <div className="bg-gradient-to-r from-primary via-primary-light to-secondary p-6 sm:p-8 rounded-2xl text-white shadow-lg mb-12 relative overflow-hidden border border-primary-light">
+        <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none animate-none">
+          <Shield className="h-64 w-64 text-white" />
+        </div>
+        <div className="relative z-10 max-w-3xl">
+          <span className="bg-accent text-primary text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full">
+            Estamos Apenas Começando!
+          </span>
+          <h2 className="font-serif font-bold text-2xl sm:text-3xl mt-4 leading-tight text-white">
+            Uma nova era de conquistas e proteção para nossa categoria
+          </h2>
+          <p className="text-sm sm:text-base text-gray-200 mt-3 leading-relaxed">
+            A ASSEC está iniciando suas atividades com um propósito claro: unir, proteger e valorizar cada um de nossos membros. Estamos negociando e expandindo ativamente nossa rede de convênios, parcerias e infraestruturas de lazer. Os benefícios listados abaixo são o ponto de partida de uma jornada extraordinária que construiremos juntos. Prepare-se para muito mais!
+          </p>
+        </div>
       </div>
 
       {/* Categories Filter */}
@@ -150,20 +129,32 @@ export default function BeneficiosPage() {
       </div>
 
       {loading && (
-        <div className="text-center py-8 text-text-secondary text-sm">
-          Carregando pousadas e benefícios...
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="p-6 h-64 flex flex-col justify-between border-l-4 border-l-gray-200 animate-pulse bg-white">
+              <div className="space-y-4">
+                <div className="h-10 w-10 bg-gray-200 rounded-lg" />
+                <div className="h-6 bg-gray-200 rounded w-3/4" />
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-100 rounded w-full" />
+                  <div className="h-4 bg-gray-100 rounded w-5/6" />
+                </div>
+              </div>
+              <div className="h-8 bg-gray-100 rounded w-full mt-4" />
+            </Card>
+          ))}
         </div>
       )}
 
       {!loading && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredBenefits.map((benefit, index) => {
-              const Icon = benefit.icon;
+            {filteredBenefits.map((benefit) => {
+              const Icon = iconMap[benefit.icon || ""] || Shield;
               const hasImage = !!benefit.image;
               return (
                 <Card
-                  key={index}
+                  key={benefit.id}
                   className="flex flex-col justify-between h-full relative overflow-hidden group transition-all duration-300 hover:-translate-y-1 hover:shadow-lg p-0 border-l-4 border-l-accent-dark"
                 >
                   <div className="flex flex-col h-full justify-between">
@@ -203,6 +194,12 @@ export default function BeneficiosPage() {
                         <p className="text-text-secondary text-sm leading-relaxed">
                           {benefit.description}
                         </p>
+                        
+                        {benefit.location && (
+                          <p className="text-xs text-text-muted mt-2 font-semibold">
+                            Localização: {benefit.location}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -230,9 +227,23 @@ export default function BeneficiosPage() {
           </div>
 
           {filteredBenefits.length === 0 && (
-            <div className="text-center py-12 text-text-secondary">
-              Nenhum benefício encontrado para esta categoria.
-            </div>
+            benefits.length === 0 ? (
+              <Card className="max-w-2xl mx-auto p-8 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+                <div className="p-4 bg-accent/10 text-accent-dark rounded-full w-fit mx-auto mb-4 animate-none">
+                  <Landmark className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="font-serif font-bold text-xl text-primary mb-2">
+                  Preparando Grandes Novidades para Você!
+                </h3>
+                <p className="text-sm text-text-secondary leading-relaxed max-w-lg mx-auto">
+                  Nossa equipe de parcerias está em negociações avançadas com os melhores planos de saúde, odontologia, instituições de ensino e colônias de férias do estado. Muito em breve, você terá acesso a descontos e coberturas exclusivas aqui no portal. Fique atento!
+                </p>
+              </Card>
+            ) : (
+              <div className="text-center py-12 text-text-secondary">
+                Nenhum benefício encontrado para esta categoria.
+              </div>
+            )
           )}
         </>
       )}
@@ -268,7 +279,7 @@ export default function BeneficiosPage() {
             <div className="p-6">
               {!selectedBenefit.image && (
                 <div className="p-3 bg-primary text-accent rounded-lg w-fit mb-4">
-                  {React.createElement(selectedBenefit.icon, { className: "h-6 w-6" })}
+                  {React.createElement(iconMap[selectedBenefit.icon || ""] || Shield, { className: "h-6 w-6" })}
                 </div>
               )}
 
@@ -280,9 +291,28 @@ export default function BeneficiosPage() {
                 Categoria: {selectedBenefit.tag}
               </div>
 
-              <p className="text-text-secondary text-sm leading-relaxed mb-6">
+              <p className="text-text-secondary text-sm leading-relaxed mb-4">
                 {selectedBenefit.details || selectedBenefit.description}
               </p>
+
+              {selectedBenefit.location && (
+                <div className="text-xs text-text-secondary mb-2">
+                  <strong>Localização:</strong> {selectedBenefit.location}
+                </div>
+              )}
+
+              {selectedBenefit.amenities && selectedBenefit.amenities.length > 0 && (
+                <div className="mb-6">
+                  <strong className="text-xs text-text-secondary block mb-1.5">Comodidades / Serviços:</strong>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedBenefit.amenities.map((item, idx) => (
+                      <span key={idx} className="text-[10px] font-semibold bg-gray-100 text-text-secondary px-2 py-0.5 rounded">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex justify-end gap-3 border-t border-border pt-4">
                 <button
@@ -304,5 +334,17 @@ export default function BeneficiosPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function BeneficiosPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex items-center justify-center py-32">
+        <div className="h-6 w-6 rounded-full border-2 border-accent border-t-transparent animate-spin" />
+      </div>
+    }>
+      <BeneficiosContent />
+    </React.Suspense>
   );
 }

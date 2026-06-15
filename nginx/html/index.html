@@ -22,11 +22,11 @@
     }
 
     html, body {
-      height: 100%;
+      min-height: 100%;
       font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     /* Fundo animado */
@@ -66,8 +66,8 @@
       min-height: 100vh;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      padding: 2rem;
-      gap: 2.5rem;
+      padding: 2rem 1.25rem 4rem;
+      gap: 2rem;
     }
 
     /* Badge */
@@ -213,24 +213,88 @@
     }
 
     /* Footer */
+    /* Instagram */
+    .social-link {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 22px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.95rem; font-weight: 500;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeUp 0.6s ease 0.55s both;
+    }
+    .social-link:hover {
+      border-color: rgba(225,48,108,0.6);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 28px rgba(225,48,108,0.25);
+    }
+    .social-link svg { flex-shrink: 0; }
+    .social-link span { color: var(--muted); font-weight: 400; margin-right: 2px; }
+
     .footer {
       position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
       font-size: 0.75rem; color: var(--muted);
       white-space: nowrap;
       animation: fadeUp 0.6s ease 0.6s both;
+      z-index: 10;
+      text-align: center;
     }
     .footer a { color: var(--muted); text-decoration: none; }
     .footer a:hover { color: var(--text); }
+
+    /* Logo */
+    .logo-img-wrap {
+      animation: fadeUp 0.6s ease 0.1s both;
+      display: flex;
+      justify-content: center;
+    }
+    .logo-img {
+      width: clamp(280px, 55vw, 460px);
+      height: auto;
+      filter: drop-shadow(0 8px 32px rgba(108,99,255,0.35)) drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+      transition: transform 0.4s ease, filter 0.4s ease;
+    }
+    .logo-img:hover {
+      transform: scale(1.04) translateY(-4px);
+      filter: drop-shadow(0 12px 40px rgba(108,99,255,0.5)) drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+    }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 480px) {
-      .countdown-block { padding: 1rem 1.2rem; min-width: 72px; }
+    @media (max-width: 600px) {
+      .container { gap: 1.4rem; padding: 1.5rem 1rem 1.5rem; justify-content: flex-start; padding-top: 2.5rem; }
+      .logo-img { width: clamp(200px, 80vw, 320px); }
+      .countdown { gap: 0.75rem; }
+      .countdown-block { padding: 0.85rem 1rem; min-width: 64px; border-radius: 12px; }
+      .countdown-num { font-size: clamp(1.5rem, 8vw, 2rem); }
+      .countdown-label { font-size: 0.62rem; }
+      .email-form { max-width: 100%; }
       .email-row { flex-direction: column; }
       .btn { width: 100%; }
+      .social-link { font-size: 0.85rem; padding: 9px 16px; }
+      .subtitle { font-size: 0.95rem; }
+      .footer {
+        position: static;
+        transform: none;
+        left: auto;
+        white-space: normal;
+        text-align: center;
+        width: 100%;
+        padding: 0.5rem 1rem 0;
+        font-size: 0.75rem;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .countdown-block { padding: 0.7rem 0.75rem; min-width: 56px; }
+      .countdown-num { font-size: 1.4rem; }
     }
   </style>
 </head>
@@ -246,7 +310,9 @@
       Em desenvolvimento
     </div>
 
-    <div class="logo">Assecce</div>
+    <div class="logo-img-wrap">
+      <img src="logo.png" alt="ASSEC — Associação dos Servidores da Segurança do Ceará" class="logo-img" />
+    </div>
 
     <p class="subtitle">
       Estamos construindo algo incrível.<br />
@@ -282,15 +348,33 @@
       </div>
       <span class="success-msg" id="success-msg">✓ Ótimo! Te avisaremos quando estivermos no ar.</span>
     </div>
-  </div>
 
-  <div class="footer">
-    &copy; 2025 Assecce &nbsp;·&nbsp; <a href="mailto:contato@assecce.com.br">contato@assecce.com.br</a>
+    <a class="social-link" href="https://instagram.com/assec.ceara" target="_blank" rel="noopener noreferrer">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#f09433"/>
+            <stop offset="25%" stop-color="#e6683c"/>
+            <stop offset="50%" stop-color="#dc2743"/>
+            <stop offset="75%" stop-color="#cc2366"/>
+            <stop offset="100%" stop-color="#bc1888"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="20" height="20" rx="5.5" ry="5.5" fill="url(#ig-grad)"/>
+        <circle cx="12" cy="12" r="4.5" fill="none" stroke="white" stroke-width="1.8"/>
+        <circle cx="17" cy="7" r="1.1" fill="white"/>
+      </svg>
+      <span>Siga-nos</span> @assec.ceara
+    </a>
+
+    <div class="footer">
+      &copy; 2026 ASSEC &nbsp;·&nbsp; <a href="mailto:contato@assecce.com.br">contato@assecce.com.br</a>
+    </div>
   </div>
 
   <script>
     // Countdown — 30 dias a partir de hoje
-    const launch = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const launch = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     function pad(n) { return String(n).padStart(2, '0'); }
 

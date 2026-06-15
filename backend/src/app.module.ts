@@ -7,11 +7,12 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ContactModule } from './contact/contact.module';
 import { SchedulesModule } from './schedules/schedules.module';
-import { InnsModule } from './inns/inns.module';
 import { NoticesModule } from './notices/notices.module';
 import { SlotsModule } from './slots/slots.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { NetworkModule } from './network/network.module';
+import { BenefitsModule } from './benefits/benefits.module';
+import { FinancialsModule } from './financials/financials.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { NetworkModule } from './network/network.module';
     AuthModule,
     ContactModule,
     SchedulesModule,
-    InnsModule,
+    BenefitsModule,
+    FinancialsModule,
     NoticesModule,
     SlotsModule,
     NotificationsModule,

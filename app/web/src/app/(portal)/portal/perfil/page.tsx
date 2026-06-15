@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { User, Camera, ShieldCheck, AlertCircle, Save, Loader2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { User as UserType } from "@/lib/types";
 
 const profileSchema = z.object({
   name: z.string().min(3, "O nome deve conter pelo menos 3 caracteres"),
@@ -21,7 +22,7 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function PerfilPage() {
-  const [user, setUser] = React.useState<any>(null);
+  const [user, setUser] = React.useState<UserType | null>(null);
   const [photoBase64, setPhotoBase64] = React.useState<string | null>(null);
   const [photoError, setPhotoError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -34,7 +35,7 @@ export default function PerfilPage() {
   const {
     register,
     handleSubmit,
-    setValue,
+    reset,
     formState: { errors },
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -48,14 +49,16 @@ export default function PerfilPage() {
         if (res.ok) {
           const userData = await res.json();
           setUser(userData);
-          setPhotoBase64(userData.photoUrl ?? null);
+          setPhotoBase64(userData.avatarUrl ?? null);
           
           // Populate form fields
-          setValue("name", userData.name ?? "");
-          setValue("cpf", userData.cpf ?? "");
-          setValue("rg", userData.rg ?? "");
-          setValue("matricula", userData.matricula ?? "");
-          setValue("org", userData.org ?? "");
+          reset({
+            name: userData.name ?? "",
+            cpf: userData.cpf ?? "",
+            rg: userData.rg ?? "",
+            matricula: userData.matricula ?? "",
+            org: userData.org ?? "",
+          });
         }
       } catch (err) {
         console.error("Error fetching user profile:", err);
@@ -65,7 +68,7 @@ export default function PerfilPage() {
     };
 
     fetchUserData();
-  }, [setValue]);
+  }, [reset]);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhotoError(null);
@@ -108,7 +111,7 @@ export default function PerfilPage() {
     try {
       const payload = {
         ...data,
-        photoUrl: photoBase64,
+        avatarUrl: photoBase64,
       };
 
       const res = await apiFetch("/users/me", {
@@ -242,12 +245,18 @@ export default function PerfilPage() {
                 label="CPF"
                 placeholder="000.000.000-00"
                 error={errors.cpf?.message}
+                readOnly
+                className="bg-gray-50/80 cursor-not-allowed opacity-80"
+                hint="Alteração restrita à administração"
                 {...register("cpf")}
               />
               <Input
                 label="RG"
                 placeholder="0000000000-0 SSP/CE"
                 error={errors.rg?.message}
+                readOnly
+                className="bg-gray-50/80 cursor-not-allowed opacity-80"
+                hint="Alteração restrita à administração"
                 {...register("rg")}
               />
             </div>
@@ -257,12 +266,18 @@ export default function PerfilPage() {
                 label="Matrícula"
                 placeholder="Digite o número da sua matrícula"
                 error={errors.matricula?.message}
+                readOnly
+                className="bg-gray-50/80 cursor-not-allowed opacity-80"
+                hint="Alteração restrita à administração"
                 {...register("matricula")}
               />
               <Input
                 label="Organização / Cargo / Patente"
                 placeholder="Ex: Soldado - PM/CE, Secretário"
                 error={errors.org?.message}
+                readOnly
+                className="bg-gray-50/80 cursor-not-allowed opacity-80"
+                hint="Alteração restrita à administração"
                 {...register("org")}
               />
             </div>

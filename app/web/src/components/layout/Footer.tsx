@@ -9,7 +9,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary text-gray-300 border-t border-primary-light font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Column 1: Institution */}
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-3.5 text-white focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none p-0.5 rounded group w-fit">
@@ -92,32 +92,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 3: Transparency */}
-          <div>
-            <h3 className="text-white font-bold text-xs uppercase tracking-widest mb-5 border-l-2 border-l-accent pl-2.5 py-0.5">
-              Transparência
-            </h3>
-            <ul className="space-y-3 text-xs">
-              <li>
-                <Link href="/transparencia" className="hover:text-accent transition-all hover:translate-x-1 duration-200 flex items-center gap-1.5 focus-visible:outline-none focus-visible:underline">
-                  <FileText className="h-3.5 w-3.5 text-accent shrink-0" />
-                  <span>Relatórios Anuais</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/transparencia?tab=financeiro" className="hover:text-accent transition-all hover:translate-x-1 duration-200 inline-block focus-visible:outline-none focus-visible:underline">
-                  Demonstrativos Financeiros
-                </Link>
-              </li>
-              <li>
-                <Link href="/transparencia?tab=estatutos" className="hover:text-accent transition-all hover:translate-x-1 duration-200 inline-block focus-visible:outline-none focus-visible:underline">
-                  Estatuto Social e Regimentos
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4: Accessibility and LGPD */}
+          {/* Column 3: Accessibility and LGPD */}
           <div>
             <h3 className="text-white font-bold text-xs uppercase tracking-widest mb-5 border-l-2 border-l-accent pl-2.5 py-0.5">
               Legal e Acessibilidade
@@ -143,7 +118,7 @@ const Footer = () => {
         <div className="border-t border-primary-light mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-500">
           <p>© {currentYear} ASSEC. Todos os direitos reservados.</p>
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6">
-            <span className="hover:text-white transition-colors cursor-default">CNPJ: 67.901.120/0001-78</span>
+            <span className="hover:text-white transition-colors cursor-default">CNPJ: 66.901.120/0001-78</span>
             <span className="hidden sm:inline text-gray-700">|</span>
             <span>
               Desenvolvido por{" "}

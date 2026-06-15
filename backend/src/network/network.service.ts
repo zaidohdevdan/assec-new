@@ -82,8 +82,8 @@ export class NetworkService {
   /**
    * Real DNS Records Lookup (similar to nslookup/dig).
    */
-  async dnsLookup(host: string): Promise<Record<string, any>> {
-    const records: Record<string, any> = {};
+  async dnsLookup(host: string): Promise<Record<string, string[] | dns.MxRecord[] | string[][]>> {
+    const records: Record<string, string[] | dns.MxRecord[] | string[][]> = {};
 
     try {
       records.A = await dns.promises.resolve4(host).catch(() => []);
@@ -146,7 +146,7 @@ export class NetworkService {
             Math.round((validToMs - Date.now()) / (1000 * 60 * 60 * 24)),
           );
 
-          const getCN = (field: any) => {
+          const getCN = (field: { CN?: string | string[] } | string | undefined) => {
             if (!field) return undefined;
             if (typeof field === 'string') return field;
             const cn = field.CN;
@@ -239,7 +239,7 @@ export class NetworkService {
         resolve('OPEN');
       });
 
-      socket.on('error', (err: any) => {
+      socket.on('error', (err: NodeJS.ErrnoException) => {
         socket.destroy();
         if (err.code === 'ECONNREFUSED') {
           resolve('CLOSED');

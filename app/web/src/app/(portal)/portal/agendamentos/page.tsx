@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar, PlusCircle, Clock, CheckCircle2, AlertCircle, X, Trash2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { ScheduleSlot } from "@/lib/types";
 
 // Helper to format date string safely without timezone offsets
 const formatDateString = (dateStr: string) => {
@@ -55,7 +56,7 @@ export default function AgendamentosPage() {
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
 
   // States for available slots
-  const [availableSlots, setAvailableSlots] = React.useState<any[]>([]);
+  const [availableSlots, setAvailableSlots] = React.useState<ScheduleSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = React.useState(false);
 
   // Filter states

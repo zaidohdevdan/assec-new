@@ -23,7 +23,7 @@ export class SchedulesController {
 
   @Get('admin/list')
   @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.PRESIDENT)
   findAllAdmin() {
     return this.schedulesService.findAll();
   }

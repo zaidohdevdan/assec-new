@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar, PlusCircle, Clock, Trash2, AlertCircle, CheckCircle2, User } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { ScheduleSlot } from "@/lib/types";
 
 // Helper to format date string safely without timezone offsets
 const formatDateString = (dateStr: string) => {
@@ -29,7 +30,7 @@ const slotBatchSchema = z.object({
 type SlotBatchFormData = z.infer<typeof slotBatchSchema>;
 
 export default function ProfessionalAgendaPage() {
-  const [slots, setSlots] = React.useState<any[]>([]);
+  const [slots, setSlots] = React.useState<ScheduleSlot[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
@@ -123,7 +124,7 @@ export default function ProfessionalAgendaPage() {
     }
   };
 
-  const handleRevokeSlot = async (slot: any) => {
+  const handleRevokeSlot = async (slot: ScheduleSlot) => {
     const isReserved = slot.status === "Reservado";
     const confirmMessage = isReserved
       ? `Atenção: Esta vaga está reservada pelo associado "${slot.schedule?.user?.name}". Ao revogá-la, o agendamento dele será cancelado permanentemente e ele será notificado. Deseja continuar?`
@@ -339,11 +340,11 @@ export default function ProfessionalAgendaPage() {
                                     )}
                                   </div>
                                   <p className="text-xs text-text-secondary">
-                                    <strong className="text-primary">Assunto:</strong> {slot.schedule.title}
+                                    <strong className="text-primary">Assunto:</strong> {slot.schedule?.title}
                                   </p>
-                                  {slot.schedule.info && (
+                                  {slot.schedule?.info && (
                                     <p className="text-[11px] text-text-muted italic bg-slate-50 border border-gray-100 p-1.5 rounded mt-0.5">
-                                      "{slot.schedule.info}"
+                                      "{slot.schedule?.info}"
                                     </p>
                                   )}
                                 </div>

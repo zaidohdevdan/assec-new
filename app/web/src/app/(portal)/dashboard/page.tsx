@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Landmark, Mail, Calendar, UserCheck, X } from "lucide-react";
+import { FileText, Landmark, Mail, Calendar, UserCheck, X, Heart } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 
 interface MessageItem {
@@ -17,7 +17,7 @@ interface MessageItem {
 }
 
 export default function DashboardPage() {
-  const [stats, setStats] = React.useState({ notices: 0, inns: 0, messages: 0 });
+  const [stats, setStats] = React.useState({ notices: 0, benefits: 0, messages: 0 });
   const [messages, setMessages] = React.useState<MessageItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   
@@ -29,14 +29,14 @@ export default function DashboardPage() {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const [resNotices, resInns, resContact] = await Promise.all([
+        const [resNotices, resBenefits, resContact] = await Promise.all([
           apiFetch("/notices"),
-          apiFetch("/inns"),
+          apiFetch("/benefits?all=true"),
           apiFetch("/contact"),
         ]);
 
         let noticesCount = 0;
-        let innsCount = 0;
+        let benefitsCount = 0;
         let contactMessages: MessageItem[] = [];
 
         if (resNotices.ok) {
@@ -44,9 +44,9 @@ export default function DashboardPage() {
           noticesCount = notices.length;
         }
 
-        if (resInns.ok) {
-          const inns = await resInns.json();
-          innsCount = inns.length;
+        if (resBenefits.ok) {
+          const benefits = await resBenefits.json();
+          benefitsCount = benefits.length;
         }
 
         if (resContact.ok) {
@@ -55,7 +55,7 @@ export default function DashboardPage() {
 
         setStats({
           notices: noticesCount,
-          inns: innsCount,
+          benefits: benefitsCount,
           messages: contactMessages.length,
         });
 
@@ -127,14 +127,14 @@ export default function DashboardPage() {
 
         <Card className="flex items-center gap-4 p-6">
           <div className="p-4 bg-primary text-accent rounded-lg">
-            <Landmark className="h-6 w-6" />
+            <Heart className="h-6 w-6" />
           </div>
           <div>
             <span className="text-2xl font-extrabold text-primary block">
-              {loading ? "..." : stats.inns}
+              {loading ? "..." : stats.benefits}
             </span>
             <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
-              Pousadas Cadastradas
+              Benefícios Cadastrados
             </span>
           </div>
         </Card>
