@@ -24,18 +24,22 @@ find /home/deploy/backups -name "assec_*.sql.gz" -mtime +2 -delete
 # ============================================
 # ATUALIZAR CÓDIGO
 # ============================================
-echo "📥 Atualizando código do Git..."
-git fetch origin main
-BEFORE=$(git rev-parse HEAD)
-git reset --hard origin/main
-AFTER=$(git rev-parse HEAD)
+if [ -d .git ]; then
+    echo "📥 Atualizando código do Git..."
+    git fetch origin main
+    BEFORE=$(git rev-parse HEAD)
+    git reset --hard origin/main
+    AFTER=$(git rev-parse HEAD)
 
-if [ "$BEFORE" = "$AFTER" ]; then
-    echo "⚠️ Nenhuma alteração no Git. Saindo..."
-    exit 0
+    if [ "$BEFORE" = "$AFTER" ]; then
+        echo "⚠️ Nenhuma alteração no Git. Saindo..."
+        exit 0
+    fi
+
+    echo "✅ Código atualizado: ${BEFORE:0:7} → ${AFTER:0:7}"
+else
+    echo "ℹ️ Diretório não é um repositório Git. Pulando atualização via Git..."
 fi
-
-echo "✅ Código atualizado: ${BEFORE:0:7} → ${AFTER:0:7}"
 
 # ============================================
 # BUILD E DEPLOY
