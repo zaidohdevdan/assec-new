@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
   // Em dev (Turbopack), aponta para o root do monorepo onde existe outro
   // next.config.js, o que confunde o servidor e causa 404 em todas as rotas.
   // ...(isProd && { outputFileTracingRoot: path.join(__dirname, "../../") }),
+  ...(isProd && { output: "standalone" }),
   eslint: {
     ignoreDuringBuilds: true,
   },
