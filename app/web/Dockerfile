@@ -35,8 +35,9 @@ FROM node:20-alpine AS runner
 # Set the build argument for API URL
 WORKDIR /app
 
-# Create a non-root user for security
-RUN addgroup --gid 1001 nodejs && adduser --uid 1001 --gid 1001 --system nextjs
+# Create a non-root user for security (nodejs group already exists in node:20-alpine)
+RUN addgroup -g 1001 -S nodejs 2>/dev/null || true && \
+    adduser -S -u 1001 -G nodejs nextjs 2>/dev/null || true
 
 # Copy Next.js build output
 COPY --from=builder /app/public ./public
