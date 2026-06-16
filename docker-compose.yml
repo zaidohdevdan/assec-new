@@ -74,6 +74,7 @@ services:
     environment:
       NODE_ENV: production
       NODE_OPTIONS: --max-old-space-size=600
+      INTERNAL_API_URL: http://backend:3001
     networks:
       - web-net
     deploy:

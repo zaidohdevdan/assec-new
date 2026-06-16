@@ -52,67 +52,27 @@ function sanitizeHtml(html: string): string {
     .replace(/\s+on\w+='[^']*'/gi, "");
 }
 
-// Fallback Mock Data
-const FALLBACK: Article[] = [
-  {
-    id: "1",
-    title: "ASSEC garante nova vitória jurídica para reajuste de benefício",
-    summary: "Decisão em segunda instância assegura reajuste integral para associados aposentados.",
-    content: "<p>Nossa equipe jurídica obteve parecer favorável em segunda instância que assegura o reajuste integral para os associados aposentados. A decisão protege direitos fundamentais adquiridos por nossos servidores do Ceará.</p><p>A presidência da ASSEC ressaltou que esta ação representa apenas um passo em direção a um conjunto amplo de melhorias estruturais que a atual gestão vem pleiteando junto aos órgãos de previdência estaduais.</p>",
-    type: "Jurídico",
-    tags: ["jurídico", "benefício", "reajuste"],
-    coverImage: null,
-    active: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    title: "Novidades nas reservas da Pousada do Litoral para Julho",
-    summary: "Fique atento ao cronograma de abertura das reservas para a alta temporada.",
-    content: "<p>Fique atento ao cronograma de abertura das reservas para a alta temporada de férias. Vagas limitadas para garantir o lazer de todos os associados.</p><p>As reservas poderão ser efetuadas via portal do associado a partir do dia 10 do próximo mês. Recomendamos a atualização cadastral prévia para evitar contratempos.</p>",
-    type: "Lazer",
-    tags: ["pousada", "férias", "reservas"],
-    coverImage: null,
-    active: true,
-    createdAt: new Date(Date.now() - 3 * 86400000).toISOString(),
-  },
-  {
-    id: "3",
-    title: "Parceria com nova rede de farmácias oferece até 40% de desconto",
-    summary: "Associados contam com descontos especiais em medicamentos de uso contínuo.",
-    content: "<p>Agora os associados contam com descontos especiais em medicamentos de uso contínuo em todas as filiais parceiras do estado do Ceará.</p><p>Para usufruir do desconto, basta apresentar a carteira digital de associado ASSEC na recepção de qualquer estabelecimento da rede credenciada no momento da compra.</p>",
-    type: "Parcerias",
-    tags: ["farmácia", "desconto", "benefícios"],
-    coverImage: null,
-    active: true,
-    createdAt: new Date(Date.now() - 7 * 86400000).toISOString(),
-  },
-  {
-    id: "4",
-    title: "Assembleia Geral Extraordinária convocada para o dia 15/06",
-    summary: "Convocamos todos os membros ativos a participar da votação das atualizações regimentares.",
-    content: "<p>Convocamos todos os membros ativos a participarem da discussão e votação das atualizações regimentares. Sua presença é essencial para o bom andamento da associação.</p><p>A reunião ocorrerá na sede administrativa da ASSEC, iniciando em primeira convocação às 09h00 com quórum qualificado, e às 09h30 com qualquer número de presentes.</p>",
-    type: "Institucional",
-    tags: ["assembleia", "convocação", "institucional"],
-    coverImage: null,
-    active: true,
-    createdAt: new Date(Date.now() - 10 * 86400000).toISOString(),
-  },
-];
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+// Server Components rodam no Node.js, não no browser.
+// Em produção, NEXT_PUBLIC_API_URL="/api" (relativo) não funciona server-side.
+// INTERNAL_API_URL aponta para o backend pela rede Docker (http://backend:3001).
+const API_BASE =
+  process.env.INTERNAL_API_URL ??
+  process.env.NEXT_PUBLIC_API_URL ??
+  'http://localhost:3001';
 
 // Helper to fetch single article
 async function getArticle(id: string): Promise<Article | null> {
   try {
-    const res = await fetch(`${API_BASE}/notices/${id}`, { next: { revalidate: 60 } });
+    const url = `${API_BASE}/notices/${id}`;
+    const res = await fetch(url, { next: { revalidate: 60 } });
     if (res.ok) {
       return await res.json();
     }
+    console.error(`[getArticle] API returned ${res.status} for ${url}`);
   } catch (err) {
-    // server fallback
+    console.error(`[getArticle] Fetch failed for id=${id}:`, err);
   }
-  return FALLBACK.find((a) => a.id === id) || null;
+  return null;
 }
 
 // ─── Metadata Generation ─────────────────────────────────────────────────────
