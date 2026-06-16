@@ -196,37 +196,6 @@ export default async function NoticiaDetailPage({
         dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }}
       />
 
-      <style jsx>{`
-        .news-content :global(img) {
-          max-width: 100% !important;
-          height: auto !important;
-          border-radius: 8px;
-          margin: 1.5rem auto;
-          display: block;
-        }
-        .news-content :global(table) {
-          display: block !important;
-          width: 100% !important;
-          overflow-x: auto !important;
-          border-collapse: collapse;
-          margin: 1.5rem 0;
-        }
-        .news-content :global(iframe) {
-          max-width: 100% !important;
-          width: 100% !important;
-          height: auto;
-          aspect-ratio: 16 / 9;
-          border-radius: 8px;
-          margin: 1.5rem 0;
-        }
-        .news-content :global(p),
-        .news-content :global(span),
-        .news-content :global(a) {
-          overflow-wrap: break-word !important;
-          word-break: break-word !important;
-        }
-      `}</style>
-
       {/* Tags & Footer Action */}
       {article.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-8 pb-8 border-b border-slate-200">
@@ -242,8 +211,8 @@ export default async function NoticiaDetailPage({
       )}
 
       {/* Footer Share box */}
-      <div className="flex justify-between items-center bg-slate-50 border border-slate-200 rounded-lg p-5">
-        <div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50 border border-slate-200 rounded-lg p-5">
+        <div className="space-y-1">
           <h4 className="font-serif font-bold text-sm text-primary">Gostou da notícia?</h4>
           <p className="text-text-muted text-xs">Compartilhe esta informação oficial com outros servidores.</p>
         </div>
