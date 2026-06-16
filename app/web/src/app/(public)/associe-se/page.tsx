@@ -13,7 +13,6 @@ import { apiFetch } from "@/lib/api";
 const associeSchema = z.object({
   nome: z.string().min(3, "O nome deve conter pelo menos 3 caracteres"),
   email: z.string().email("Endereço de e-mail inválido"),
-  cpf: z.string().min(11, "CPF deve conter no mínimo 11 dígitos").max(14, "CPF inválido"),
   telefone: z.string().min(10, "Telefone inválido"),
   cargo: z.string().min(2, "Informe seu cargo ou patente"),
   consent: z.literal(true, {
@@ -46,7 +45,7 @@ export default function AssociePage() {
           name: data.nome,
           email: data.email,
           subject: `Proposta de Filiação - ${data.cargo}`,
-          message: `CPF: ${data.cpf}\nTelefone: ${data.telefone}\nCargo/Patente: ${data.cargo}\nConsentimento LGPD: Aceito pelo usuário em conformidade com as diretrizes legais da associação.`,
+          message: `Telefone: ${data.telefone}\nCargo/Patente: ${data.cargo}\nConsentimento LGPD: Aceito pelo usuário em conformidade com as diretrizes legais da associação.`,
         }),
       });
 
@@ -148,20 +147,14 @@ export default function AssociePage() {
                 {...register("email")}
               />
               <Input
-                label="CPF"
-                placeholder="000.000.000-00"
-                error={errors.cpf?.message}
-                {...register("cpf")}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <Input
                 label="Telefone com DDD"
                 placeholder="(85) 99999-9999"
                 error={errors.telefone?.message}
                 {...register("telefone")}
               />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <Input
                 label="Cargo / Patente"
                 placeholder="Ex: Soldado, Cabo, Inspetor"

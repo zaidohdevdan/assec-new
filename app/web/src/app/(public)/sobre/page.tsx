@@ -360,14 +360,14 @@ export default function SobrePage() {
               </p>
             </div>
           </div>
-          <a
-            href="/estatuto-assec.pdf"
-            download
-            className="flex items-center gap-2 px-6 py-3 bg-accent text-primary hover:bg-accent-light font-bold text-xs uppercase tracking-widest rounded shadow border-none w-full sm:w-auto justify-center transition-colors shrink-0"
+          <button
+            disabled
+            className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-400 font-bold text-xs uppercase tracking-widest rounded border-none w-full sm:w-auto justify-center cursor-not-allowed shrink-0"
+            title="O Estatuto Social está temporariamente indisponível para download para adequação à LGPD."
           >
-            <Download className="h-4 w-4" />
-            <span>Baixar Estatuto (PDF)</span>
-          </a>
+            <FileText className="h-4 w-4" />
+            <span>Sob Revisão (LGPD)</span>
+          </button>
         </div>
 
       </div>

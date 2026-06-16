@@ -221,8 +221,8 @@ export default function CarteiraPage() {
                     <span className="font-serif font-bold text-xs leading-none text-white tracking-wide">
                       ASSEC
                     </span>
-                    <span className="text-[6px] uppercase tracking-widest text-accent-light leading-none mt-0.5">
-                      Segurança do Ceará
+                    <span className="text-[5.5px] uppercase tracking-wider text-accent-light leading-none mt-1 block max-w-[130px]">
+                      Associação dos Servidores da Segurança do Ceará
                     </span>
                   </div>
                 </div>
@@ -327,29 +327,32 @@ export default function CarteiraPage() {
                     className="h-5 w-5 object-contain opacity-80"
                   />
                 </div>
-                <p className="text-[6px] text-gray-300 mt-2 leading-relaxed">
+                <p className="text-[5.5px] text-gray-300 mt-1.5 leading-normal">
                   Esta carteira é de uso pessoal e intransferível, identificando o titular como associado da ASSEC. Apresente-a para usufruir de convênios, pousadas, assessoria jurídica e demais benefícios. Em caso de perda, solicite a segunda via à secretaria.
                 </p>
               </div>
 
               {/* Back Details Grid */}
-              <div className="grid grid-cols-2 gap-2 my-2 text-left bg-primary-light/40 p-2 rounded border border-white/5 relative z-10">
+              <div className="grid grid-cols-2 gap-3 my-1.5 text-left bg-slate-900/60 p-2 rounded-lg border border-white/10 relative z-10 shadow-inner">
                 <div>
-                  <span className="text-[5px] text-gray-400 uppercase block">RG</span>
-                  <span className="text-[9px] font-bold font-mono text-white">{user.rg}</span>
+                  <span className="text-[5.5px] text-gray-400 uppercase font-bold tracking-wider block">Identidade (RG)</span>
+                  <span className="text-[9.5px] font-bold font-mono text-white tracking-wide">{user.rg}</span>
                 </div>
                 <div>
-                  <span className="text-[5px] text-gray-400 uppercase block">Situação Cadastral</span>
-                  <span className="text-[9px] font-bold text-emerald-400 uppercase">ATIVO</span>
+                  <span className="text-[5.5px] text-gray-400 uppercase font-bold tracking-wider block">Situação de Filiação</span>
+                  <span className="text-[9.5px] font-bold text-emerald-400 uppercase tracking-wide flex items-center gap-1">
+                    <span className="h-1 w-1 rounded-full bg-emerald-400 inline-block animate-pulse" />
+                    ATIVO
+                  </span>
                 </div>
               </div>
 
               {/* Barcode and QR Code Row */}
               <div className="grid grid-cols-5 gap-2 relative z-10">
                 {/* Barcode Column (3/5) */}
-                <div className="col-span-3 flex flex-col items-center justify-center gap-1 bg-white p-2 rounded border border-gray-200 h-[46px]">
-                  <div className="flex items-stretch h-4 gap-[1px] w-full max-w-[170px]">
-                    {barcodeLines.slice(0, 25).map((width, idx) => (
+                <div className="col-span-3 flex flex-col items-center justify-between bg-white p-1.5 rounded-lg border border-gray-200 h-[50px] shadow-sm">
+                  <div className="flex items-stretch h-5 gap-[1.5px] w-full max-w-[170px] justify-center pt-0.5">
+                    {barcodeLines.slice(0, 27).map((width, idx) => (
                       <div
                         key={idx}
                         className="bg-black shrink-0"
@@ -357,34 +360,36 @@ export default function CarteiraPage() {
                       />
                     ))}
                   </div>
-                  <span className="text-[6.5px] font-mono text-black font-semibold uppercase leading-none">
+                  <span className="text-[6px] font-mono text-black font-bold uppercase tracking-wider leading-none mt-1">
                     {user.id ? user.id.substring(0, 18).toUpperCase() : "ASSEC-MEMBER"}
                   </span>
                 </div>
                 
                 {/* QR Code Column (2/5) */}
-                <div className="col-span-2 flex items-center justify-center gap-1.5 bg-white p-1.5 rounded border border-gray-200 h-[46px]">
-                  {validationUrl ? (
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
-                        validationUrl
-                      )}`}
-                      alt="Validação QR Code"
-                      className="h-9 w-9 object-contain"
-                    />
-                  ) : (
-                    <div className="h-9 w-9 bg-gray-100 animate-pulse" />
-                  )}
-                  <div className="flex flex-col text-[5px] text-black text-left leading-normal font-sans font-bold">
+                <div className="col-span-2 flex items-center justify-between gap-1 bg-white p-1.5 rounded-lg border border-gray-200 h-[50px] shadow-sm">
+                  <div className="flex items-center justify-center flex-1">
+                    {validationUrl ? (
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
+                          validationUrl
+                        )}`}
+                        alt="Validação QR Code"
+                        className="h-9 w-9 object-contain"
+                      />
+                    ) : (
+                      <div className="h-9 w-9 bg-gray-100 animate-pulse rounded" />
+                    )}
+                  </div>
+                  <div className="flex flex-col text-[4.5px] text-black text-left leading-normal font-sans font-bold shrink-0 pr-1 select-none">
                     <span>ESCANEIE</span>
                     <span>PARA</span>
-                    <span className="text-primary font-extrabold text-[5.5px]">VALIDAR</span>
+                    <span className="text-primary font-black text-[5px]">VALIDAR</span>
                   </div>
                 </div>
               </div>
 
               {/* Card back footer */}
-              <div className="text-center text-[6.5px] text-gray-400 pt-1 border-t border-white/10 flex justify-between relative z-10">
+              <div className="text-center text-[6px] text-gray-400 pt-1 border-t border-white/10 flex justify-between relative z-10 mt-1">
                 <span>ASSEC - Todos os direitos reservados.</span>
                 <span className="font-semibold text-white">CNPJ: 66.901.120/0001-78</span>
               </div>

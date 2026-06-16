@@ -135,20 +135,20 @@ const Header = () => {
             <Image
               src="/logo-transparent.png"
               alt="ASSEC Logo"
-              width={48}
-              height={48}
-              className="h-10 sm:h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+              width={64}
+              height={64}
+              className="h-11 md:h-14 lg:h-16 w-auto transition-transform duration-300 group-hover:scale-105"
               priority
             />
             
             {/* Vertical Divider Art */}
-            <div className="h-8 w-[1.5px] bg-gradient-to-b from-accent via-accent/40 to-transparent self-center rounded-full opacity-80" />
+            <div className="h-9 md:h-11 w-[1.5px] bg-gradient-to-b from-accent via-accent/40 to-transparent self-center rounded-full opacity-80" />
             
             <div className="flex flex-col justify-center">
-              <span className="font-serif font-extrabold text-base sm:text-lg leading-none tracking-wider text-white group-hover:text-accent transition-colors duration-300">
+              <span className="font-serif font-extrabold text-lg sm:text-xl md:text-2xl leading-none tracking-wider text-white group-hover:text-accent transition-colors duration-300">
                 ASSEC
               </span>
-              <span className="text-[7px] sm:text-[8px] font-sans font-bold uppercase tracking-wider text-accent mt-1 block max-w-[280px] leading-tight">
+              <span className="text-[7.5px] md:text-[9.5px] lg:text-[11px] font-sans font-bold uppercase tracking-wider text-accent mt-1 block max-w-[195px] md:max-w-none leading-tight">
                 Associação dos Servidores da Segurança do Ceará
               </span>
             </div>
