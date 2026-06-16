@@ -186,12 +186,12 @@ function NoticiasContent() {
               <Card
                 className={`border-l-4 ${getCatStyle(featuredArticle.type).border} border border-slate-200 hover:border-slate-300 transition-colors duration-200 bg-white overflow-hidden group`}
               >
-                <div className="flex flex-col lg:flex-row">
+                <div className="flex flex-col md:flex-row">
                   {/* Cover image Link */}
                   {featuredArticle.coverImage && (
                     <Link
                       href={`/noticias/${featuredArticle.id}`}
-                      className="w-full h-52 lg:w-72 lg:h-auto lg:self-stretch shrink-0 overflow-hidden block relative"
+                      className="w-full h-52 md:w-64 md:h-auto md:self-stretch lg:w-80 shrink-0 overflow-hidden block relative"
                     >
                       <Image
                         src={featuredArticle.coverImage}
@@ -202,7 +202,7 @@ function NoticiasContent() {
                       />
                     </Link>
                   )}
-                  <div className="flex-1 p-8 flex flex-col justify-between">
+                  <div className="flex-1 p-5 sm:p-8 flex flex-col justify-between">
                     <div>
                       <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold uppercase tracking-widest mb-4">
                         <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${getCatStyle(featuredArticle.type).text}`}>

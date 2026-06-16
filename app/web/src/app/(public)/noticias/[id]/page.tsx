@@ -192,9 +192,40 @@ export default async function NoticiaDetailPage({
 
       {/* Main Body Content */}
       <div
-        className="text-text-secondary text-sm sm:text-base leading-relaxed prose prose-slate max-w-none mb-12 space-y-6"
+        className="text-text-secondary text-sm sm:text-base leading-relaxed prose prose-slate max-w-none mb-12 space-y-6 news-content"
         dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }}
       />
+
+      <style jsx>{`
+        .news-content :global(img) {
+          max-width: 100% !important;
+          height: auto !important;
+          border-radius: 8px;
+          margin: 1.5rem auto;
+          display: block;
+        }
+        .news-content :global(table) {
+          display: block !important;
+          width: 100% !important;
+          overflow-x: auto !important;
+          border-collapse: collapse;
+          margin: 1.5rem 0;
+        }
+        .news-content :global(iframe) {
+          max-width: 100% !important;
+          width: 100% !important;
+          height: auto;
+          aspect-ratio: 16 / 9;
+          border-radius: 8px;
+          margin: 1.5rem 0;
+        }
+        .news-content :global(p),
+        .news-content :global(span),
+        .news-content :global(a) {
+          overflow-wrap: break-word !important;
+          word-break: break-word !important;
+        }
+      `}</style>
 
       {/* Tags & Footer Action */}
       {article.tags.length > 0 && (

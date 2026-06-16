@@ -63,24 +63,41 @@ export default function CarteiraPage() {
     <div className="space-y-8 animate-none">
       <style jsx global>{`
         @media print {
-          /* Hide sidebar, headers, footers, and other buttons */
+          /* Remove margens e cabeçalhos de sistema na folha impressa */
+          @page {
+            margin: 0;
+            size: A4 portrait;
+          }
+          body {
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          /* Esconder toda a interface do portal */
           body * {
             visibility: hidden;
           }
+          /* Mostrar apenas o contêiner de impressão */
           #print-area, #print-area * {
             visibility: visible;
           }
           #print-area {
             position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
+            left: 50% !important;
+            top: 10% !important;
+            transform: translateX(-50%) !important;
+            width: 100% !important;
+            max-width: 340px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 25px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          /* Forçar cores de fundo nos navegadores */
+          * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
