@@ -56,52 +56,7 @@ function getCatStyle(cat: string) {
 
 // ─── Fallback mock data ────────────────────────────────────────────────────────
 
-const FALLBACK: Article[] = [
-  {
-    id: "1",
-    title: "ASSEC garante nova vitória jurídica para reajuste de benefício",
-    summary: "Decisão em segunda instância assegura reajuste integral para associados aposentados.",
-    content: "<p>Nossa equipe jurídica obteve parecer favorável em segunda instância que assegura o reajuste integral para os associados aposentados. A decisão protege direitos fundamentais adquiridos por nossos servidores do Ceará.</p>",
-    type: "Jurídico",
-    tags: ["jurídico", "benefício", "reajuste"],
-    coverImage: null,
-    active: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    title: "Novidades nas reservas da Pousada do Litoral para Julho",
-    summary: "Fique atento ao cronograma de abertura das reservas para a alta temporada.",
-    content: "<p>Fique atento ao cronograma de abertura das reservas para a alta temporada de férias. Vagas limitadas para garantir o lazer de todos os associados.</p>",
-    type: "Lazer",
-    tags: ["pousada", "férias", "reservas"],
-    coverImage: null,
-    active: true,
-    createdAt: new Date(Date.now() - 3 * 86400000).toISOString(),
-  },
-  {
-    id: "3",
-    title: "Parceria com nova rede de farmácias oferece até 40% de desconto",
-    summary: "Associados contam com descontos especiais em medicamentos de uso contínuo.",
-    content: "<p>Agora os associados contam com descontos especiais em medicamentos de uso contínuo em todas as filiais parceiras do estado do Ceará.</p>",
-    type: "Parcerias",
-    tags: ["farmácia", "desconto", "benefícios"],
-    coverImage: null,
-    active: true,
-    createdAt: new Date(Date.now() - 7 * 86400000).toISOString(),
-  },
-  {
-    id: "4",
-    title: "Assembleia Geral Extraordinária convocada para o dia 15/06",
-    summary: "Convocamos todos os membros ativos a participar da votação das atualizações regimentares.",
-    content: "<p>Convocamos todos os membros ativos a participarem da discussão e votação das atualizações regimentares. Sua presença é essencial para o bom andamento da associação.</p>",
-    type: "Institucional",
-    tags: ["assembleia", "convocação", "institucional"],
-    coverImage: null,
-    active: true,
-    createdAt: new Date(Date.now() - 10 * 86400000).toISOString(),
-  },
-];
+
 
 // ─── Share helper ─────────────────────────────────────────────────────────────
 
@@ -118,7 +73,7 @@ function NoticiasContent() {
   const deepLinkId = searchParams.get("id");
 
   const [activeCategory, setActiveCategory] = React.useState("Todos");
-  const [articles, setArticles] = React.useState<Article[]>(FALLBACK);
+  const [articles, setArticles] = React.useState<Article[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
 
@@ -130,10 +85,10 @@ function NoticiasContent() {
         const res = await apiFetch("/notices");
         if (res.ok) {
           const data: Article[] = await res.json();
-          if (data.length > 0) setArticles(data);
+          setArticles(data);
         }
-      } catch {
-        /* use fallback */
+      } catch (err) {
+        console.error("[Noticias] Fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -414,13 +369,27 @@ function NoticiasContent() {
           </div>
 
           {/* Empty state */}
-          {filtered.length === 0 && (
-            <div className="text-center py-20 bg-slate-50 border border-dashed border-slate-200 rounded-lg max-w-xl mx-auto flex flex-col items-center gap-3">
-              <ShieldAlert className="h-8 w-8 text-slate-400" />
-              <span className="text-text-secondary text-sm font-semibold">
-                Nenhuma notícia encontrada para esta categoria.
-              </span>
+          {articles.length === 0 ? (
+            <div className="text-center py-24 bg-white border border-slate-100 rounded-2xl max-w-2xl mx-auto flex flex-col items-center gap-4 shadow-sm px-6">
+              <div className="h-16 w-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 animate-pulse">
+                <Newspaper className="h-8 w-8" />
+              </div>
+              <h3 className="font-serif font-bold text-xl text-primary mt-2">
+                Nenhuma notícia cadastrada
+              </h3>
+              <p className="text-text-secondary text-sm max-w-md">
+                No momento não há comunicados ou informativos publicados. Por favor, fique no aguardo de novas atualizações.
+              </p>
             </div>
+          ) : (
+            filtered.length === 0 && (
+              <div className="text-center py-20 bg-slate-50 border border-dashed border-slate-200 rounded-lg max-w-xl mx-auto flex flex-col items-center gap-3 px-4">
+                <ShieldAlert className="h-8 w-8 text-slate-400" />
+                <span className="text-text-secondary text-sm font-semibold">
+                  Nenhuma notícia encontrada para a categoria "{activeCategory}".
+                </span>
+              </div>
+            )
           )}
         </>
       )}
