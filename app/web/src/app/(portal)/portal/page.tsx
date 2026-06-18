@@ -566,7 +566,7 @@ export default function PortalPage() {
                       </p>
                       {schedule?.info && (
                         <p className="text-xs text-text-muted italic bg-white p-2 rounded border border-gray-100 mt-1.5">
-                          "{schedule.info}"
+                          &ldquo;{schedule.info}&rdquo;
                         </p>
                       )}
                       <p className="text-[11px] text-text-muted">

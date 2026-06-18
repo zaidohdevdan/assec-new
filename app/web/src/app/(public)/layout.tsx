@@ -2,6 +2,7 @@ import * as React from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SkipLink from "@/components/layout/SkipLink";
+import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 
 export default function PublicLayout({
   children,
@@ -16,6 +17,7 @@ export default function PublicLayout({
         {children}
       </main>
       <Footer />
+      <WhatsAppButton />
     </>
   );
 }

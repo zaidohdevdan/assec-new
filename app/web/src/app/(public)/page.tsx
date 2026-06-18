@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Início",
-  description: "Associação dos Servidores da Segurança do Ceará. Transparência, representatividade e força.",
+  title: "ASSEC | Associação dos Servidores da Segurança do Ceará",
+  description: "Portal Oficial da ASSEC Ceará. Força, transparência e benefícios exclusivos para os servidores da segurança pública do Estado do Ceará.",
 };
 
 export default function HomePage() {
@@ -22,17 +22,17 @@ export default function HomePage() {
           <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mb-8">
             Unindo e defendendo os servidores da segurança pública do Estado do Ceará com integridade e compromisso.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <Link href="/associe-se" className="w-full sm:w-auto">
-              <Button className="w-full bg-accent text-primary hover:bg-accent-light font-semibold px-8 py-3 animate-none">
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center items-center">
+            <Button asChild variant="accent" className="w-full sm:w-auto h-auto py-3.5 px-8 font-semibold text-center text-sm sm:text-base animate-none">
+              <Link href="/associe-se" aria-label="Associe-se à Associação dos Servidores da Segurança do Ceará">
                 Associe-se Agora
-              </Button>
-            </Link>
-            <Link href="/sobre" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full border-gray-400 text-white hover:bg-primary-light px-8 py-3 animate-none">
+              </Link>
+            </Button>
+            <Button asChild variant="outlineWhite" className="w-full sm:w-auto h-auto py-3.5 px-8 font-semibold text-center text-sm sm:text-base animate-none">
+              <Link href="/sobre" aria-label="Saiba mais sobre a história e objetivos da ASSEC">
                 Saiba Mais
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -55,8 +55,8 @@ export default function HomePage() {
               <span className="text-4xl font-extrabold text-primary font-sans">
                 Criada em 2026
               </span>
-              <span className="text-text-secondary text-sm font-medium mt-1">
-                Uma nova força com ideais modernos e atuantes
+              <span className="text-text-secondary text-sm font-medium mt-1 max-w-xs">
+                Uma associação que nasceu em 2026 com um compromisso antigo: defender quem protege o Ceará.
               </span>
             </div>
             <div className="flex flex-col items-center">
@@ -118,7 +118,7 @@ export default function HomePage() {
                   </li>
                 </ul>
               </div>
-              <Link href="/beneficios?cat=jurídico" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
+              <Link href="/beneficios?cat=jurídico" aria-label="Conhecer assessoria jurídica oferecida pela ASSEC" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
                 <span>Conhecer assessoria</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -156,7 +156,7 @@ export default function HomePage() {
                   </li>
                 </ul>
               </div>
-              <Link href="/beneficios?cat=lazer" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
+              <Link href="/beneficios?cat=lazer" aria-label="Ver destinos de lazer e turismo parceiros da ASSEC" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
                 <span>Ver destinos</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -194,7 +194,7 @@ export default function HomePage() {
                   </li>
                 </ul>
               </div>
-              <Link href="/beneficios?cat=saúde" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
+              <Link href="/beneficios?cat=saúde" aria-label="Explorar convênios de saúde e bem-estar para associados" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
                 <span>Explorar convênios</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -232,7 +232,7 @@ export default function HomePage() {
                   </li>
                 </ul>
               </div>
-              <Link href="/beneficios?cat=educação" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
+              <Link href="/beneficios?cat=educação" aria-label="Ver rede de descontos em educação e parcerias" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
                 <span>Ver rede de descontos</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -251,11 +251,11 @@ export default function HomePage() {
           <p className="text-text-secondary text-base sm:text-lg mb-8 max-w-xl mx-auto">
             Faça parte de uma associação atuante que busca sempre a melhoria das condições de vida e trabalho de nossos servidores.
           </p>
-          <Link href="/associe-se">
-            <Button size="lg" className="bg-accent text-primary hover:bg-accent-light font-bold px-10 animate-none">
+          <Button asChild variant="accent" className="w-full sm:w-auto h-auto py-3.5 px-10 font-bold text-center text-sm sm:text-base animate-none">
+            <Link href="/associe-se" aria-label="Quero me associar à ASSEC">
               Quero me Associar
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </section>
     </div>

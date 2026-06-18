@@ -344,7 +344,7 @@ export default function ProfessionalAgendaPage() {
                                   </p>
                                   {slot.schedule?.info && (
                                     <p className="text-[11px] text-text-muted italic bg-slate-50 border border-gray-100 p-1.5 rounded mt-0.5">
-                                      "{slot.schedule?.info}"
+                                      &ldquo;{slot.schedule?.info}&rdquo;
                                     </p>
                                   )}
                                 </div>

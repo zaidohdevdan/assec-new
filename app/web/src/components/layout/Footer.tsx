@@ -14,7 +14,7 @@ const Footer = () => {
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-3.5 text-white focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none p-0.5 rounded group w-fit">
               <Image
-                src="/logo-transparent.png"
+                src="/logo-transparent.webp"
                 alt="ASSEC Logo"
                 width={56}
                 height={56}

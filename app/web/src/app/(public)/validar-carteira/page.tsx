@@ -79,7 +79,7 @@ export default function ValidarCarteiraPage() {
       <div className="mb-8 flex flex-col items-center">
         <Link href="/">
           <Image
-            src="/logo-transparent.png"
+            src="/logo-transparent.webp"
             alt="ASSEC Logo"
             width={80}
             height={80}
@@ -129,7 +129,7 @@ export default function ValidarCarteiraPage() {
           {/* Watermark in background */}
           <div className="absolute right-[-20px] bottom-[-20px] w-40 h-40 opacity-[0.03] pointer-events-none">
             <Image
-              src="/logo-transparent.png"
+              src="/logo-transparent.webp"
               alt="Watermark"
               width={160}
               height={160}

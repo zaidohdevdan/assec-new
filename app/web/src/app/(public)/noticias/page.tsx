@@ -386,7 +386,7 @@ function NoticiasContent() {
               <div className="text-center py-20 bg-slate-50 border border-dashed border-slate-200 rounded-lg max-w-xl mx-auto flex flex-col items-center gap-3 px-4">
                 <ShieldAlert className="h-8 w-8 text-slate-400" />
                 <span className="text-text-secondary text-sm font-semibold">
-                  Nenhuma notícia encontrada para a categoria "{activeCategory}".
+                  Nenhuma notícia encontrada para a categoria &ldquo;{activeCategory}&rdquo;.
                 </span>
               </div>
             )

@@ -15,7 +15,7 @@ import {
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Sobre Nós",
+  title: "Sobre Nós | História, Missão e Diretoria da Associação",
   description: "Conheça a história, missão, valores e organograma completo da Associação dos Servidores da Segurança do Ceará.",
 };
 
@@ -48,8 +48,8 @@ export default function SobrePage() {
         {/* Card com logomarca oficial — mesma altura do texto via items-stretch */}
         <div className="bg-primary rounded-lg border border-primary-light flex items-center justify-center p-6 h-full">
           <Image
-            src="/escudo-logo.png"
-            alt="Logomarca ASSEC"
+            src="/escudo-logo.webp"
+            alt="Logomarca oficial da ASSEC"
             width={500}
             height={279}
             className="w-full max-w-[460px] h-auto object-contain"
@@ -362,6 +362,8 @@ export default function SobrePage() {
           </div>
           <button
             disabled
+            aria-disabled="true"
+            aria-label="Download do Estatuto Social indisponível - Documento sob revisão para adequação à LGPD"
             className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-400 font-bold text-xs uppercase tracking-widest rounded border-none w-full sm:w-auto justify-center cursor-not-allowed shrink-0"
             title="O Estatuto Social está temporariamente indisponível para download para adequação à LGPD."
           >

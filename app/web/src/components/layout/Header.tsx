@@ -133,7 +133,7 @@ const Header = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 text-white focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none p-1 rounded group w-fit">
             <Image
-              src="/logo-transparent.png"
+              src="/logo-transparent.webp"
               alt="ASSEC Logo"
               width={64}
               height={64}

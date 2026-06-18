@@ -198,7 +198,7 @@ export default function CarteiraPage() {
               {/* Background Watermark Logo */}
               <div className="absolute right-[-10px] bottom-[-10px] w-36 h-36 opacity-[0.06] pointer-events-none">
                 <Image
-                  src="/logo-transparent.png"
+                  src="/logo-transparent.webp"
                   alt="Watermark Logo"
                   width={144}
                   height={144}
@@ -211,7 +211,7 @@ export default function CarteiraPage() {
                 <div className="flex items-center gap-2">
                   {/* Official Logo */}
                   <Image
-                    src="/logo-transparent.png"
+                    src="/logo-transparent.webp"
                     alt="ASSEC Logo"
                     width={32}
                     height={32}
@@ -244,7 +244,7 @@ export default function CarteiraPage() {
                   ) : (
                     <div className="flex flex-col items-center justify-center text-accent/60 w-full h-full p-2 relative">
                       <Image
-                        src="/logo-transparent.png"
+                        src="/logo-transparent.webp"
                         alt="ASSEC Logo"
                         width={40}
                         height={40}
@@ -306,7 +306,7 @@ export default function CarteiraPage() {
               {/* Background Watermark Logo */}
               <div className="absolute left-[-10px] top-[-10px] w-36 h-36 opacity-[0.06] pointer-events-none">
                 <Image
-                  src="/logo-transparent.png"
+                  src="/logo-transparent.webp"
                   alt="Watermark Logo"
                   width={144}
                   height={144}
@@ -320,7 +320,7 @@ export default function CarteiraPage() {
                     Disposições Gerais
                   </span>
                   <Image
-                    src="/logo-transparent.png"
+                    src="/logo-transparent.webp"
                     alt="ASSEC Logo"
                     width={20}
                     height={20}
