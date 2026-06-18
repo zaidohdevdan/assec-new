@@ -253,7 +253,7 @@ export default function DashboardPage() {
           onClick={() => setSelectedMessage(null)}
         >
           <div 
-            className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden relative border border-border animate-in fade-in zoom-in-95 duration-200 text-left"
+            className="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto relative border border-border animate-in fade-in zoom-in-95 duration-200 text-left"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"

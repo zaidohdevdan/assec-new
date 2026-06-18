@@ -465,7 +465,7 @@ export default function UsuariosManagerPage() {
           onClick={() => setModalOpen(false)}
         >
           <div
-            className="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden relative border border-border animate-in fade-in zoom-in-95 duration-200 text-left"
+            className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative border border-border animate-in fade-in zoom-in-95 duration-200 text-left"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"

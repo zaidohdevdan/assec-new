@@ -81,3 +81,33 @@ body {
   overflow-wrap: break-word !important;
   word-break: break-word !important;
 }
+
+/* ─── Touch Scroll & Mobile Adaptation ─── */
+.overflow-y-auto,
+.overflow-x-auto,
+main,
+aside,
+nav {
+  -webkit-overflow-scrolling: touch; /* Momentum scrolling on iOS */
+  scrollbar-width: thin; /* Thin scrollbars on Firefox */
+}
+
+/* Custom scrollbar styling for high-end feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+

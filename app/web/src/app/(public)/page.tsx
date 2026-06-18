@@ -1,8 +1,10 @@
 import * as React from "react";
 import Link from "next/link";
-import { Shield, FileText, CheckCircle2, TrendingUp, Users, ArrowRight, Scale, Palmtree, HeartPulse, GraduationCap } from "lucide-react";
+import { Shield, FileText, CheckCircle2, TrendingUp, Users, ArrowRight, Scale, Palmtree, HeartPulse, GraduationCap, Brain, HeartHandshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PreAssociateForm } from "@/components/ui/PreAssociateForm";
+
 
 export const metadata = {
   title: "ASSEC | Associação dos Servidores da Segurança do Ceará",
@@ -85,177 +87,184 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card accentHover className="p-6 flex flex-col justify-between h-full group bg-white border border-border transition-all duration-300">
-              <div>
-                <div className="p-3 bg-primary/5 text-accent-dark rounded-xl w-fit mb-5 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
-                  <Scale className="h-6 w-6" />
-                </div>
-                <h3 className="font-serif font-bold text-xl text-primary mb-3">
-                  Assessoria Jurídica
-                </h3>
-                <p className="text-text-secondary text-xs sm:text-sm mb-4 leading-relaxed">
-                  Defesa técnica e suporte especializado para resguardar a atuação profissional e a carreira do servidor de segurança pública.
-                </p>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Defesa em processos administrativos (PADs)</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Acompanhamento em sindicâncias</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Consultas jurídicas preventivas</span>
-                  </li>
-                </ul>
-              </div>
-              <Link href="/beneficios?cat=jurídico" aria-label="Conhecer assessoria jurídica oferecida pela ASSEC" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
-                <span>Conhecer assessoria</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            {/* Destaque Jurídico com Vídeo (5 Colunas) */}
+            <div className="lg:col-span-5 flex">
+              <Card accentHover className="p-6 sm:p-8 flex flex-col justify-between h-full w-full group bg-white border border-border transition-all duration-300 shadow-sm hover:shadow-md">
+                <div>
+                  <div className="p-3 bg-primary/5 text-accent-dark rounded-xl w-fit mb-5 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
+                    <Scale className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-serif font-bold text-2xl text-primary mb-3">
+                    Assessoria Jurídica
+                  </h3>
+                  <p className="text-text-secondary text-sm mb-4 leading-relaxed">
+                    Defesa técnica e suporte especializado para resguardar a atuação profissional e a carreira do servidor de segurança pública.
+                  </p>
+                  
+                  {/* YouTube Shorts Embed Container */}
+                  <div className="my-6 flex flex-col items-center">
+                    <div className="relative w-full max-w-[260px] aspect-[9/16] rounded-2xl overflow-hidden shadow-lg border border-border bg-black group/video">
+                      <iframe 
+                        className="absolute inset-0 w-full h-full"
+                        src="https://www.youtube.com/embed/-ZHInjOCktY" 
+                        title="Suporte Técnico-Legal e Assessoria Jurídica: Dr. Marcílio Lélis Prata" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        referrerPolicy="strict-origin-when-cross-origin" 
+                        allowFullScreen
+                      />
+                    </div>
+                    <span className="text-xs text-text-secondary mt-2 text-center italic">
+                      Dr. Marcílio Lélis Prata fala sobre o Suporte Técnico-Legal.
+                    </span>
+                  </div>
 
-            <Card accentHover className="p-6 flex flex-col justify-between h-full group bg-white border border-border transition-all duration-300">
-              <div>
-                <div className="p-3 bg-primary/5 text-accent-dark rounded-xl w-fit mb-5 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
-                  <Palmtree className="h-6 w-6" />
+                  <ul className="space-y-2 mb-6">
+                    <li className="flex items-start gap-2 text-xs text-text-secondary">
+                      <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Defesa em processos administrativos (PADs) e sindicâncias</span>
+                    </li>
+                    <li className="flex items-start gap-2 text-xs text-text-secondary">
+                      <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Acompanhamento especializado em inquéritos policiais</span>
+                    </li>
+                    <li className="flex items-start gap-2 text-xs text-text-secondary">
+                      <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Consultas jurídicas preventivas e ações de interesse coletivo</span>
+                    </li>
+                  </ul>
                 </div>
-                <h3 className="font-serif font-bold text-xl text-primary mb-3">
-                  Lazer & Turismo
-                </h3>
-                <p className="text-text-secondary text-xs sm:text-sm mb-4 leading-relaxed">
-                  Convênios de hospedagem e turismo para proporcionar momentos inesquecíveis de descanso para você e sua família.
-                </p>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Pousadas parceiras no litoral e na serra</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Tarifas e pacotes altamente atrativos</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Reservas descomplicadas pelo portal</span>
-                  </li>
-                </ul>
-              </div>
-              <Link href="/beneficios?cat=lazer" aria-label="Ver destinos de lazer e turismo parceiros da ASSEC" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
-                <span>Ver destinos</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Card>
+                <Link href="/beneficios?cat=jurídico" aria-label="Conhecer assessoria jurídica oferecida pela ASSEC" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto pt-4 border-t border-border w-full">
+                  <span>Conhecer assessoria completa</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Card>
+            </div>
 
-            <Card accentHover className="p-6 flex flex-col justify-between h-full group bg-white border border-border transition-all duration-300">
-              <div>
-                <div className="p-3 bg-primary/5 text-accent-dark rounded-xl w-fit mb-5 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
-                  <HeartPulse className="h-6 w-6" />
-                </div>
-                <h3 className="font-serif font-bold text-xl text-primary mb-3">
-                  Saúde & Bem-Estar
-                </h3>
-                <p className="text-text-secondary text-xs sm:text-sm mb-4 leading-relaxed">
-                  Rede de apoio médico, odontológico e terapêutico com condições exclusivas para promover o bem-estar do associado.
-                </p>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Planos de saúde e odontológicos especiais</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Descontos em exames e consultas clínicas</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Parceria com redes de farmácias</span>
-                  </li>
-                </ul>
-              </div>
-              <Link href="/beneficios?cat=saúde" aria-label="Explorar convênios de saúde e bem-estar para associados" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
-                <span>Explorar convênios</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Card>
+            {/* Grid de Benefícios Conveniados (7 Colunas) */}
+            <div className="lg:col-span-7 flex flex-col justify-between">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-full">
+                
+                {/* Lazer & Turismo */}
+                <Card accentHover className="p-5 flex flex-col justify-between h-full group bg-white border border-border transition-all duration-300">
+                  <div>
+                    <div className="p-2.5 bg-primary/5 text-accent-dark rounded-lg w-fit mb-4 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
+                      <Palmtree className="h-5 w-5" />
+                    </div>
+                    <h3 className="font-serif font-bold text-lg text-primary mb-2">
+                      Lazer & Turismo
+                    </h3>
+                    <p className="text-text-secondary text-xs sm:text-sm mb-4 leading-relaxed">
+                      Convênios de hospedagem e turismo para proporcionar momentos inesquecíveis de descanso para você e sua família.
+                    </p>
+                  </div>
+                  <Link href="/beneficios?cat=lazer" aria-label="Ver destinos de lazer e turismo parceiros da ASSEC" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-xs sm:text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
+                    <span>Ver destinos</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </Card>
 
-            <Card accentHover className="p-6 flex flex-col justify-between h-full group bg-white border border-border transition-all duration-300">
-              <div>
-                <div className="p-3 bg-primary/5 text-accent-dark rounded-xl w-fit mb-5 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
-                  <GraduationCap className="h-6 w-6" />
-                </div>
-                <h3 className="font-serif font-bold text-xl text-primary mb-3">
-                  Educação & Parcerias
-                </h3>
-                <p className="text-text-secondary text-xs sm:text-sm mb-4 leading-relaxed">
-                  Oportunidades de crescimento acadêmico e parcerias comerciais com vantagens imperdíveis no dia a dia.
-                </p>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Descontos em universidades e escolas de idiomas</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Vantagens em academias e centros de saúde</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-xs text-text-secondary">
-                    <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Ampla rede de comércios credenciados</span>
-                  </li>
-                </ul>
+                {/* Saúde & Bem-Estar */}
+                <Card accentHover className="p-5 flex flex-col justify-between h-full group bg-white border border-border transition-all duration-300">
+                  <div>
+                    <div className="p-2.5 bg-primary/5 text-accent-dark rounded-lg w-fit mb-4 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
+                      <HeartPulse className="h-5 w-5" />
+                    </div>
+                    <h3 className="font-serif font-bold text-lg text-primary mb-2">
+                      Saúde & Bem-Estar
+                    </h3>
+                    <p className="text-text-secondary text-xs sm:text-sm mb-4 leading-relaxed">
+                      Rede de apoio médico, odontológico e terapêutico com condições exclusivas para promover o bem-estar do associado.
+                    </p>
+                  </div>
+                  <Link href="/beneficios?cat=saúde" aria-label="Explorar convênios de saúde e bem-estar para associados" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-xs sm:text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
+                    <span>Explorar convênios</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </Card>
+
+                {/* Educação & Parcerias */}
+                <Card accentHover className="p-5 flex flex-col justify-between h-full group bg-white border border-border transition-all duration-300">
+                  <div>
+                    <div className="p-2.5 bg-primary/5 text-accent-dark rounded-lg w-fit mb-4 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
+                      <GraduationCap className="h-5 w-5" />
+                    </div>
+                    <h3 className="font-serif font-bold text-lg text-primary mb-2">
+                      Educação & Parcerias
+                    </h3>
+                    <p className="text-text-secondary text-xs sm:text-sm mb-4 leading-relaxed">
+                      Oportunidades de crescimento acadêmico e parcerias comerciais com vantagens imperdíveis no dia a dia.
+                    </p>
+                  </div>
+                  <Link href="/beneficios?cat=educação" aria-label="Ver rede de descontos em educação e parcerias" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-xs sm:text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
+                    <span>Ver rede de descontos</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </Card>
+
+                {/* Apoio Psicológico */}
+                <Card accentHover className="p-5 flex flex-col justify-between h-full group bg-white border border-border transition-all duration-300">
+                  <div>
+                    <div className="p-2.5 bg-primary/5 text-accent-dark rounded-lg w-fit mb-4 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
+                      <Brain className="h-5 w-5" />
+                    </div>
+                    <h3 className="font-serif font-bold text-lg text-primary mb-2">
+                      Apoio Psicológico
+                    </h3>
+                    <p className="text-text-secondary text-xs sm:text-sm mb-4 leading-relaxed">
+                      Suporte especializado à saúde mental e psicoterapia para aliviar o estresse inerente à rotina da segurança pública.
+                    </p>
+                  </div>
+                  <Link href="/beneficios?cat=saúde" aria-label="Ver suporte psicológico oferecido pela ASSEC" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-xs sm:text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
+                    <span>Ver suporte</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </Card>
+
+                {/* Assistência & Proteção Social */}
+                <Card accentHover className="p-5 flex flex-col justify-between h-full group bg-white border border-border transition-all duration-300 sm:col-span-2">
+                  <div>
+                    <div className="p-2.5 bg-primary/5 text-accent-dark rounded-lg w-fit mb-4 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
+                      <HeartHandshake className="h-5 w-5" />
+                    </div>
+                    <h3 className="font-serif font-bold text-lg text-primary mb-2">
+                      Assistência & Proteção Social
+                    </h3>
+                    <p className="text-text-secondary text-xs sm:text-sm mb-4 leading-relaxed">
+                      Programas de suporte familiar, seguro coletivo de proteção e auxílio mútuo em momentos de necessidade ou vulnerabilidade.
+                    </p>
+                  </div>
+                  <Link href="/beneficios?cat=assistência" aria-label="Conhecer programas de assistência social" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-xs sm:text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
+                    <span>Conhecer assistência</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </Card>
+
               </div>
-              <Link href="/beneficios?cat=educação" aria-label="Ver rede de descontos em educação e parcerias" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto">
-                <span>Ver rede de descontos</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Card>
+            </div>
           </div>
         </div>
       </section>
 
-
-      {/* Final CTA */}
-      <section className="bg-bg-page border-t border-border py-16 sm:py-24 text-center">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="font-serif font-bold text-3xl sm:text-4xl text-primary mb-6">
-            Fortaleça a Sua Categoria Profissional
-          </h2>
-          <p className="text-text-secondary text-base sm:text-lg mb-8 max-w-xl mx-auto">
-            Faça parte de uma associação atuante que busca sempre a melhoria das condições de vida e trabalho de nossos servidores.
-          </p>
-          <Button asChild variant="accent" className="w-full sm:w-auto h-auto py-3.5 px-10 font-bold text-center text-sm sm:text-base animate-none">
-            <Link href="/associe-se" aria-label="Quero me associar à ASSEC">
-              Quero me Associar
-            </Link>
-          </Button>
+      {/* Pre-Association Form Section */}
+      <section className="py-16 sm:py-24 bg-white border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="text-accent-dark uppercase tracking-widest text-xs font-bold font-sans">Filiação Online</span>
+            <h2 className="font-serif font-bold text-3xl sm:text-4xl text-primary mt-2 mb-4">
+              Faça Sua Pré-Associação
+            </h2>
+            <p className="text-text-secondary max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+              Deseja aproveitar todas as vantagens e ter o respaldo da ASSEC? Preencha o formulário abaixo e nossa equipe entrará em contato para finalizar o seu cadastro.
+            </p>
+          </div>
+          <PreAssociateForm />
         </div>
       </section>
     </div>
