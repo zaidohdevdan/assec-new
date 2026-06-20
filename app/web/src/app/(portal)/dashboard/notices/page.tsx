@@ -277,7 +277,17 @@ export default function NoticesManagementPage() {
 
         ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, TARGET_W, TARGET_H);
 
-        resolve(canvas.toDataURL("image/jpeg", 0.88));
+        let finalFormat = "image/webp";
+        try {
+          const testCanvas = document.createElement("canvas");
+          if (!testCanvas.toDataURL("image/webp").startsWith("data:image/webp")) {
+            finalFormat = "image/jpeg";
+          }
+        } catch {
+          finalFormat = "image/jpeg";
+        }
+
+        resolve(canvas.toDataURL(finalFormat, 0.75));
       };
 
       img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("Falha ao carregar imagem")); };

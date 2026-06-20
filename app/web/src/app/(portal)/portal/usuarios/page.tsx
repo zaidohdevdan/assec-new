@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { User, PlusCircle, Search, Edit3, Trash2, X, AlertCircle, CheckCircle2, ShieldAlert, Camera } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { User as UserType } from "@/lib/types";
+import { compressImage } from "@/lib/image";
 
 // Form validation schema
 const userFormSchema = z.object({
@@ -48,26 +49,23 @@ export default function UsuariosManagerPage() {
   const [cardPhotoError, setCardPhotoError] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleCardPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCardPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setCardPhotoError(null);
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 1.2 * 1024 * 1024) {
-      setCardPhotoError("A imagem é muito grande. Escolha uma foto com até 1MB.");
-      return;
+    try {
+      const base64String = await compressImage(file, {
+        maxWidth: 400,
+        maxHeight: 400,
+        quality: 0.75,
+        format: "image/webp",
+      });
+      setCardPhotoBase64(base64String);
+    } catch (err: any) {
+      console.error(err);
+      setCardPhotoError(err.message || "Erro ao processar imagem.");
     }
-
-    if (!file.type.startsWith("image/")) {
-      setCardPhotoError("Tipo de arquivo inválido.");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setCardPhotoBase64(event.target?.result as string);
-    };
-    reader.readAsDataURL(file);
   };
 
   const {

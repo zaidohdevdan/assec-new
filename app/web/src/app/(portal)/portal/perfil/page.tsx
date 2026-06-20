@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { User, Camera, ShieldCheck, AlertCircle, Save, Loader2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { User as UserType } from "@/lib/types";
+import { compressImage } from "@/lib/image";
 
 const profileSchema = z.object({
   name: z.string().min(3, "O nome deve conter pelo menos 3 caracteres"),
@@ -39,64 +40,58 @@ export default function PerfilPage() {
     formState: { errors },
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: "",
+      cpf: "",
+      rg: "",
+      matricula: "",
+      org: "",
+    },
   });
 
-  React.useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const res = await apiFetch("/auth/me");
-
-        if (res.ok) {
-          const userData = await res.json();
-          setUser(userData);
-          setPhotoBase64(userData.avatarUrl ?? null);
-          
-          // Populate form fields
-          reset({
-            name: userData.name ?? "",
-            cpf: userData.cpf ?? "",
-            rg: userData.rg ?? "",
-            matricula: userData.matricula ?? "",
-            org: userData.org ?? "",
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching user profile:", err);
-      } finally {
-        setLoading(false);
+  const fetchUserData = async () => {
+    try {
+      const res = await apiFetch("/auth/me");
+      if (res.ok) {
+        const userData = await res.json();
+        setUser(userData);
+        setPhotoBase64(userData.avatarUrl ?? null);
+        reset({
+          name: userData.name || "",
+          cpf: userData.cpf || "",
+          rg: userData.rg || "",
+          matricula: userData.matricula || "",
+          org: userData.org || "",
+        });
       }
-    };
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  React.useEffect(() => {
     fetchUserData();
   }, [reset]);
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhotoError(null);
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate size (limit to 1MB to prevent huge payload issues)
-    if (file.size > 1.2 * 1024 * 1024) {
-      setPhotoError("A imagem é muito grande. Escolha uma foto com até 1MB.");
-      return;
-    }
-
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      setPhotoError("Tipo de arquivo inválido. Por favor, envie uma imagem.");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const base64String = event.target?.result as string;
+    try {
+      const base64String = await compressImage(file, {
+        maxWidth: 400,
+        maxHeight: 400,
+        quality: 0.75,
+        format: "image/webp",
+      });
       setPhotoBase64(base64String);
-    };
-    reader.onerror = (err) => {
+    } catch (err: any) {
       console.error(err);
-      setPhotoError("Erro ao processar imagem.");
-    };
-    reader.readAsDataURL(file);
+      setPhotoError(err.message || "Erro ao processar imagem.");
+    }
   };
 
   const triggerFileInput = () => {

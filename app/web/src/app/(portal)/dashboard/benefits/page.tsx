@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, X, MapPin, Edit3, Heart, Shield, Key, ShieldCheck, Landmark, Info } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { compressImage } from "@/lib/image";
 
 interface BenefitItem {
   id: string;
@@ -85,16 +86,21 @@ export default function BenefitsManagementPage() {
 
   const selectedTag = watch("tag");
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result as string;
+      try {
+        const base64 = await compressImage(file, {
+          maxWidth: 600,
+          maxHeight: 600,
+          quality: 0.75,
+          format: "image/webp",
+        });
         setBase64Image(base64);
         setValue("image", base64, { shouldValidate: true });
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.error("Erro ao comprimir imagem do benefício:", err);
+      }
     }
   };
 
