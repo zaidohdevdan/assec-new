@@ -172,7 +172,7 @@ Sem ficha do Google Business Profile vinculada ao site.
 Formulário inline capturando: nome completo, e-mail, celular, órgão de lotação e mensagem opcional. Integração com Mailchimp, Resend ou Loops.
 
 ### 6.2 Expandir conteúdo da home para 1.000+ palavras
-Seções: Quem somos · Números · Convênios em destaque · Depoimentos · FAQ · CTA final.
+Seções: Quem somos · Números · Convênios em destaque · Depoimentos · FAQ · CTA final. 
 
 ### 6.3 Página de Notícias ativa com blog
 CMS leve (Sanity, Strapi ou markdown) integrado ao Next.js. Cada notícia com Open Graph próprio, schema `NewsArticle` e URL canônica.

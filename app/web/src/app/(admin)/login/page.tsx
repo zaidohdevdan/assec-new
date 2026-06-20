@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +10,7 @@ import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Shield } from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 
 const loginSchema = z.object({
@@ -36,7 +38,6 @@ export default function LoginPage() {
             router.push("/portal");
           }
         }
-        // If not OK, user is not authenticated — stay on login page
       } catch {
         // Network error or no session — stay on login page
       }
@@ -66,9 +67,6 @@ export default function LoginPage() {
 
       if (res.ok) {
         const body = await res.json();
-        // Session cookie (__Host-assec_session) is now set automatically by the backend (HttpOnly).
-        // We only store non-sensitive display data in localStorage (name, role, photo).
-        // The JWT itself is NOT in localStorage — this is the XSS protection.
         const userDisplay = {
           id: body.user?.id,
           name: body.user?.name,
@@ -84,8 +82,6 @@ export default function LoginPage() {
         localStorage.setItem("user", JSON.stringify(userDisplay));
         const secureFlag = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : "";
         document.cookie = `assec_user_profile=${encodeURIComponent(JSON.stringify(userDisplay))}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
-        // Also persist access_token for Root Terminal backward compatibility
-        // TODO(security): Remove once terminal migrates to cookie-based auth
         if (body.access_token) {
           localStorage.setItem("token", body.access_token);
         }
@@ -108,39 +104,71 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-primary flex flex-col justify-center items-center px-4">
-      <div className="flex items-center gap-3 text-white mb-8">
-        <Shield className="h-10 w-10 text-accent" />
-        <div className="flex flex-col">
-          <span className="font-serif font-bold text-2xl tracking-wide leading-none">
-            ASSEC
-          </span>
-          <span className="text-[10px] uppercase tracking-widest text-accent-light mt-1">
-            Painel Administrativo
-          </span>
-        </div>
+    <div className="min-h-screen relative flex flex-col justify-center items-center px-4 font-sans overflow-hidden bg-primary">
+      {/* Background Image with Dark Blur Overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-[5px] scale-105 pointer-events-none opacity-45"
+        style={{ backgroundImage: "url('/banner-header.webp')" }}
+      />
+      <div className="absolute inset-0 bg-primary/70 mix-blend-multiply pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/50 to-primary/80 pointer-events-none" />
+
+      {/* Navigation back to main site */}
+      <div className="absolute top-6 left-6 z-20">
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-2 text-white hover:text-accent font-semibold text-sm transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded p-1.5 backdrop-blur-sm bg-white/5 border border-white/10"
+        >
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+          <span>Voltar para o Site</span>
+        </Link>
       </div>
 
-      <Card className="w-full max-w-md p-8 bg-white shadow-xl rounded-lg">
-        <h1 className="font-serif font-bold text-xl text-primary text-center mb-6">
-          Acesse sua Conta
-        </h1>
+      {/* Institutional Identification */}
+      <div className="flex flex-col items-center text-center mb-8 z-10">
+        <Link href="/" className="flex flex-col items-center group focus-visible:outline-none">
+          <Image
+            src="/logo-transparent.webp"
+            alt="Logotipo Oficial da ASSEC"
+            width={80}
+            height={80}
+            className="h-20 w-auto transition-transform duration-300 group-hover:scale-105 mb-4 drop-shadow-md"
+            priority
+          />
+          <span className="font-serif font-extrabold text-2xl tracking-wider text-white leading-none">
+            ASSEC
+          </span>
+          <span className="text-[9px] uppercase tracking-widest text-accent font-bold mt-1.5 max-w-[250px] leading-tight drop-shadow">
+            Associação dos Servidores da Segurança do Ceará
+          </span>
+        </Link>
+      </div>
+
+      {/* Login Form Card */}
+      <Card className="w-full max-w-md p-8 bg-white/95 backdrop-blur-md shadow-2xl rounded-xl z-10 border border-white/20 transition-all duration-300 hover:shadow-[0_0_30px_rgba(212,175,55,0.15)] group/card">
+        <div className="flex items-center gap-2 justify-center mb-6">
+          <Lock className="h-5 w-5 text-accent-dark" />
+          <h1 className="font-serif font-bold text-xl text-primary text-center">
+            Acesso Restrito
+          </h1>
+        </div>
 
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded text-sm text-red-700 flex items-center gap-2" role="alert">
-            <svg className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-5 w-5 shrink-0 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <Input
             label="E-mail"
-            placeholder="admin@assec.com.br"
+            placeholder="associado@assecce.com.br"
             error={errors.email?.message}
             {...register("email")}
+            className="w-full"
           />
 
           <Input
@@ -149,13 +177,14 @@ export default function LoginPage() {
             placeholder="••••••"
             error={errors.password?.message}
             {...register("password")}
+            className="w-full"
           />
 
           <div className="pt-2">
             <Button
               type="submit"
               loading={loading}
-              className="w-full bg-accent text-primary hover:bg-accent-light font-bold py-3 text-base animate-none"
+              className="w-full bg-accent text-primary hover:bg-accent-light font-bold py-3 text-base animate-none transition-all duration-300 hover:shadow-md active:scale-[0.99]"
             >
               Entrar
             </Button>

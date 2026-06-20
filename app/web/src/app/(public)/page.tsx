@@ -1,9 +1,11 @@
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Shield, FileText, CheckCircle2, TrendingUp, Users, ArrowRight, Scale, Palmtree, HeartPulse, GraduationCap, Brain, HeartHandshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PreAssociateForm } from "@/components/ui/PreAssociateForm";
+import { NewsCarousel } from "@/components/home/NewsCarousel";
 
 
 export const metadata = {
@@ -15,26 +17,49 @@ export default function HomePage() {
   return (
     <div className="flex flex-col w-full animate-none">
       {/* Hero Section */}
-      <section className="bg-primary text-white py-16 sm:py-24 border-b border-primary-light">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
-          <Shield className="h-16 w-16 text-accent mb-6" />
-          <h1 className="font-serif font-bold text-4xl sm:text-6xl max-w-4xl leading-tight mb-6">
-            Força, Transparência e Representatividade
-          </h1>
-          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mb-8">
-            Unindo e defendendo os servidores da segurança pública do Estado do Ceará com integridade e compromisso.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center items-center">
-            <Button asChild variant="accent" className="w-full sm:w-auto h-auto py-3.5 px-8 font-semibold text-center text-sm sm:text-base animate-none">
-              <Link href="/associe-se" aria-label="Associe-se à Associação dos Servidores da Segurança do Ceará">
-                Associe-se Agora
-              </Link>
-            </Button>
-            <Button asChild variant="outlineWhite" className="w-full sm:w-auto h-auto py-3.5 px-8 font-semibold text-center text-sm sm:text-base animate-none">
-              <Link href="/sobre" aria-label="Saiba mais sobre a história e objetivos da ASSEC">
-                Saiba Mais
-              </Link>
-            </Button>
+      <section className="relative bg-primary text-white py-24 sm:py-32 lg:py-40 border-b border-primary-light overflow-hidden">
+        {/* Background image optimized with Next.js Image Component */}
+        <Image
+          src="/banner-header.webp"
+          alt="Banner representando a união das forças de segurança do Ceará com seus agentes fardados e viaturas"
+          fill
+          priority
+          sizes="100vw"
+          quality={90}
+          className="object-cover object-center transition-transform duration-1000 transform scale-102"
+        />
+        {/* Dark gradients to ensure contrast */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/95 to-transparent lg:to-primary/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-transparent to-primary/40" />
+        <div className="absolute inset-0 bg-black/50" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-3xl flex flex-col items-start text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/20 border border-accent/40 text-accent mb-6 backdrop-blur-sm">
+              <Shield className="h-4 w-4" />
+              <span className="text-xs font-bold uppercase tracking-wider">Associação Oficial</span>
+            </div>
+            
+            <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl leading-tight mb-6 text-white drop-shadow-md">
+              Força, Transparência e <span className="text-accent drop-shadow-none">Representatividade</span>
+            </h1>
+            
+            <p className="text-gray-200 text-base sm:text-lg lg:text-xl mb-8 leading-relaxed max-w-2xl drop-shadow-sm">
+              Unindo e defendendo os servidores da segurança pública do Estado do Ceará com integridade, compromisso e benefícios exclusivos.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <Button asChild variant="accent" className="w-full sm:w-auto h-auto py-3.5 px-8 font-semibold text-center text-sm sm:text-base transition-all duration-300 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                <Link href="/associe-se" aria-label="Associe-se à Associação dos Servidores da Segurança do Ceará">
+                  Associe-se Agora
+                </Link>
+              </Button>
+              <Button asChild variant="outlineWhite" className="w-full sm:w-auto h-auto py-3.5 px-8 font-semibold text-center text-sm sm:text-base backdrop-blur-sm bg-white/5 hover:bg-white/10 border-white/40">
+                <Link href="/sobre" aria-label="Saiba mais sobre a história e objetivos da ASSEC">
+                  Saiba Mais
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -251,6 +276,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Carousel de Notícias */}
+      <NewsCarousel />
 
       {/* Pre-Association Form Section */}
       <section className="py-16 sm:py-24 bg-white border-b border-border">
