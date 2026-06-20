@@ -654,7 +654,7 @@ export default function UsuariosManagerPage() {
                   />
 
                   <Input
-                    label="Matrícula ASSEC"
+                    label="Matrícula Funcional"
                     placeholder="ASSEC-YYYY-XXXX"
                     error={errors.matricula?.message}
                     {...register("matricula")}
