@@ -130,3 +130,13 @@ nav {
   background: rgba(156, 163, 175, 0.5);
 }
 
+/* scrollbar-hide utility class */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+

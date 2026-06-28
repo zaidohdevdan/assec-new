@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { PreAssociateForm } from "@/components/ui/PreAssociateForm";
 import { NewsCarousel } from "@/components/home/NewsCarousel";
 import { VideoShortsSection } from "@/components/home/VideoShortsSection";
+import { JuridicoVideoPreview } from "@/components/home/JuridicoVideoPreview";
 
 
 export const metadata = {
@@ -129,22 +130,8 @@ export default function HomePage() {
                     Defesa técnica e suporte especializado para resguardar a atuação profissional e a carreira do servidor de segurança pública.
                   </p>
                   
-                  {/* YouTube Shorts Embed Container */}
-                  <div className="my-6 flex flex-col items-center">
-                    <div className="relative w-full max-w-[260px] aspect-[9/16] rounded-2xl overflow-hidden shadow-lg border border-border bg-black group/video">
-                      <iframe 
-                        className="absolute inset-0 w-full h-full"
-                        src="https://www.youtube.com/embed/-ZHInjOCktY" 
-                        title="Suporte Técnico-Legal e Assessoria Jurídica: Dr. Marcílio Lélis Prata" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        referrerPolicy="strict-origin-when-cross-origin" 
-                        allowFullScreen
-                      />
-                    </div>
-                    <span className="text-xs text-text-secondary mt-2 text-center italic">
-                      Dr. Marcílio Lélis Prata fala sobre o Suporte Técnico-Legal.
-                    </span>
-                  </div>
+                  {/* Interactive YouTube Shorts Lightbox Preview */}
+                  <JuridicoVideoPreview />
 
                   <ul className="space-y-2 mb-6">
                     <li className="flex items-start gap-2 text-xs text-text-secondary">
