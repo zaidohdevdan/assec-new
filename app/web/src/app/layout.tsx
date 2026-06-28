@@ -20,6 +20,7 @@ import { CookieBanner } from "@/components/ui/CookieBanner";
 
 export const metadata = {
   metadataBase: new URL("https://assecce.com.br"),
+  manifest: "/manifest.json",
   title: {
     default: "ASSEC | Associação dos Servidores da Segurança do Ceará",
     template: "%s | ASSEC",
