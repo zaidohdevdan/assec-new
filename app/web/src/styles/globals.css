@@ -139,4 +139,67 @@ nav {
   display: none; /* Chrome, Safari and Opera */
 }
 
+/* ─── Rich-Text News Content Responsiveness ─── */
+.news-content {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Make images responsive inside CMS content */
+.news-content img {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 0.5rem;
+  display: block;
+  margin: 1.5rem auto;
+}
+
+/* Make tables scrollable and responsive */
+.news-content table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+.news-content table th,
+.news-content table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  min-width: 100px;
+}
+
+.news-content table th {
+  background-color: rgba(248, 250, 252, 0.05);
+  font-weight: 600;
+  text-align: left;
+}
+
+/* Responsive Embeds & IFrames (e.g. YouTube videos) */
+.news-content iframe,
+.news-content embed,
+.news-content object,
+.news-content video {
+  max-width: 100% !important;
+  aspect-ratio: 16/9;
+  height: auto !important;
+  border-radius: 0.5rem;
+  margin: 1.5rem auto;
+  display: block;
+  border: 0;
+}
+
+/* Handle preformatted code blocks */
+.news-content pre,
+.news-content code {
+  max-width: 100% !important;
+  overflow-x: auto;
+  word-break: normal;
+  white-space: pre;
+}
+
 
