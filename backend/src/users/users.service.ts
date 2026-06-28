@@ -125,7 +125,9 @@ export class UsersService {
         },
       });
       if (matriculaConflict) {
-        throw new ConflictException('A matrícula informada já está cadastrada.');
+        throw new ConflictException(
+          'A matrícula informada já está cadastrada.',
+        );
       }
     }
 

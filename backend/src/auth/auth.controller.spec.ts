@@ -125,7 +125,10 @@ describe('AuthController', () => {
         'dan@gmail.com',
         'daniel@123',
       );
-      const expectedCookieName = process.env.NODE_ENV === 'production' ? '__Host-assec_session' : 'assec_session';
+      const expectedCookieName =
+        process.env.NODE_ENV === 'production'
+          ? '__Host-assec_session'
+          : 'assec_session';
       expect(mockResponse.cookie).toHaveBeenCalledWith(
         expectedCookieName,
         'jwt-token',
@@ -136,7 +139,6 @@ describe('AuthController', () => {
         }),
       );
       expect(result).toEqual({
-        access_token: 'jwt-token',
         user: expect.objectContaining({
           id: mockUserWithoutPassword.id,
           name: mockUserWithoutPassword.name,
@@ -179,7 +181,10 @@ describe('AuthController', () => {
 
       const result = await controller.logout(mockResponse);
 
-      const expectedCookieName = process.env.NODE_ENV === 'production' ? '__Host-assec_session' : 'assec_session';
+      const expectedCookieName =
+        process.env.NODE_ENV === 'production'
+          ? '__Host-assec_session'
+          : 'assec_session';
       expect(mockResponse.clearCookie).toHaveBeenCalledWith(
         expectedCookieName,
         expect.objectContaining({
@@ -188,7 +193,10 @@ describe('AuthController', () => {
           path: '/',
         }),
       );
-      expect(result).toEqual({ success: true, message: 'Sessão encerrada com sucesso.' });
+      expect(result).toEqual({
+        success: true,
+        message: 'Sessão encerrada com sucesso.',
+      });
     });
   });
 

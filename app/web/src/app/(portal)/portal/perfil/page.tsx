@@ -88,9 +88,9 @@ export default function PerfilPage() {
         format: "image/webp",
       });
       setPhotoBase64(base64String);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setPhotoError(err.message || "Erro ao processar imagem.");
+      setPhotoError((err as Error).message || "Erro ao processar imagem.");
     }
   };
 

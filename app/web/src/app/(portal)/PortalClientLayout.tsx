@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, CreditCard, User, Users, LogOut, ArrowLeft, Loader2, Menu, X, Bell, Check, Shield, Terminal, FileText, Landmark, Heart } from "lucide-react";
+import { LayoutDashboard, Calendar, CreditCard, User, Users, LogOut, ArrowLeft, Loader2, Menu, X, Bell, Check, Shield, Terminal, FileText, Landmark, Heart, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { User as UserType, Notification } from "@/lib/types";
@@ -194,6 +194,7 @@ export default function PortalClientLayout({
       { label: "Painel Administrativo", href: "/dashboard", icon: Shield },
       { label: "Avisos/Notícias", href: "/dashboard/notices", icon: FileText },
       { label: "Gerenciar Benefícios", href: "/dashboard/benefits", icon: Heart },
+      { label: "Vídeos (Shorts)", href: "/dashboard/videos", icon: Video },
       { label: "Meu Perfil", href: "/portal/perfil", icon: User },
     ]
     : userRole === "PRESIDENT"

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Card } from "@/components/ui/card";
+import { apiFetch } from "@/lib/api";
 import { Terminal as TerminalIcon, AlertCircle } from "lucide-react";
 import { User as UserType, Schedule } from "@/lib/types";
 
@@ -55,23 +56,18 @@ export default function TerminalPage() {
 
   // Fetch all necessary data for the terminal commands
   const fetchAllData = React.useCallback(async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    // Token is no longer stored in localStorage; auth uses HttpOnly cookies.
 
     try {
-      // Fetch users
-      const usersRes = await fetch(`${API_BASE}/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Fetch users via apiFetch (credentials include cookie auth)
+      const usersRes = await apiFetch(`/users`);
       if (usersRes.ok) {
         const usersData = await usersRes.json();
         setUsers(usersData);
       }
 
-      // Fetch schedules
-      const schedulesRes = await fetch(`${API_BASE}/schedules/admin/list`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Fetch schedules via apiFetch
+      const schedulesRes = await apiFetch(`/schedules/admin/list`);
       if (schedulesRes.ok) {
         const schedulesData = await schedulesRes.json();
         setSchedules(schedulesData);
@@ -259,11 +255,10 @@ export default function TerminalPage() {
             } else {
               logOutput(`Iniciando criação do usuário "${name}"...`, "info");
               try {
-                const res = await fetch(`${API_BASE}/users`, {
+                const res = await apiFetch(`/users`, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
                   },
                   body: JSON.stringify({
                     name,
@@ -317,11 +312,10 @@ export default function TerminalPage() {
                 logOutput(`Iniciando edição de "${targetUser.name}" (Campo: ${field})...`, "info");
                 try {
                   const payload = { [field]: value };
-                  const res = await fetch(`${API_BASE}/users/${targetUser.id}`, {
+                  const res = await apiFetch(`/users/${targetUser.id}`, {
                     method: "PUT",
                     headers: {
                       "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify(payload),
                   });
@@ -365,12 +359,9 @@ export default function TerminalPage() {
             } else {
               logOutput(`Iniciando exclusão de "${targetUser.name}"...`, "info");
               try {
-                const res = await fetch(`${API_BASE}/users/${targetUser.id}`, {
-                  method: "DELETE",
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                });
+                const res = await apiFetch(`/users/${targetUser.id}`, {
+                    method: "DELETE",
+                  });
 
                 if (res.ok) {
                   logOutput(`Usuário "${targetUser.name}" excluído com sucesso!`, "success");
@@ -414,14 +405,13 @@ export default function TerminalPage() {
         const host = args[1];
         logOutput(`PING ${host} via TCP Connect...`, "info");
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/network/ping`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify({ host }),
-          });
+          const res = await apiFetch(`/network/ping`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ host }),
+                });
           if (res.ok) {
             const data = await res.json();
             if (data.status === "ONLINE") {
@@ -453,14 +443,13 @@ export default function TerminalPage() {
         logOutput(`Starting Nmap scan on ${host}...`, "info");
         try {
           const startScan = performance.now();
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/network/portscan`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify({ host }),
-          });
+          const res = await apiFetch(`/network/portscan`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ host }),
+                });
           const endScan = performance.now();
           const scanDuration = ((endScan - startScan) / 1000).toFixed(2);
 
@@ -494,14 +483,13 @@ export default function TerminalPage() {
         const host = args[1];
         logOutput(`; <<>> DiG (DNS Lookup) for ${host} <<>>`, "info");
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/network/dns`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify({ host }),
-          });
+          const res = await apiFetch(`/network/dns`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ host }),
+                });
           if (res.ok) {
             const records = await res.json() as Record<string, unknown[]>;
             logOutput(";; ANSWER SECTION:", "info");
@@ -536,14 +524,13 @@ export default function TerminalPage() {
         const host = args[1];
         logOutput(`Iniciando handshake SSL/TLS com ${host}:443...`, "info");
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/network/ssl`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify({ host }),
-          });
+          const res = await apiFetch(`/network/ssl`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ host }),
+                });
           if (res.ok) {
             const data = await res.json();
             if (data.error) {
@@ -575,14 +562,13 @@ export default function TerminalPage() {
         const domain = args[1];
         logOutput(`Consultando WHOIS para ${domain}...`, "info");
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/network/whois`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify({ domain }),
-          });
+          const res = await apiFetch(`/network/whois`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ domain }),
+                });
           if (res.ok) {
             const rawText = await res.text();
             // WHOIS output can be long, so print line by line

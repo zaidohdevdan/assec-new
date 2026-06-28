@@ -17,8 +17,11 @@ export class FinancialsService {
   }
 
   async findOne(id: string) {
-    const record = await this.prisma.financialRecord.findUnique({ where: { id } });
-    if (!record) throw new NotFoundException('Lançamento financeiro não encontrado');
+    const record = await this.prisma.financialRecord.findUnique({
+      where: { id },
+    });
+    if (!record)
+      throw new NotFoundException('Lançamento financeiro não encontrado');
     return record;
   }
 
@@ -40,8 +43,24 @@ export class FinancialsService {
     let totalIncome = 0;
     let totalExpense = 0;
 
-    const monthsMap: Record<string, { month: string; income: number; expense: number }> = {};
-    const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const monthsMap: Record<
+      string,
+      { month: string; income: number; expense: number }
+    > = {};
+    const monthNames = [
+      'Jan',
+      'Fev',
+      'Mar',
+      'Abr',
+      'Mai',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Set',
+      'Out',
+      'Nov',
+      'Dez',
+    ];
 
     for (const rec of records) {
       const amt = rec.amount;

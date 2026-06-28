@@ -50,7 +50,10 @@ export class FinancialsController {
 
   @Put(':id')
   @Roles(Role.ADMIN)
-  update(@Param('id') id: string, @Body() data: Prisma.FinancialRecordUpdateInput) {
+  update(
+    @Param('id') id: string,
+    @Body() data: Prisma.FinancialRecordUpdateInput,
+  ) {
     if (data.date && typeof data.date === 'string') {
       data.date = new Date(data.date);
     }

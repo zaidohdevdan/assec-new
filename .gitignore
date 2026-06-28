@@ -33,3 +33,7 @@ backups/
 
 # macOS
 .DS_Store
+
+# Windows metadata
+*Zone.Identifier
+

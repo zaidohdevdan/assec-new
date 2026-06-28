@@ -25,7 +25,9 @@ export class NetworkController {
   @HttpCode(HttpStatus.OK)
   async ping(@Body('host') host: string) {
     if (!host || !hostRegex.test(host)) {
-      throw new BadRequestException('Host inválido. Apenas letras, números, hífen e pontos são permitidos.');
+      throw new BadRequestException(
+        'Host inválido. Apenas letras, números, hífen e pontos são permitidos.',
+      );
     }
     return this.networkService.ping(host);
   }
@@ -34,7 +36,9 @@ export class NetworkController {
   @HttpCode(HttpStatus.OK)
   async portScan(@Body('host') host: string) {
     if (!host || !hostRegex.test(host)) {
-      throw new BadRequestException('Host inválido. Apenas letras, números, hífen e pontos são permitidos.');
+      throw new BadRequestException(
+        'Host inválido. Apenas letras, números, hífen e pontos são permitidos.',
+      );
     }
     return this.networkService.portScan(host);
   }
@@ -43,7 +47,9 @@ export class NetworkController {
   @HttpCode(HttpStatus.OK)
   async dnsLookup(@Body('host') host: string) {
     if (!host || !hostRegex.test(host)) {
-      throw new BadRequestException('Host inválido. Apenas letras, números, hífen e pontos são permitidos.');
+      throw new BadRequestException(
+        'Host inválido. Apenas letras, números, hífen e pontos são permitidos.',
+      );
     }
     return this.networkService.dnsLookup(host);
   }
@@ -52,7 +58,9 @@ export class NetworkController {
   @HttpCode(HttpStatus.OK)
   async sslCheck(@Body('host') host: string) {
     if (!host || !hostRegex.test(host)) {
-      throw new BadRequestException('Host inválido. Apenas letras, números, hífen e pontos são permitidos.');
+      throw new BadRequestException(
+        'Host inválido. Apenas letras, números, hífen e pontos são permitidos.',
+      );
     }
     return this.networkService.sslCheck(host);
   }
@@ -61,7 +69,9 @@ export class NetworkController {
   @HttpCode(HttpStatus.OK)
   async whois(@Body('domain') domain: string) {
     if (!domain || !hostRegex.test(domain)) {
-      throw new BadRequestException('Domínio inválido. Apenas letras, números, hífen e pontos são permitidos.');
+      throw new BadRequestException(
+        'Domínio inválido. Apenas letras, números, hífen e pontos são permitidos.',
+      );
     }
     return this.networkService.whois(domain);
   }

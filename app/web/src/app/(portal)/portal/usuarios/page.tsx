@@ -62,9 +62,9 @@ export default function UsuariosManagerPage() {
         format: "image/webp",
       });
       setCardPhotoBase64(base64String);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setCardPhotoError(err.message || "Erro ao processar imagem.");
+      setCardPhotoError((err as Error).message || "Erro ao processar imagem.");
     }
   };
 

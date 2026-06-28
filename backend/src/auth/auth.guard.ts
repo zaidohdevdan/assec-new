@@ -19,7 +19,11 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<AuthenticatedRequest & { cookies?: Record<string, string> }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<
+        AuthenticatedRequest & { cookies?: Record<string, string> }
+      >();
 
     // 1. Extract the JWT — prefer the HttpOnly cookie, fall back to Authorization header
     //    (Bearer header is kept for the Root Terminal which cannot use cookies directly)
@@ -36,7 +40,9 @@ export class AuthGuard implements CanActivate {
     }
 
     if (!token) {
-      throw new UnauthorizedException('Sessão não encontrada. Faça login novamente.');
+      throw new UnauthorizedException(
+        'Sessão não encontrada. Faça login novamente.',
+      );
     }
 
     // 2. Verify JWT signature and expiry

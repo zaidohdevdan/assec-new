@@ -1,9 +1,12 @@
+"use client";
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail, MapPin, Instagram } from "lucide-react";
 
+
 const Footer = () => {
+
   const currentYear = new Date().getFullYear();
 
   return (

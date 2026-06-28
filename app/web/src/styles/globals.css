@@ -6,11 +6,12 @@
   --color-primary: #071A2D;
   --color-primary-light: #0a2439;
   --color-secondary: #0E2B47;
-  --color-accent: #D4AF37;
-  --color-accent-dark: #B8960C;
-  --color-accent-light: #F0C75E;
+  --color-accent: #B8960C; /* Dourado escuro para alto contraste em fundo claro (WCAG AA) */
+  --color-accent-dark: #8E7400;
+  --color-accent-light: #D4AF37;
   --color-support: #1E7A46;
   --color-support-light: #2cb568;
+  --color-secondary-light: #1e3d5c;
   --bg-page: #F8FAFC;
   --bg-surface: #FFFFFF;
   --text-primary: #1F2937;
@@ -19,6 +20,24 @@
   --border-default: #E5E7EB;
   --border-focus: #0E2B47;
 }
+
+/* Ajuste dinâmico de contraste do dourado em elementos de fundo escuro */
+.bg-primary,
+.bg-secondary,
+.bg-slate-900,
+.bg-slate-950,
+.bg-black,
+header,
+footer,
+[class*="bg-primary"],
+[class*="bg-secondary"],
+[class*="bg-slate-9"],
+[class*="bg-black"] {
+  --color-accent: #D4AF37; /* Dourado brilhante para contraste sobre escuro */
+  --color-accent-dark: #B8960C;
+  --color-accent-light: #F0C75E;
+}
+
 
 html,
 body {

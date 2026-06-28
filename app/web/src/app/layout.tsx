@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Inter, Merriweather } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "@/styles/globals.css";
 
 const inter = Inter({
@@ -9,7 +9,7 @@ const inter = Inter({
   display: "swap",
 });
 
-const merriweather = Merriweather({
+const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-serif",
@@ -88,7 +88,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${merriweather.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${playfairDisplay.variable}`}>
       <head>
         <script
           type="application/ld+json"
@@ -96,7 +96,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-bg-page text-text-primary antialiased min-h-screen flex flex-col">
-        {children}
+        <main id="main">{children}</main>
         <CookieBanner />
       </body>
     </html>

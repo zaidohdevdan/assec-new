@@ -13,6 +13,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { NetworkModule } from './network/network.module';
 import { BenefitsModule } from './benefits/benefits.module';
 import { FinancialsModule } from './financials/financials.module';
+import { VideosModule } from './videos/videos.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { FinancialsModule } from './financials/financials.module';
     SlotsModule,
     NotificationsModule,
     NetworkModule,
+    VideosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

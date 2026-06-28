@@ -88,7 +88,9 @@ describe('UsersService', () => {
         since: mockUser.since,
       };
 
-      (prisma.user.findUnique as jest.Mock).mockResolvedValue(userWithoutPassword);
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(
+        userWithoutPassword,
+      );
 
       const result = await service.findById('user-uuid-1');
 

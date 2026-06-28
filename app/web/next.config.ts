@@ -18,9 +18,10 @@ const nextConfig: NextConfig = {
   // ...(isProd && { outputFileTracingRoot: path.join(__dirname, "../../") }),
   ...(isProd && { output: "standalone" }),
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   images: {
+    qualities: [90],
     remotePatterns: [
       {
         protocol: "http",
@@ -40,6 +41,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
 };
 
 export default nextConfig;

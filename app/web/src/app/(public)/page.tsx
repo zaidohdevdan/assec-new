@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PreAssociateForm } from "@/components/ui/PreAssociateForm";
 import { NewsCarousel } from "@/components/home/NewsCarousel";
+import { VideoShortsSection } from "@/components/home/VideoShortsSection";
 
 
 export const metadata = {
@@ -63,6 +64,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
 
       {/* Stats Section */}
       <section className="bg-white border-b border-border py-12 sm:py-16">
@@ -276,6 +278,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Vídeos e Shorts Recentes */}
+      <VideoShortsSection />
 
       {/* Carousel de Notícias */}
       <NewsCarousel />

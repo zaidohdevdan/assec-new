@@ -82,9 +82,6 @@ export default function LoginPage() {
         localStorage.setItem("user", JSON.stringify(userDisplay));
         const secureFlag = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : "";
         document.cookie = `assec_user_profile=${encodeURIComponent(JSON.stringify(userDisplay))}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
-        if (body.access_token) {
-          localStorage.setItem("token", body.access_token);
-        }
 
         const userRole = body.user?.role ?? "USER";
         if (userRole === "ADMIN") {

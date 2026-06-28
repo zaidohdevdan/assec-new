@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -18,7 +22,10 @@ export class SlotsService {
     });
   }
 
-  async createBatch(professionalId: string, slots: Array<{ date: string; time: string }>) {
+  async createBatch(
+    professionalId: string,
+    slots: Array<{ date: string; time: string }>,
+  ) {
     const data = slots.map((s) => ({
       professionalId,
       date: s.date,
@@ -50,10 +57,7 @@ export class SlotsService {
             },
           },
         },
-        orderBy: [
-          { date: 'asc' },
-          { time: 'asc' },
-        ],
+        orderBy: [{ date: 'asc' }, { time: 'asc' }],
       });
     }
 
@@ -77,10 +81,7 @@ export class SlotsService {
             },
           },
         },
-        orderBy: [
-          { date: 'asc' },
-          { time: 'asc' },
-        ],
+        orderBy: [{ date: 'asc' }, { time: 'asc' }],
       });
     }
 

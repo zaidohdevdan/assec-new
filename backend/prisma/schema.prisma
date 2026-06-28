@@ -128,3 +128,13 @@ model FinancialRecord {
   updatedAt   DateTime @updatedAt
 }
 
+model Video {
+  id         String   @id @default(uuid())
+  title      String
+  youtubeUrl String
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+

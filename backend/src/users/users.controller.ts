@@ -35,7 +35,7 @@ export class UsersController {
     const updatePayload: Partial<{ name: string; avatarUrl: string }> = {};
     if (data.name !== undefined) updatePayload.name = data.name;
     if (data.avatarUrl !== undefined) updatePayload.avatarUrl = data.avatarUrl;
-    
+
     return this.usersService.update(userId, updatePayload);
   }
 
@@ -60,7 +60,11 @@ export class UsersController {
 
   @Get(':id')
   async findOne(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
-    if (req.user.role !== Role.ADMIN && req.user.role !== Role.PRESIDENT && req.user.sub !== id) {
+    if (
+      req.user.role !== Role.ADMIN &&
+      req.user.role !== Role.PRESIDENT &&
+      req.user.sub !== id
+    ) {
       throw new ForbiddenException('Acesso negado');
     }
     return this.usersService.findById(id);
@@ -76,7 +80,10 @@ export class UsersController {
   @Put(':id')
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  async update(@Param('id') id: string, @Body() data: Parameters<UsersService['update']>[1]) {
+  async update(
+    @Param('id') id: string,
+    @Body() data: Parameters<UsersService['update']>[1],
+  ) {
     return this.usersService.update(id, data);
   }
 

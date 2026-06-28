@@ -11,7 +11,10 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import type { Request as ExpressRequest, Response as ExpressResponse } from 'express';
+import type {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from 'express';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { UsersService } from '../users/users.service';
@@ -84,19 +87,16 @@ export class AuthController {
     // Set the JWT in a secure, HttpOnly cookie (not accessible via JavaScript)
     // This is the primary defence against XSS token theft
     res.cookie(SESSION_COOKIE, access_token, {
-      httpOnly: true,          // Not accessible via document.cookie (XSS protection)
-      sameSite: 'lax',         // CSRF mitigation for same-site navigations
-      secure: isProduction,    // HTTPS-only in production; allow HTTP in dev
+      httpOnly: true, // Token is managed via HttpOnly cookie; no need to store in localStorage
+      sameSite: 'lax', // CSRF mitigation for same-site navigations
+      secure: isProduction, // HTTPS-only in production; allow HTTP in dev
       // __Host- prefix requires no Domain attribute
       path: '/',
       maxAge: 60 * 60 * 1000, // 1 hour, matching JWT_EXPIRES_IN
     });
 
-    // Return public user data + access_token (for backward-compat with terminal root)
-    // NOTE: access_token in body is kept for the Root Terminal which uses Bearer auth
-    // TODO(security): Remove access_token from response body once terminal migrates to cookie auth
+    // Return public user data only; token is set in HttpOnly cookie
     return {
-      access_token,
       user: {
         id: userPublic.id,
         name: userPublic.name,

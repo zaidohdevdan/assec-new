@@ -45,7 +45,9 @@ export class NetworkService {
    */
   async portScan(
     host: string,
-  ): Promise<{ port: number; service: string; status: 'OPEN' | 'CLOSED' | 'FILTERED' }[]> {
+  ): Promise<
+    { port: number; service: string; status: 'OPEN' | 'CLOSED' | 'FILTERED' }[]
+  > {
     const targetPorts = [
       { port: 21, service: 'FTP' },
       { port: 22, service: 'SSH' },
@@ -82,7 +84,9 @@ export class NetworkService {
   /**
    * Real DNS Records Lookup (similar to nslookup/dig).
    */
-  async dnsLookup(host: string): Promise<Record<string, string[] | dns.MxRecord[] | string[][]>> {
+  async dnsLookup(
+    host: string,
+  ): Promise<Record<string, string[] | dns.MxRecord[] | string[][]>> {
     const records: Record<string, string[] | dns.MxRecord[] | string[][]> = {};
 
     try {
@@ -146,7 +150,9 @@ export class NetworkService {
             Math.round((validToMs - Date.now()) / (1000 * 60 * 60 * 24)),
           );
 
-          const getCN = (field: { CN?: string | string[] } | string | undefined) => {
+          const getCN = (
+            field: { CN?: string | string[] } | string | undefined,
+          ) => {
             if (!field) return undefined;
             if (typeof field === 'string') return field;
             const cn = field.CN;
@@ -187,10 +193,13 @@ export class NetworkService {
    */
   async whois(domain: string): Promise<string> {
     const cleanDomain = domain.trim().toLowerCase();
-    
+
     // First query IANA to find the responsible registrar whois server
-    const ianaResponse = await this.queryWhoisServer('whois.iana.org', cleanDomain);
-    
+    const ianaResponse = await this.queryWhoisServer(
+      'whois.iana.org',
+      cleanDomain,
+    );
+
     const referMatch = ianaResponse.match(/refer:\s+([a-zA-Z0-9.-]+)/i);
     if (referMatch && referMatch[1]) {
       const referServer = referMatch[1].trim();
@@ -202,7 +211,11 @@ export class NetworkService {
   }
 
   // Helper TCP connect
-  private tcpConnect(ip: string, port: number, timeout: number): Promise<boolean> {
+  private tcpConnect(
+    ip: string,
+    port: number,
+    timeout: number,
+  ): Promise<boolean> {
     return new Promise((resolve) => {
       const socket = new net.Socket();
       socket.setTimeout(timeout);

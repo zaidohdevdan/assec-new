@@ -12,7 +12,7 @@ export class SchedulesService {
   constructor(
     private prisma: PrismaService,
     private notifications: NotificationsService,
-  ) { }
+  ) {}
 
   async create(data: {
     userId: string;

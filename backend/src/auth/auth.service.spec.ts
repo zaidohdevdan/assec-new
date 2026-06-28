@@ -117,7 +117,7 @@ describe('AuthService', () => {
     it('should return access_token and user', () => {
       const { password, ...userWithoutPassword } = mockUser;
 
-      (jwtService.sign as jest.Mock).mockReturnValue('jwt-token-123');
+      jwtService.sign.mockReturnValue('jwt-token-123');
 
       const result = service.login(userWithoutPassword);
 
