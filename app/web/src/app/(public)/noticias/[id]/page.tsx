@@ -127,7 +127,7 @@ export default async function NoticiaDetailPage({
 
   // ── Render Page ────────────────────────────────────────────────────────────
   return (
-    <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 font-sans animate-none">
+    <article className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 font-sans animate-none">
       
       {/* Back button */}
       <div className="mb-8">
@@ -175,14 +175,14 @@ export default async function NoticiaDetailPage({
       </div>
 
       {/* Title */}
-      <h1 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-primary leading-tight mb-6">
+      <h1 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-primary leading-tight mb-6 break-words">
         {article.title}
       </h1>
 
       {/* Summary / Lead */}
       {article.summary && (
         <div className="bg-slate-50 border-l-4 border-accent p-4 rounded-r-lg mb-8 shadow-sm">
-          <p className="text-text-secondary text-sm sm:text-base font-medium leading-relaxed italic">
+          <p className="text-text-secondary text-sm sm:text-base font-medium leading-relaxed italic break-words">
             {article.summary}
           </p>
         </div>

@@ -97,7 +97,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-bg-page text-text-primary antialiased min-h-screen flex flex-col">
-        <main id="main">{children}</main>
+        <main id="main" className="flex-1 flex flex-col w-full min-w-0">{children}</main>
         <CookieBanner />
       </body>
     </html>

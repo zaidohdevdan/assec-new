@@ -14,7 +14,7 @@ export default function PublicLayout({
     <>
       <SkipLink />
       <Header />
-      <main id="main-content" className="flex-1 focus:outline-none" tabIndex={-1}>
+      <main id="main-content" className="flex-1 flex flex-col w-full min-w-0 focus:outline-none" tabIndex={-1}>
         {children}
       </main>
       <Footer />
