@@ -4,6 +4,7 @@ import * as React from "react";
 import { Play, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 
 export function JuridicoVideoPreview() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -60,13 +61,13 @@ export function JuridicoVideoPreview() {
         onClick={() => setIsOpen(true)}
         className="relative w-full max-w-[260px] aspect-[9/16] rounded-2xl overflow-hidden shadow-lg border border-border bg-black group cursor-pointer"
       >
-        {/* High quality thumbnail from youtube */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
+        {/* Optimized local poster image */}
+        <Image
+          src="/juridico-poster.webp"
           alt={title}
+          fill
+          sizes="(max-width: 768px) 260px, 260px"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
         />
         {/* Dark Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 opacity-90 transition-opacity group-hover:opacity-95" />
