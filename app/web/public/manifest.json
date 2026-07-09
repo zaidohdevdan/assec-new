@@ -4,19 +4,25 @@
   "description": "Portal Oficial da Associação dos Servidores da Segurança do Ceará",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#071A2D",
-  "theme_color": "#071A2D",
+  "background_color": "#0a1929",
+  "theme_color": "#0a1929",
   "orientation": "portrait",
   "icons": [
     {
       "src": "/pwa-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/pwa-icon-512.png",
       "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-icon-1024.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"
     }

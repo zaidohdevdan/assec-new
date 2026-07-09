@@ -19,10 +19,10 @@ export function PWASplashScreen() {
         setIsVisible(true);
         sessionStorage.setItem("pwa-splash-seen", "true");
         
-        // Hide splash screen after 2.8 seconds (2.3s animation + 0.5s fadeout buffer)
+        // Hide splash screen after 2.5 seconds (2.0s static display + 0.5s fade out transition)
         const timer = setTimeout(() => {
           setIsVisible(false);
-        }, 2800);
+        }, 2500);
         return () => clearTimeout(timer);
       }
     }
@@ -35,66 +35,18 @@ export function PWASplashScreen() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="fixed inset-0 bg-[#071A2D] z-[9999] flex flex-col items-center justify-center select-none overflow-hidden"
+          className="fixed inset-0 bg-[#0a1929] z-[9999] flex items-center justify-center select-none overflow-hidden"
         >
-          {/* Subtle Ambient Background Light */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
-
-          {/* Responsive Banner Image Container */}
-          <motion.div
-            initial={{ scale: 1.02, opacity: 0 }}
-            animate={{ 
-              scale: 1,
-              opacity: 1,
-            }}
-            exit={{ opacity: 0 }}
-            transition={{ 
-              duration: 1.6,
-              ease: "easeInOut",
-            }}
-            className="absolute inset-0 w-full h-full flex items-center justify-center bg-[#071A2D]"
-          >
-            {/* Desktop layout: Contained poster style with elegant backdrop. Mobile layout: Full-screen cover */}
-            <div className="relative w-full h-full max-w-none md:max-w-md md:max-h-[90vh] md:aspect-[843/1264] md:rounded-2xl md:overflow-hidden md:border md:border-accent/25 md:shadow-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img 
-                src="/banner-assec.jpg" 
-                alt="ASSEC Ceará" 
-                className="w-full h-full object-cover"
-                draggable={false}
-              />
-
-              {/* Glowing metallic sweep effect over the banner */}
-              <motion.div
-                initial={{ x: "-100%" }}
-                animate={{ x: "100%" }}
-                transition={{
-                  delay: 0.3,
-                  duration: 1.2,
-                  ease: "easeInOut",
-                }}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 pointer-events-none"
-              />
-            </div>
-          </motion.div>
-
-          {/* Subtle pulsing loading status at the bottom */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0.4, 0.8, 0.4] }}
-            transition={{
-              delay: 0.8,
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute bottom-12 flex flex-col items-center gap-2"
-          >
-            <span className="text-[10px] text-accent font-sans font-bold uppercase tracking-[0.25em]">
-              Carregando Portal
-            </span>
-            <div className="h-[2px] w-12 bg-gradient-to-r from-transparent via-accent to-transparent rounded-full" />
-          </motion.div>
+          {/* Central Shield Logo: 40-50% of the screen width */}
+          <div className="w-[45vw] max-w-[320px] md:max-w-[400px] aspect-square flex items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src="/logo-transparent.webp" 
+              alt="ASSEC Ceará Logo" 
+              className="w-full h-full object-contain"
+              draggable={false}
+            />
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
