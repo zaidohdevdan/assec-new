@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 
+import Image from "next/image";
+
 interface VideoItem {
   id: string;
   title: string;
@@ -27,6 +29,7 @@ export function VideoShortsSection() {
   const [modalVideo, setModalVideo] = React.useState<VideoItem | null>(null);
   const [mounted, setMounted] = React.useState(false);
   const [isPlayerPlaying, setIsPlayerPlaying] = React.useState(true);
+  const [activeScrollIndex, setActiveScrollIndex] = React.useState(0);
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
   React.useEffect(() => {
@@ -47,7 +50,8 @@ export function VideoShortsSection() {
       try {
         const res = await apiFetch("/videos");
         if (res.ok) {
-          setVideos(await res.json());
+          const data: VideoItem[] = await res.json();
+          setVideos(data.filter((v) => v.active));
         }
       } catch (err) {
         console.error("Erro ao carregar vídeos:", err);
@@ -88,6 +92,15 @@ export function VideoShortsSection() {
     }
   };
 
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, clientWidth } = scrollContainerRef.current;
+      const cardWidth = clientWidth > 640 ? 280 : 240;
+      const index = Math.round(scrollLeft / (cardWidth + 16)); // card width + gap
+      setActiveScrollIndex(index);
+    }
+  };
+
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
       const { scrollLeft, clientWidth } = scrollContainerRef.current;
@@ -97,6 +110,17 @@ export function VideoShortsSection() {
       
       scrollContainerRef.current.scrollTo({
         left: scrollTo,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  const scrollToCard = (index: number) => {
+    if (scrollContainerRef.current) {
+      const clientWidth = scrollContainerRef.current.clientWidth;
+      const cardWidth = clientWidth > 640 ? 280 : 240;
+      scrollContainerRef.current.scrollTo({
+        left: index * (cardWidth + 16),
         behavior: "smooth"
       });
     }
@@ -140,14 +164,14 @@ export function VideoShortsSection() {
             <div className={`flex gap-2 shrink-0 self-end sm:self-auto ${videos.length <= 4 ? "md:hidden" : "md:flex"}`}>
               <button 
                 onClick={() => scroll("left")}
-                className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-text-primary hover:bg-slate-50 transition-colors shadow-sm"
+                className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-text-primary hover:bg-slate-50 transition-colors shadow-sm focus-visible:ring-2 focus-visible:ring-accent"
                 aria-label="Rolar vídeos para esquerda"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <button 
                 onClick={() => scroll("right")}
-                className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-text-primary hover:bg-slate-50 transition-colors shadow-sm"
+                className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-text-primary hover:bg-slate-50 transition-colors shadow-sm focus-visible:ring-2 focus-visible:ring-accent"
                 aria-label="Rolar vídeos para direita"
               >
                 <ChevronRight className="h-5 w-5" />
@@ -156,32 +180,40 @@ export function VideoShortsSection() {
           )}
         </div>
 
-        {/* Videos Shelf (Horizontal Scroll Container) */}
-        <div 
-          ref={scrollContainerRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0"
-          style={{ scrollbarWidth: "none" }}
-        >
-          {videos.map((video) => {
-            const youtubeId = getYouTubeId(video.youtubeUrl);
-            if (!youtubeId) return null;
+        {/* Outer container with indicator overlays */}
+        <div className="relative">
+          {/* Left edge shadow indicator */}
+          <div className="absolute left-0 top-0 bottom-6 w-8 bg-gradient-to-r from-white to-transparent z-20 pointer-events-none md:hidden" />
+          
+          {/* Right edge shadow indicator */}
+          <div className="absolute right-0 top-0 bottom-6 w-8 bg-gradient-to-l from-white to-transparent z-20 pointer-events-none md:hidden" />
 
-            return (
-              <div 
-                key={video.id} 
-                className="flex-shrink-0 w-[240px] sm:w-[280px] snap-start"
-              >
-                <Card className="overflow-hidden border border-border bg-slate-50 shadow-sm transition-all hover:shadow-md hover:border-accent duration-300 flex flex-col h-full rounded-2xl p-0">
-                  {/* Aspect Ratio 9:16 for vertical Shorts */}
-                  <div className="relative w-full aspect-[9/16] bg-black group overflow-hidden">
-                    <>
+          {/* Videos Shelf (Horizontal Scroll Container) */}
+          <div 
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0"
+            style={{ scrollbarWidth: "none" }}
+          >
+            {videos.map((video) => {
+              const youtubeId = getYouTubeId(video.youtubeUrl);
+              if (!youtubeId) return null;
+
+              return (
+                <div 
+                  key={video.id} 
+                  className="flex-shrink-0 w-[240px] sm:w-[280px] snap-start"
+                >
+                  <Card className="overflow-hidden border border-border bg-slate-50 shadow-sm transition-all hover:shadow-md hover:border-accent duration-300 flex flex-col h-full rounded-2xl p-0">
+                    {/* Aspect Ratio 9:16 for vertical Shorts */}
+                    <div className="relative w-full aspect-[9/16] bg-black group overflow-hidden">
                       {/* High quality thumbnail from youtube */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
                         alt={video.title}
+                        fill
+                        sizes="(max-width: 640px) 240px, 280px"
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
                       />
                       {/* Dark Overlay gradient */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 opacity-90 transition-opacity group-hover:opacity-95" />
@@ -202,17 +234,33 @@ export function VideoShortsSection() {
                         <span className="text-[10px] text-accent font-bold uppercase tracking-widest block mb-1">
                           Shorts
                         </span>
-                        <h3 className="text-xs sm:text-sm font-bold text-white leading-snug line-clamp-3">
+                        <h3 className="text-xs sm:text-sm font-bold text-white leading-snug line-clamp-3 font-sans">
                           {video.title}
                         </h3>
                       </div>
-                    </>
-                  </div>
-                </Card>
-              </div>
-            );
-          })}
+                    </div>
+                  </Card>
+                </div>
+              );
+            })}
+          </div>
         </div>
+
+        {/* Mobile Pagination Dots */}
+        {videos.length > 1 && (
+          <div className="flex justify-center gap-1.5 mt-2 md:hidden">
+            {videos.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => scrollToCard(idx)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  activeScrollIndex === idx ? "w-5 bg-accent-dark" : "w-2 bg-slate-300"
+                }`}
+                aria-label={`Ir para vídeo ${idx + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Lightbox Video Modal (with React Portal and framer-motion animations) */}
