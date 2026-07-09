@@ -40,7 +40,7 @@ export function PWASplashScreen() {
           {/* Subtle Ambient Background Light */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
 
-          {/* Animated Full-Screen Banner Image Container */}
+          {/* Responsive Banner Image Container */}
           <motion.div
             initial={{ scale: 1.02, opacity: 0 }}
             animate={{ 
@@ -49,30 +49,33 @@ export function PWASplashScreen() {
             }}
             exit={{ opacity: 0 }}
             transition={{ 
-              duration: 1.8,
+              duration: 1.6,
               ease: "easeInOut",
             }}
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-full h-full flex items-center justify-center bg-[#071A2D]"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src="/banner-assec.jpg" 
-              alt="ASSEC Ceará" 
-              className="w-full h-full object-cover"
-              draggable={false}
-            />
+            {/* Desktop layout: Contained poster style with elegant backdrop. Mobile layout: Full-screen cover */}
+            <div className="relative w-full h-full max-w-none md:max-w-md md:max-h-[90vh] md:aspect-[843/1264] md:rounded-2xl md:overflow-hidden md:border md:border-accent/25 md:shadow-2xl">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="/banner-assec.jpg" 
+                alt="ASSEC Ceará" 
+                className="w-full h-full object-cover"
+                draggable={false}
+              />
 
-            {/* Glowing metallic sweep effect over the banner */}
-            <motion.div
-              initial={{ x: "-100%" }}
-              animate={{ x: "100%" }}
-              transition={{
-                delay: 0.3,
-                duration: 1.2,
-                ease: "easeInOut",
-              }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 pointer-events-none"
-            />
+              {/* Glowing metallic sweep effect over the banner */}
+              <motion.div
+                initial={{ x: "-100%" }}
+                animate={{ x: "100%" }}
+                transition={{
+                  delay: 0.3,
+                  duration: 1.2,
+                  ease: "easeInOut",
+                }}
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 pointer-events-none"
+              />
+            </div>
           </motion.div>
 
           {/* Subtle pulsing loading status at the bottom */}

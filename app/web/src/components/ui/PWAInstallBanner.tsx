@@ -100,9 +100,9 @@ export function PWAInstallBanner() {
             {/* Header */}
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-accent-light/10 border border-accent/20 flex items-center justify-center shrink-0">
+                <div className="h-10 w-10 rounded-xl bg-black border border-accent/30 flex items-center justify-center shrink-0 shadow-inner overflow-hidden p-1.5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/pwa-icon-192.png" alt="ASSEC" className="h-7 w-7 object-contain" />
+                  <img src="/logo-transparent.webp" alt="ASSEC" className="h-full w-full object-contain" />
                 </div>
                 <div>
                   <h4 className="font-serif font-bold text-sm tracking-wide text-white">Instalar Portal ASSEC</h4>
