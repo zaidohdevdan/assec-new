@@ -40,19 +40,19 @@ export function PWASplashScreen() {
           {/* Subtle Ambient Background Light */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
 
-          {/* Animated Banner Image Container */}
+          {/* Animated Full-Screen Banner Image Container */}
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 1.02, opacity: 0 }}
             animate={{ 
-              scale: [0.9, 1.02, 1],
+              scale: 1,
               opacity: 1,
             }}
-            exit={{ scale: 1.05, opacity: 0 }}
+            exit={{ opacity: 0 }}
             transition={{ 
-              duration: 2.2,
-              ease: [0.25, 1, 0.5, 1], // Custom cubic-bezier for a premium native app spring feel
+              duration: 1.8,
+              ease: "easeInOut",
             }}
-            className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-[843/1264] rounded-2xl overflow-hidden shadow-2xl border border-accent/20 flex items-center justify-center bg-[#071A2D]"
+            className="absolute inset-0 w-full h-full"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
@@ -67,11 +67,11 @@ export function PWASplashScreen() {
               initial={{ x: "-100%" }}
               animate={{ x: "100%" }}
               transition={{
-                delay: 0.4,
-                duration: 1.5,
+                delay: 0.3,
+                duration: 1.2,
                 ease: "easeInOut",
               }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 pointer-events-none"
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 pointer-events-none"
             />
           </motion.div>
 
