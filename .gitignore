@@ -15,6 +15,7 @@ node_modules/
 # Environments
 .env*
 ASSEC_Relatorio_E
+
 # Logs
 *.log
 
@@ -37,3 +38,6 @@ backups/
 # Windows metadata
 *Zone.Identifier
 
+#mackdown
+assec-new_relatorio_tecnico.mackdown
+assec-new_relatorio_tecnico.pdf

@@ -152,6 +152,48 @@ nav {
   border-radius: 0.5rem;
   display: block;
   margin: 1.5rem auto;
+  min-height: 100px;
+  background-color: #f1f5f9; /* slate-100 placeholder while loading */
+}
+
+/* Mobile: images fill full width */
+@media (max-width: 639px) {
+  .news-content img {
+    width: 100% !important;
+  }
+}
+
+/* Desktop: respect original width up to container limit */
+@media (min-width: 640px) {
+  .news-content img {
+    width: auto;
+  }
+}
+
+/* Support for <picture>, <figure> and <figcaption> from rich editors */
+.news-content picture {
+  display: block;
+  margin: 1.5rem auto;
+}
+
+.news-content picture img {
+  margin: 0;
+}
+
+.news-content figure {
+  margin: 1.5rem auto;
+  text-align: center;
+}
+
+.news-content figure img {
+  margin: 0 auto 0.5rem;
+}
+
+.news-content figcaption {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.4;
 }
 
 /* Make tables scrollable and responsive */
@@ -201,5 +243,3 @@ nav {
   word-break: normal;
   white-space: pre;
 }
-
-

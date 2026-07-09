@@ -4,6 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,9 @@ const contactSchema = z.object({
   email: z.string().email("Endereço de e-mail inválido"),
   subject: z.string().min(2, "O assunto deve conter pelo menos 2 caracteres"),
   message: z.string().min(5, "A mensagem deve conter pelo menos 5 caracteres"),
+  consent: z.literal(true, {
+    errorMap: () => ({ message: "Você deve consentir com o tratamento dos seus dados para enviar a mensagem" }),
+  }),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -47,9 +51,16 @@ export default function ContatoPage() {
     setLoading(true);
     setSubmitError(null);
     try {
+      const { consent, ...contactData } = data;
+      if (consent) {
+        // Apenas para evitar o aviso de variável não utilizada do lint
+      }
       const res = await apiFetch("/contact", {
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...contactData,
+          message: `${contactData.message}\n\n---\nConsentimento LGPD: Aceito pelo titular em ${new Date().toISOString()}\nBase legal: Art. 7º, I e V da Lei 13.709/2018 (LGPD)\nPolítica: v2026.06.001`,
+        }),
       });
 
       if (res.ok) {
@@ -96,7 +107,7 @@ export default function ContatoPage() {
           
           <div className="space-y-4">
             {/* Address Card */}
-            <Card className="flex items-start gap-4 p-5 hover:border-l-4 hover:border-l-accent transition-all duration-300">
+            <Card accentHover className="flex items-start gap-4 p-5 transition-all duration-300">
               <div className="p-3 bg-primary/5 rounded-lg text-accent-dark shrink-0">
                 <MapPin className="h-6 w-6" />
               </div>
@@ -110,7 +121,7 @@ export default function ContatoPage() {
             </Card>
 
             {/* Telephone Card */}
-            <Card className="flex items-start gap-4 p-5 hover:border-l-4 hover:border-l-accent transition-all duration-300">
+            <Card accentHover className="flex items-start gap-4 p-5 transition-all duration-300">
               <div className="p-3 bg-primary/5 rounded-lg text-accent-dark shrink-0">
                 <Phone className="h-6 w-6" />
               </div>
@@ -126,7 +137,7 @@ export default function ContatoPage() {
             </Card>
 
             {/* Email Card */}
-            <Card className="flex items-start gap-4 p-5 hover:border-l-4 hover:border-l-accent transition-all duration-300">
+            <Card accentHover className="flex items-start gap-4 p-5 transition-all duration-300">
               <div className="p-3 bg-primary/5 rounded-lg text-accent-dark shrink-0">
                 <Mail className="h-6 w-6" />
               </div>
@@ -142,7 +153,7 @@ export default function ContatoPage() {
             </Card>
 
             {/* Instagram Card */}
-            <Card className="flex items-start gap-4 p-5 hover:border-l-4 hover:border-l-accent transition-all duration-300">
+            <Card accentHover className="flex items-start gap-4 p-5 transition-all duration-300">
               <div className="p-3 bg-primary/5 rounded-lg text-accent-dark shrink-0">
                 <Instagram className="h-6 w-6" />
               </div>
@@ -160,7 +171,7 @@ export default function ContatoPage() {
             </Card>
 
             {/* Operating Hours Card */}
-            <Card className="flex items-start gap-4 p-5 hover:border-l-4 hover:border-l-accent transition-all duration-300">
+            <Card accentHover className="flex items-start gap-4 p-5 transition-all duration-300">
               <div className="p-3 bg-primary/5 rounded-lg text-accent-dark shrink-0">
                 <Clock className="h-6 w-6" />
               </div>
@@ -241,6 +252,29 @@ export default function ContatoPage() {
                   error={errors.message?.message}
                   {...register("message")}
                 />
+
+                {/* LGPD Consent Checkbox */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-start gap-2.5 text-left">
+                    <input
+                      type="checkbox"
+                      id="contact-consent"
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-accent mt-0.5"
+                      {...register("consent")}
+                    />
+                    <label htmlFor="contact-consent" className="text-xs text-text-secondary leading-relaxed">
+                      Consinto com a coleta e tratamento dos meus dados pessoais (nome, e-mail, assunto e mensagem) informados neste formulário, para a finalidade exclusiva de responder ao meu contato, nos termos do Art. 7º, I e V da Lei 13.709/2018 (LGPD) e da{" "}
+                      <Link href="/politica-de-privacidade" target="_blank" className="text-accent-dark underline font-semibold hover:text-accent">
+                        Política de Privacidade
+                      </Link>.
+                    </label>
+                  </div>
+                  {errors.consent?.message && (
+                    <span className="text-xs text-red-600 font-medium text-left">
+                      {errors.consent.message}
+                    </span>
+                  )}
+                </div>
 
                 <div className="pt-2">
                   <Button

@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { NewsImage } from "@/components/ui/NewsImage";
 import { apiFetch } from "@/lib/api";
 import { Card } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Calendar, Tag, ArrowRight, ImageIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar, ArrowRight, ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Article {
@@ -217,10 +217,11 @@ function ArticleCard({ article }: { article: Article }) {
       {/* Thumbnail */}
       <div className="relative w-full aspect-video bg-slate-100 overflow-hidden shrink-0">
         {article.coverImage ? (
-          <Image
+          <NewsImage
             src={article.coverImage}
             alt={article.title}
             fill
+            variant="card"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (

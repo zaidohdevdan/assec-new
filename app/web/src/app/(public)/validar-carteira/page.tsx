@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShieldAlert, ShieldCheck, Loader2, Home, UserCheck, Calendar } from "lucide-react";
+import { ShieldAlert, ShieldCheck, Loader2, Home, Calendar } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import Link from "next/link";
 

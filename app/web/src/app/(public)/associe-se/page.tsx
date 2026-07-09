@@ -39,13 +39,15 @@ export default function AssociePage() {
     setLoading(true);
     setSubmitError(null);
     try {
+      const consentTimestamp = new Date().toISOString();
+      const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown';
       const res = await apiFetch("/contact", {
         method: "POST",
         body: JSON.stringify({
           name: data.nome,
           email: data.email,
           subject: `Proposta de Filiação - ${data.cargo}`,
-          message: `Telefone: ${data.telefone}\nCargo/Patente: ${data.cargo}\nConsentimento LGPD: Aceito pelo usuário em conformidade com as diretrizes legais da associação.`,
+          message: `Telefone: ${data.telefone}\nCargo/Patente: ${data.cargo}\n\n---\nConsentimento LGPD: Aceito pelo titular em ${consentTimestamp}\nUser-Agent: ${userAgent}\nPolítica: v2026.06.001\nBase legal: Art. 7º, I e V da Lei 13.709/2018 (LGPD)`,
         }),
       });
 

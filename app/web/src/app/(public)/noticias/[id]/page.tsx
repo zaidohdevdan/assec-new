@@ -8,6 +8,7 @@ import {
   ArrowLeft,
   ImageIcon,
   ShieldAlert,
+  ChevronRight,
 } from "lucide-react";
 import { ShareButton } from "@/components/ui/ShareButton";
 
@@ -23,6 +24,7 @@ interface Article {
   coverImage: string | null;
   active: boolean;
   createdAt: string;
+  updatedAt?: string;
 }
 
 // ─── Constants & Styles ────────────────────────────────────────────────────────
@@ -85,9 +87,55 @@ export async function generateMetadata({
   const { id } = await params;
   const article = await getArticle(id);
 
+  if (!article) {
+    return {
+      title: "Notícia não encontrada",
+      description: "Confira o boletim informativo da ASSEC Ceará.",
+    };
+  }
+
+  const canonicalUrl = `https://assecce.com.br/noticias/${id}`;
+  const ogImage = article.coverImage || "/escudo-logo.webp";
+
   return {
-    title: article ? `${article.title} | Notícias ASSEC` : "Notícia não encontrada",
-    description: article?.summary || "Confira o boletim informativo da ASSEC Ceará.",
+    title: `${article.title} | Notícias ASSEC`,
+    description: article.summary || "Confira o boletim informativo da ASSEC Ceará.",
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      type: "article",
+      url: canonicalUrl,
+      title: article.title,
+      description: article.summary || "Confira o boletim informativo da ASSEC Ceará.",
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        },
+      ],
+      publishedTime: article.createdAt,
+      authors: ["ASSEC - Associação dos Servidores da Segurança do Ceará"],
+      tags: article.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.summary || "Confira o boletim informativo da ASSEC Ceará.",
+      images: [ogImage],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large" as const,
+        "max-snippet": -1,
+      },
+    },
   };
 }
 
@@ -124,11 +172,100 @@ export default async function NoticiaDetailPage({
   }
 
   const style = getCatStyle(article.type);
+  const canonicalUrl = `https://assecce.com.br/noticias/${id}`;
+  const ogImage = article.coverImage
+    ? (article.coverImage.startsWith("http") ? article.coverImage : `https://assecce.com.br${article.coverImage}`)
+    : "https://assecce.com.br/escudo-logo.webp";
+
+  // ── JSON-LD: NewsArticle ───────────────────────────────────────────────────
+  const newsArticleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": article.title,
+    "description": article.summary || "",
+    "image": ogImage,
+    "datePublished": article.createdAt,
+    "dateModified": article.updatedAt || article.createdAt,
+    "author": {
+      "@type": "Organization",
+      "name": "ASSEC - Associação dos Servidores da Segurança do Ceará",
+      "url": "https://assecce.com.br",
+    },
+    "publisher": {
+      "@id": "https://assecce.com.br/#organization",
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+    "articleSection": article.type,
+    "keywords": article.tags.join(", "),
+  };
+
+  // ── JSON-LD: BreadcrumbList ────────────────────────────────────────────────
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Início",
+        "item": "https://assecce.com.br",
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Notícias",
+        "item": "https://assecce.com.br/noticias",
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": article.title,
+        "item": canonicalUrl,
+      },
+    ],
+  };
 
   // ── Render Page ────────────────────────────────────────────────────────────
   return (
     <article className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 font-sans animate-none">
-      
+      {/* JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
+      {/* Breadcrumb visual */}
+      <nav aria-label="Trilha de navegação" className="mb-6">
+        <ol className="flex items-center gap-1.5 text-xs text-text-muted flex-wrap">
+          <li>
+            <Link href="/" className="hover:text-primary transition-colors font-medium">
+              Início
+            </Link>
+          </li>
+          <li aria-hidden="true">
+            <ChevronRight className="h-3 w-3" />
+          </li>
+          <li>
+            <Link href="/noticias" className="hover:text-primary transition-colors font-medium">
+              Notícias
+            </Link>
+          </li>
+          <li aria-hidden="true">
+            <ChevronRight className="h-3 w-3" />
+          </li>
+          <li aria-current="page" className="text-primary font-semibold truncate max-w-[300px]">
+            {article.title}
+          </li>
+        </ol>
+      </nav>
+
       {/* Back button */}
       <div className="mb-8">
         <Link
@@ -147,8 +284,9 @@ export default async function NoticiaDetailPage({
             src={article.coverImage}
             alt={article.title}
             fill
-            sizes="(max-w-4xl) 100vw, 800px"
+            sizes="(max-width: 1024px) 100vw, 800px"
             className="object-cover"
+            quality={85}
             priority
           />
         </div>

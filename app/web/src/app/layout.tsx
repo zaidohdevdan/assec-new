@@ -26,9 +26,35 @@ export const metadata = {
     template: "%s | ASSEC",
   },
   description: "Portal Institucional da Associação dos Servidores da Segurança do Ceará. Transparência, representatividade e força.",
+  keywords: [
+    "ASSEC",
+    "associação servidores segurança Ceará",
+    "segurança pública Ceará",
+    "assessoria jurídica policial",
+    "convênios servidores públicos",
+    "filiação associação segurança",
+    "benefícios servidores Ceará",
+    "Fortaleza segurança pública",
+    "sindicato polícia Ceará",
+    "direitos servidores segurança",
+  ],
+  authors: [{ name: "ASSEC - Associação dos Servidores da Segurança do Ceará", url: "https://assecce.com.br" }],
+  creator: "ASSEC Ceará",
+  publisher: "ASSEC - Associação dos Servidores da Segurança do Ceará",
+  category: "nonprofit",
+  alternates: {
+    canonical: "https://assecce.com.br",
+  },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large" as const,
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
   openGraph: {
     type: "website",
@@ -52,6 +78,9 @@ export const metadata = {
     description: "Portal Institucional da Associação dos Servidores da Segurança do Ceará. Transparência, representatividade e força.",
     images: ["/escudo-logo.webp"],
   },
+  verification: {
+    google: "", // Preencher quando verificado no Google Search Console
+  },
 };
 
 export default function RootLayout({
@@ -59,9 +88,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const jsonLd = {
+  const orgJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": "https://assecce.com.br/#organization",
     "name": "ASSEC - Associação dos Servidores da Segurança do Ceará",
     "alternateName": "ASSEC",
     "url": "https://assecce.com.br",
@@ -88,12 +118,28 @@ export default function RootLayout({
     "taxID": "66.901.120/0001-78"
   };
 
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://assecce.com.br/#website",
+    "name": "ASSEC Ceará",
+    "url": "https://assecce.com.br",
+    "publisher": {
+      "@id": "https://assecce.com.br/#organization"
+    },
+    "inLanguage": "pt-BR"
+  };
+
   return (
     <html lang="pt-BR" className={`${inter.variable} ${playfairDisplay.variable}`}>
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
       <body className="bg-bg-page text-text-primary antialiased min-h-screen flex flex-col">

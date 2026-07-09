@@ -1,7 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Shield, FileText, CheckCircle2, TrendingUp, Users, ArrowRight, Scale, Palmtree, HeartPulse, GraduationCap, Brain, HeartHandshake } from "lucide-react";
+import { Shield, CheckCircle2, TrendingUp, Users, ArrowRight, Scale, Palmtree, HeartPulse, GraduationCap, Brain, HeartHandshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PreAssociateForm } from "@/components/ui/PreAssociateForm";

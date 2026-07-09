@@ -10,7 +10,6 @@ import {
   UserCheck,
   Users2,
   FileText,
-  Download,
   HeartPulse,
   GraduationCap,
   Palmtree

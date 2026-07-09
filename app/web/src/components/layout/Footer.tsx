@@ -3,6 +3,7 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail, MapPin, Instagram } from "lucide-react";
+import { CookieSettingsLink } from "@/components/ui/CookieBanner";
 
 
 const Footer = () => {
@@ -113,6 +114,9 @@ const Footer = () => {
                   <span className="inline-block px-1 border border-accent rounded text-[9px] text-accent font-mono uppercase font-bold" aria-hidden="true">WCAG 2.2 AA</span>
                   <span className="text-[11px]">Declaração de Acessibilidade</span>
                 </Link>
+              </li>
+              <li>
+                <CookieSettingsLink />
               </li>
             </ul>
           </div>

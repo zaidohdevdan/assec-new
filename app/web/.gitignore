@@ -3,6 +3,9 @@
 out/
 build/
 
+#docs
+docs/
+
 # Dependencies
 node_modules/
 

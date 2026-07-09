@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { NewsImage } from "@/components/ui/NewsImage";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { apiFetch } from "@/lib/api";
@@ -193,10 +193,11 @@ function NoticiasContent() {
                       href={`/noticias/${featuredArticle.id}`}
                       className="w-full h-52 md:w-64 md:h-auto md:self-stretch lg:w-80 shrink-0 overflow-hidden block relative"
                     >
-                      <Image
+                      <NewsImage
                         src={featuredArticle.coverImage}
                         alt={featuredArticle.title}
                         fill
+                        variant="featured"
                         className="object-cover transition-transform duration-300 group-hover:scale-102"
                         priority
                       />
@@ -289,11 +290,11 @@ function NoticiasContent() {
                     style={{ aspectRatio: "16/9" }}
                   >
                     {art.coverImage ? (
-                      <Image
+                      <NewsImage
                         src={art.coverImage}
                         alt={art.title}
                         fill
-                        sizes="(max-w-7xl) 33vw, 100vw"
+                        variant="card"
                         className="object-cover transition-transform duration-300 group-hover:scale-102"
                       />
                     ) : (
