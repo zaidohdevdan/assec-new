@@ -24,10 +24,22 @@ export function PWAInstallBanner() {
   React.useEffect(() => {
     // 1. Register Service Worker
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((reg) => console.log("Service Worker registrado com sucesso:", reg.scope))
-        .catch((err) => console.error("Erro ao registrar Service Worker:", err));
+      if (process.env.NODE_ENV === "development") {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const registration of registrations) {
+            registration.unregister().then((success) => {
+              if (success) {
+                console.log("Service Worker desregistrado para desenvolvimento");
+              }
+            });
+          }
+        });
+      } else {
+        navigator.serviceWorker
+          .register("/sw.js")
+          .then((reg) => console.log("Service Worker registrado com sucesso:", reg.scope))
+          .catch((err) => console.error("Erro ao registrar Service Worker:", err));
+      }
     }
 
     // 2. Check if already installed (standalone mode)

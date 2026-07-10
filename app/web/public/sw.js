@@ -1,4 +1,4 @@
-const CACHE_NAME = "assec-pwa-cache-v1";
+const CACHE_NAME = "assec-pwa-cache-v2";
 const OFFLINE_URL = "/offline.html";
 
 // Pre-cache offline assets during install
@@ -15,7 +15,18 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            console.log("Service Worker: Clearing Old Cache", cache);
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener("fetch", (event) => {

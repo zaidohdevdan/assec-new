@@ -30,6 +30,7 @@ export default function PortalClientLayout({
   const [userRole, setUserRole] = React.useState<string>(initialUser?.role || "USER");
   const [userSpecialty, setUserSpecialty] = React.useState<string | null>(initialUser?.specialty || null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
 
   // Notifications state
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
@@ -142,6 +143,7 @@ export default function PortalClientLayout({
 
   // Sync profile photo if updated in profile page (we'll trigger a storage event)
   React.useEffect(() => {
+    setMounted(true);
     const handleStorageChange = () => {
       const userStr = localStorage.getItem("user");
       if (userStr) {
@@ -247,7 +249,9 @@ export default function PortalClientLayout({
                 ASSEC
               </span>
               <span className="text-[9px] uppercase tracking-widest text-accent-light mt-1">
-                {userRole === "ADMIN"
+                {!mounted
+                  ? "Carregando..."
+                  : userRole === "ADMIN"
                   ? "Portal do Admin"
                   : userRole === "PRESIDENT"
                   ? "Painel da Diretoria"
@@ -264,7 +268,9 @@ export default function PortalClientLayout({
 
           {/* User Profile Mini Badge */}
           <div className="p-5 border-b border-primary-light flex items-center gap-3 bg-primary-light/30">
-            {userPhoto ? (
+            {!mounted ? (
+              <div className="h-10 w-10 rounded-full bg-primary-light/40 border border-primary-light animate-pulse" />
+            ) : userPhoto ? (
               <img
                 src={userPhoto}
                 alt={userName}
@@ -277,10 +283,12 @@ export default function PortalClientLayout({
             )}
             <div className="flex flex-col min-w-0">
               <span className="text-xs font-semibold text-gray-200 truncate leading-tight">
-                {userName}
+                {mounted ? userName : "..."}
               </span>
               <span className="text-[10px] text-accent-light uppercase tracking-wider mt-0.5">
-                {userRole === "ADMIN"
+                {!mounted
+                  ? "Carregando..."
+                  : userRole === "ADMIN"
                   ? "Administrador"
                   : userRole === "PRESIDENT"
                   ? "Presidente"
@@ -297,23 +305,31 @@ export default function PortalClientLayout({
 
           {/* Navigation Links */}
           <nav className="p-4 space-y-1 overflow-y-auto flex-1">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isActive
-                      ? "bg-accent text-primary font-semibold"
-                      : "text-gray-300 hover:text-white hover:bg-primary-light"
-                    }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
+            {mounted ? (
+              menuItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isActive
+                        ? "bg-accent text-primary font-semibold"
+                        : "text-gray-300 hover:text-white hover:bg-primary-light"
+                      }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })
+            ) : (
+              <div className="space-y-2">
+                <div className="h-10 bg-primary-light/20 rounded animate-pulse" />
+                <div className="h-10 bg-primary-light/20 rounded animate-pulse" />
+                <div className="h-10 bg-primary-light/20 rounded animate-pulse" />
+              </div>
+            )}
           </nav>
         </div>
 
@@ -371,7 +387,9 @@ export default function PortalClientLayout({
 
               {/* User profile mini badge */}
               <div className="p-5 border-b border-primary-light flex items-center gap-3 bg-primary-light/30">
-                {userPhoto ? (
+                {!mounted ? (
+                  <div className="h-10 w-10 rounded-full bg-primary-light/40 border border-primary-light animate-pulse" />
+                ) : userPhoto ? (
                   <img
                     src={userPhoto}
                     alt={userName}
@@ -384,10 +402,12 @@ export default function PortalClientLayout({
                 )}
                 <div className="flex flex-col min-w-0">
                   <span className="text-xs font-semibold text-gray-200 truncate leading-tight">
-                    {userName}
+                    {mounted ? userName : "..."}
                   </span>
                   <span className="text-[10px] text-accent-light uppercase tracking-wider mt-0.5">
-                    {userRole === "ADMIN"
+                    {!mounted
+                      ? "Carregando..."
+                      : userRole === "ADMIN"
                       ? "Administrador"
                       : userRole === "PRESIDENT"
                       ? "Presidente"
@@ -403,24 +423,32 @@ export default function PortalClientLayout({
               </div>
 
               <nav className="p-4 space-y-1 overflow-y-auto flex-1">
-                {menuItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${isActive
-                          ? "bg-accent text-primary font-semibold"
-                          : "text-gray-300 hover:text-white hover:bg-primary-light"
-                        }`}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
+                {mounted ? (
+                  menuItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${isActive
+                            ? "bg-accent text-primary font-semibold"
+                            : "text-gray-300 hover:text-white hover:bg-primary-light"
+                          }`}
+                      >
+                        <Icon className="h-5 w-5" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })
+                ) : (
+                  <div className="space-y-2">
+                    <div className="h-10 bg-primary-light/20 rounded animate-pulse" />
+                    <div className="h-10 bg-primary-light/20 rounded animate-pulse" />
+                    <div className="h-10 bg-primary-light/20 rounded animate-pulse" />
+                  </div>
+                )}
               </nav>
             </div>
 
@@ -462,7 +490,7 @@ export default function PortalClientLayout({
 
           <div className="hidden lg:block">
             <span className="text-sm font-semibold text-text-secondary">
-              Seja bem-vindo ao portal, <strong className="text-primary">{userName}</strong>
+              Seja bem-vindo ao portal, <strong className="text-primary">{mounted ? userName : "..."}</strong>
             </span>
           </div>
 
@@ -547,7 +575,9 @@ export default function PortalClientLayout({
             </div>
 
             <Link href="/portal/perfil" className="flex items-center gap-2 group">
-              {userPhoto ? (
+              {!mounted ? (
+                <div className="h-8 w-8 rounded-full bg-primary-light/10 animate-pulse" />
+              ) : userPhoto ? (
                 <img
                   src={userPhoto}
                   alt={userName}

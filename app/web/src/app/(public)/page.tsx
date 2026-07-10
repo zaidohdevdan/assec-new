@@ -7,8 +7,7 @@ import { Card } from "@/components/ui/card";
 import { PreAssociateForm } from "@/components/ui/PreAssociateForm";
 import { NewsCarousel } from "@/components/home/NewsCarousel";
 import { VideoShortsSection } from "@/components/home/VideoShortsSection";
-import { JuridicoVideoPreview } from "@/components/home/JuridicoVideoPreview";
-
+import { JuridicoVideoWrapper } from "@/components/home/JuridicoVideoWrapper";
 
 export const metadata = {
   title: "ASSEC | Associação dos Servidores da Segurança do Ceará",
@@ -131,7 +130,7 @@ export default function HomePage() {
                   </p>
                   
                   {/* Interactive YouTube Shorts Lightbox Preview */}
-                  <JuridicoVideoPreview />
+                  <JuridicoVideoWrapper />
 
                   <ul className="space-y-2 mb-6">
                     <li className="flex items-start gap-2 text-xs text-text-secondary">
