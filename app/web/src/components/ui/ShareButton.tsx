@@ -60,7 +60,7 @@ export function ShareButton({ article }: ShareButtonProps) {
     if (logoImageRef.current) return Promise.resolve(logoImageRef.current);
     return new Promise((resolve, reject) => {
       const img = new Image();
-      img.src = "/logo-transparent.webp";
+      img.src = "/escudo-logo.webp";
       img.onload = () => {
         logoImageRef.current = img;
         resolve(img);
@@ -241,12 +241,12 @@ export function ShareButton({ article }: ShareButtonProps) {
     const logoX = (canvas.width - logoWidth) / 2;
 
     // Logo Background Glow
-    const gradGlow = ctx.createRadialGradient(canvas.width/2, logoY + logoHeight/2, 10, canvas.width/2, logoY + logoHeight/2, logoHeight);
+    const gradGlow = ctx.createRadialGradient(canvas.width / 2, logoY + logoHeight / 2, 10, canvas.width / 2, logoY + logoHeight / 2, logoHeight);
     gradGlow.addColorStop(0, theme === "dourado" ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.1)");
     gradGlow.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = gradGlow;
     ctx.beginPath();
-    ctx.arc(canvas.width/2, logoY + logoHeight/2, logoHeight, 0, Math.PI * 2);
+    ctx.arc(canvas.width / 2, logoY + logoHeight / 2, logoHeight, 0, Math.PI * 2);
     ctx.fill();
 
     try {
@@ -368,15 +368,15 @@ export function ShareButton({ article }: ShareButtonProps) {
     ctx.font = isFeed ? "bold 36px Georgia, serif" : "bold 42px Georgia, serif";
     const titleLineHeight = isFeed ? 48 : 56;
     const titleLines = wrapText(ctx, article.title, contentW - (contentPad * 2));
-    
+
     // Measure Summary
     ctx.font = isFeed ? "italic 22px sans-serif" : "italic 26px sans-serif";
     const summaryLineHeight = isFeed ? 34 : 40;
-    
+
     // Dynamic summary height calculation based on available space
     const maxSummaryLines = isFeed ? (hasImage ? 2 : 5) : (hasImage ? 4 : 8);
     const rawSummaryLines = resumo ? wrapText(ctx, resumo, contentW - (contentPad * 2)) : [];
-    
+
     let summaryLines: string[] = [];
     if (rawSummaryLines.length > 0) {
       summaryLines = rawSummaryLines.slice(0, maxSummaryLines);
@@ -421,7 +421,7 @@ export function ShareButton({ article }: ShareButtonProps) {
     ctx.fillStyle = primaryColor;
     ctx.textAlign = "left";
     ctx.font = isFeed ? "bold 36px Georgia, serif" : "bold 42px Georgia, serif";
-    
+
     let textDrawY = textStartY + contentPad;
     titleLines.forEach((line) => {
       ctx.fillText(line, contentX + contentPad, textDrawY);
@@ -436,7 +436,7 @@ export function ShareButton({ article }: ShareButtonProps) {
       ctx.moveTo(contentX + contentPad, textDrawY + 12);
       ctx.lineTo(contentX + contentW - contentPad, textDrawY + 12);
       ctx.stroke();
-      
+
       textDrawY += 25;
     }
 
@@ -578,8 +578,8 @@ export function ShareButton({ article }: ShareButtonProps) {
             <button
               onClick={() => setActiveTab("whatsapp")}
               className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all ${activeTab === "whatsapp"
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-500 hover:text-slate-800"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
                 }`}
             >
               <MessageSquare className="h-4 w-4 text-[#25D366]" />
@@ -588,8 +588,8 @@ export function ShareButton({ article }: ShareButtonProps) {
             <button
               onClick={() => setActiveTab("instagram")}
               className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all ${activeTab === "instagram"
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-500 hover:text-slate-800"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
                 }`}
             >
               <Smartphone className="h-4 w-4 text-[#C13584]" />
@@ -671,8 +671,8 @@ export function ShareButton({ article }: ShareButtonProps) {
                       <button
                         onClick={() => setFormat("feed")}
                         className={`flex flex-col items-center gap-2 p-3 rounded-xl border text-left transition-all ${format === "feed"
-                            ? "border-primary bg-primary/5 text-primary ring-2 ring-primary/20"
-                            : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+                          ? "border-primary bg-primary/5 text-primary ring-2 ring-primary/20"
+                          : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
                           }`}
                       >
                         <span className="w-8 h-8 rounded border-2 border-current aspect-square block shrink-0" />
@@ -684,8 +684,8 @@ export function ShareButton({ article }: ShareButtonProps) {
                       <button
                         onClick={() => setFormat("story")}
                         className={`flex flex-col items-center gap-2 p-3 rounded-xl border text-left transition-all ${format === "story"
-                            ? "border-primary bg-primary/5 text-primary ring-2 ring-primary/20"
-                            : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+                          ? "border-primary bg-primary/5 text-primary ring-2 ring-primary/20"
+                          : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
                           }`}
                       >
                         <span className="w-6 h-9 rounded border-2 border-current block shrink-0" />
@@ -707,8 +707,8 @@ export function ShareButton({ article }: ShareButtonProps) {
                       <button
                         onClick={() => setTheme("azul")}
                         className={`py-2 px-3 rounded-lg border text-xs font-bold transition-all ${theme === "azul"
-                            ? "border-[#0B1A30] bg-[#0B1A30] text-white ring-2 ring-[#0B1A30]/30 shadow-md"
-                            : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                          ? "border-[#0B1A30] bg-[#0B1A30] text-white ring-2 ring-[#0B1A30]/30 shadow-md"
+                          : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
                           }`}
                       >
                         Azul ASSEC
@@ -716,8 +716,8 @@ export function ShareButton({ article }: ShareButtonProps) {
                       <button
                         onClick={() => setTheme("dourado")}
                         className={`py-2 px-3 rounded-lg border text-xs font-bold transition-all ${theme === "dourado"
-                            ? "border-[#E2A93E] bg-[#FFD54F] text-slate-900 ring-2 ring-[#E2A93E]/30 shadow-md"
-                            : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                          ? "border-[#E2A93E] bg-[#FFD54F] text-slate-900 ring-2 ring-[#E2A93E]/30 shadow-md"
+                          : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
                           }`}
                       >
                         Dourado Nobre
@@ -725,8 +725,8 @@ export function ShareButton({ article }: ShareButtonProps) {
                       <button
                         onClick={() => setTheme("moderno")}
                         className={`py-2 px-3 rounded-lg border text-xs font-bold transition-all ${theme === "moderno"
-                            ? "border-[#1F2937] bg-[#1F2937] text-white ring-2 ring-[#1F2937]/30 shadow-md"
-                            : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                          ? "border-[#1F2937] bg-[#1F2937] text-white ring-2 ring-[#1F2937]/30 shadow-md"
+                          : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
                           }`}
                       >
                         Moderno Escuro
