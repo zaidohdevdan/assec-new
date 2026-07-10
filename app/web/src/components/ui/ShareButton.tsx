@@ -60,7 +60,7 @@ export function ShareButton({ article }: ShareButtonProps) {
     if (logoImageRef.current) return Promise.resolve(logoImageRef.current);
     return new Promise((resolve, reject) => {
       const img = new Image();
-      img.src = "/escudo-logo.webp";
+      img.src = "/logo-transparent.webp";
       img.onload = () => {
         logoImageRef.current = img;
         resolve(img);
@@ -131,7 +131,7 @@ export function ShareButton({ article }: ShareButtonProps) {
     ctx.textBaseline = "top";
 
     // 1. Draw Background Gradient & Premium Accents
-    const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    let bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     let primaryColor = "#FFFFFF";
     let accentColor = "#FFC107"; // ASSEC Gold
     let mutedTextColor = "rgba(255, 255, 255, 0.75)";
@@ -241,12 +241,12 @@ export function ShareButton({ article }: ShareButtonProps) {
     const logoX = (canvas.width - logoWidth) / 2;
 
     // Logo Background Glow
-    const gradGlow = ctx.createRadialGradient(canvas.width / 2, logoY + logoHeight / 2, 10, canvas.width / 2, logoY + logoHeight / 2, logoHeight);
+    const gradGlow = ctx.createRadialGradient(canvas.width/2, logoY + logoHeight/2, 10, canvas.width/2, logoY + logoHeight/2, logoHeight);
     gradGlow.addColorStop(0, theme === "dourado" ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.1)");
     gradGlow.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = gradGlow;
     ctx.beginPath();
-    ctx.arc(canvas.width / 2, logoY + logoHeight / 2, logoHeight, 0, Math.PI * 2);
+    ctx.arc(canvas.width/2, logoY + logoHeight/2, logoHeight, 0, Math.PI * 2);
     ctx.fill();
 
     try {
@@ -292,7 +292,7 @@ export function ShareButton({ article }: ShareButtonProps) {
     ctx.fillText(badgeText, canvas.width / 2, badgeY + 8);
 
     // 4. Draw Cover Image
-    let currentY = badgeY + badgeH + 40;
+    let currentY = badgeY + badgeH + 25; // Adjusted spacing before image
     let hasImage = false;
 
     if (includeCoverImage && article.coverImage) {
@@ -300,7 +300,7 @@ export function ShareButton({ article }: ShareButtonProps) {
         const coverImg = await getCoverImage(article.coverImage);
         if (coverImg) {
           const imgWidth = 920;
-          const imgHeight = isFeed ? 380 : 520;
+          const imgHeight = isFeed ? 320 : 520; // Adjusted Feed image height for visual balance
           const imgX = (canvas.width - imgWidth) / 2;
           const imgY = currentY;
 
@@ -351,7 +351,7 @@ export function ShareButton({ article }: ShareButtonProps) {
           }
           ctx.stroke();
 
-          currentY += imgHeight + 45;
+          currentY += imgHeight + 30; // Adjusted spacing after image
           hasImage = true;
         }
       } catch {
@@ -364,27 +364,38 @@ export function ShareButton({ article }: ShareButtonProps) {
     const contentX = (canvas.width - contentW) / 2;
     const contentPad = 40;
 
-    // Save current height to calculate box bounds
-    const textStartY = currentY;
-
-    // Adjust layout for Stories without image
-    if (!isFeed && !hasImage) {
-      currentY += 120;
+    // Measure Title
+    ctx.font = isFeed ? "bold 36px Georgia, serif" : "bold 42px Georgia, serif";
+    const titleLineHeight = isFeed ? 48 : 56;
+    const titleLines = wrapText(ctx, article.title, contentW - (contentPad * 2));
+    
+    // Measure Summary
+    ctx.font = isFeed ? "italic 22px sans-serif" : "italic 26px sans-serif";
+    const summaryLineHeight = isFeed ? 34 : 40;
+    
+    // Dynamic summary height calculation based on available space
+    const maxSummaryLines = isFeed ? (hasImage ? 2 : 5) : (hasImage ? 4 : 8);
+    const rawSummaryLines = resumo ? wrapText(ctx, resumo, contentW - (contentPad * 2)) : [];
+    
+    let summaryLines: string[] = [];
+    if (rawSummaryLines.length > 0) {
+      summaryLines = rawSummaryLines.slice(0, maxSummaryLines);
+      if (rawSummaryLines.length > maxSummaryLines && summaryLines.length > 0) {
+        const lastIdx = summaryLines.length - 1;
+        summaryLines[lastIdx] = summaryLines[lastIdx].substring(0, Math.max(0, summaryLines[lastIdx].length - 3)) + "...";
+      }
     }
 
-    // Setup typography for measurement
-    ctx.font = isFeed ? "bold 38px Georgia, serif" : "bold 44px Georgia, serif";
-    const titleLineHeight = isFeed ? 52 : 58;
-    const titleLines = wrapText(ctx, article.title, contentW - (contentPad * 2));
-
-    ctx.font = isFeed ? "italic 24px sans-serif" : "italic 28px sans-serif";
-    const summaryLineHeight = isFeed ? 38 : 44;
-    const summaryLines = resumo ? wrapText(ctx, resumo, contentW - (contentPad * 2)) : [];
-
-    // Calculate total height needed for texts
+    // Calculate actual card heights dynamically
     const titleTotalH = titleLines.length * titleLineHeight;
     const summaryTotalH = summaryLines.length > 0 ? (summaryLines.length * summaryLineHeight) + 25 : 0;
     const totalContentH = titleTotalH + summaryTotalH + (contentPad * 2);
+
+    // Starting Y adjustments
+    let textStartY = currentY;
+    if (!isFeed && !hasImage) {
+      textStartY = currentY + 100;
+    }
 
     // Draw Glassmorphic container box
     ctx.save();
@@ -409,8 +420,8 @@ export function ShareButton({ article }: ShareButtonProps) {
     // Draw Title inside Glass Card
     ctx.fillStyle = primaryColor;
     ctx.textAlign = "left";
-    ctx.font = isFeed ? "bold 38px Georgia, serif" : "bold 44px Georgia, serif";
-
+    ctx.font = isFeed ? "bold 36px Georgia, serif" : "bold 42px Georgia, serif";
+    
     let textDrawY = textStartY + contentPad;
     titleLines.forEach((line) => {
       ctx.fillText(line, contentX + contentPad, textDrawY);
@@ -425,18 +436,14 @@ export function ShareButton({ article }: ShareButtonProps) {
       ctx.moveTo(contentX + contentPad, textDrawY + 12);
       ctx.lineTo(contentX + contentW - contentPad, textDrawY + 12);
       ctx.stroke();
-
+      
       textDrawY += 25;
     }
 
     // Draw Summary inside Glass Card
     ctx.fillStyle = mutedTextColor;
-    ctx.font = isFeed ? "italic 24px sans-serif" : "italic 28px sans-serif";
+    ctx.font = isFeed ? "italic 22px sans-serif" : "italic 26px sans-serif";
     summaryLines.forEach((line) => {
-      // Avoid text overflowing bottom of card
-      if (isFeed && hasImage && textDrawY > canvas.height - 180) {
-        return;
-      }
       ctx.fillText(line, contentX + contentPad, textDrawY);
       textDrawY += summaryLineHeight;
     });
@@ -446,14 +453,14 @@ export function ShareButton({ article }: ShareButtonProps) {
     ctx.textAlign = "center";
     ctx.font = "bold 20px sans-serif";
     ctx.letterSpacing = "3px";
-    const footerY = canvas.height - 85;
+    const footerY = canvas.height - 75; // Adjusted footer Y position for safe margin
 
     // Footer divider line
     ctx.strokeStyle = theme === "dourado" ? "rgba(8, 24, 45, 0.15)" : "rgba(255, 255, 255, 0.15)";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(80, footerY - 40);
-    ctx.lineTo(1000, footerY - 40);
+    ctx.moveTo(80, footerY - 35);
+    ctx.lineTo(1000, footerY - 35);
     ctx.stroke();
 
     ctx.fillText("Leia a notícia completa em: assecce.com.br", canvas.width / 2, footerY);
