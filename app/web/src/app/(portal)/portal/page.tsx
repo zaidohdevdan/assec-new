@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, CreditCard, User, ShieldCheck, Clock, PlusCircle, Plus, Newspaper, Video, ArrowRight, TrendingUp, TrendingDown, Users, Scale, DollarSign, Activity, FileText, Heart } from "lucide-react";
+import { Calendar, CreditCard, User, ShieldCheck, Clock, PlusCircle, Plus, Newspaper, Video, ArrowRight, TrendingUp, TrendingDown, Users, Scale, DollarSign, Activity, FileText, Heart, Loader2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { User as UserType, ScheduleSlot, FinancialStats, MonthlyStats } from "@/lib/types";
 
@@ -28,6 +28,11 @@ export default function PortalPage() {
   const [noticesCount, setNoticesCount] = React.useState(0);
   const [benefitsCount, setBenefitsCount] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -115,8 +120,15 @@ export default function PortalPage() {
     };
   }, []);
 
-  if (!user) {
-    return null;
+  if (!mounted || !user) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center bg-transparent">
+        <div className="flex flex-col items-center gap-3 text-text-secondary animate-pulse">
+          <Loader2 className="h-10 w-10 animate-spin text-accent-dark" />
+          <span className="text-xs font-semibold">Carregando visão geral...</span>
+        </div>
+      </div>
+    );
   }
 
   // --- Admin Dashboard Render ---
