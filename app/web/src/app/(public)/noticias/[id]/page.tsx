@@ -354,7 +354,16 @@ export default async function NoticiaDetailPage({
           <h4 className="font-serif font-bold text-sm text-primary">Gostou da notícia?</h4>
           <p className="text-text-muted text-xs">Compartilhe esta informação oficial com outros servidores.</p>
         </div>
-        <ShareButton />
+        <ShareButton
+          article={{
+            id: article.id,
+            title: article.title,
+            summary: article.summary,
+            coverImage: article.coverImage,
+            type: article.type,
+            createdAt: article.createdAt,
+          }}
+        />
       </div>
 
     </article>
