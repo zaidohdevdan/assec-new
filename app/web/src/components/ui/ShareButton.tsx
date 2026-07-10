@@ -131,7 +131,7 @@ export function ShareButton({ article }: ShareButtonProps) {
     ctx.textBaseline = "top";
 
     // 1. Draw Background Gradient & Premium Accents
-    let bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     let primaryColor = "#FFFFFF";
     let accentColor = "#FFC107"; // ASSEC Gold
     let mutedTextColor = "rgba(255, 255, 255, 0.75)";
