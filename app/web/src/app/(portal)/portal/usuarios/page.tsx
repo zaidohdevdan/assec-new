@@ -380,24 +380,22 @@ export default function UsuariosManagerPage() {
                       </div>
                     </td>
                     <td className="py-4 px-4 font-semibold">
-                      <span className={`inline-block text-[9px] font-bold uppercase px-2 py-0.5 rounded border ${
-                        user.role === "ADMIN"
+                      <span className={`inline-block text-[9px] font-bold uppercase px-2 py-0.5 rounded border ${user.role === "ADMIN"
                           ? "bg-slate-100 text-slate-800 border-slate-200"
                           : user.role === "PROFESSIONAL"
-                          ? "bg-blue-50 text-blue-700 border-blue-200"
-                          : "bg-emerald-50 text-emerald-700 border-emerald-200"
-                      }`}>
+                            ? "bg-blue-50 text-blue-700 border-blue-200"
+                            : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        }`}>
                         {user.role}
                       </span>
                     </td>
                     <td className="py-4 px-4">
-                      <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase px-2 py-0.5 rounded border ${
-                        user.status === "Ativo"
+                      <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase px-2 py-0.5 rounded border ${user.status === "Ativo"
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                           : user.status === "Suspenso"
-                          ? "bg-amber-50 text-amber-700 border-amber-200"
-                          : "bg-red-50 text-red-700 border-red-200"
-                      }`}>
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : "bg-red-50 text-red-700 border-red-200"
+                        }`}>
                         {user.status}
                       </span>
                     </td>
@@ -514,7 +512,7 @@ export default function UsuariosManagerPage() {
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Photo Edit Overlay */}
                     <button
                       type="button"
@@ -526,7 +524,7 @@ export default function UsuariosManagerPage() {
                       <span className="text-[8px] font-bold uppercase mt-1">Alterar</span>
                     </button>
                   </div>
-                  
+
                   <input
                     type="file"
                     ref={fileInputRef}
