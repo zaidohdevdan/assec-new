@@ -4,7 +4,6 @@ import Footer from "@/components/layout/Footer";
 import SkipLink from "@/components/layout/SkipLink";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { PWAInstallBanner } from "@/components/ui/PWAInstallBanner";
-import { PWASplashScreen } from "@/components/ui/PWASplashScreen";
 
 export default function PublicLayout({
   children,
@@ -21,7 +20,6 @@ export default function PublicLayout({
       <Footer />
       <WhatsAppButton />
       <PWAInstallBanner />
-      <PWASplashScreen />
     </>
   );
 }
