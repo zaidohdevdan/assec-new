@@ -43,6 +43,8 @@ export default function UsuariosManagerPage() {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [editingUser, setEditingUser] = React.useState<UserType | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
+  const [userToDelete, setUserToDelete] = React.useState<UserType | null>(null);
 
   // Card Photo States for Admin Edit
   const [cardPhotoBase64, setCardPhotoBase64] = React.useState<string | null>(null);
@@ -213,26 +215,32 @@ export default function UsuariosManagerPage() {
     }
   };
 
-  const handleDeleteUser = async (user: UserType) => {
-    if (
-      !window.confirm(
-        `Deseja realmente EXCLUIR permanentemente o usuário "${user.name}"? Todos os agendamentos e registros dele serão deletados.`
-      )
-    ) {
-      return;
-    }
+  const requestDeleteUser = (user: UserType) => {
+    setUserToDelete(user);
+    setDeleteConfirmOpen(true);
+  };
 
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
+
+    setSubmitting(true);
+    setErrorMsg(null);
     try {
-      const res = await apiFetch(`/users/${user.id}`, { method: "DELETE" });
+      const res = await apiFetch(`/users/${userToDelete.id}`, { method: "DELETE" });
       if (res.ok) {
-        setSuccessMsg(`Usuário "${user.name}" excluído com sucesso.`);
+        setSuccessMsg(`Usuário "${userToDelete.name}" excluído com sucesso.`);
         fetchUsers();
       } else {
-        alert("Erro ao excluir usuário.");
+        const errData = await res.json().catch(() => null);
+        setErrorMsg(errData?.message ?? "Erro ao excluir usuário.");
       }
     } catch (err) {
       console.error(err);
-      alert("Erro ao conectar ao servidor.");
+      setErrorMsg("Erro de conexão. Verifique se o servidor está rodando.");
+    } finally {
+      setSubmitting(false);
+      setDeleteConfirmOpen(false);
+      setUserToDelete(null);
     }
   };
 
@@ -439,7 +447,7 @@ export default function UsuariosManagerPage() {
                         </Button>
                         <Button
                           variant="ghost"
-                          onClick={() => handleDeleteUser(user)}
+                          onClick={() => requestDeleteUser(user)}
                           disabled={user.email === "admin@assec.com.br"} // Protect root admin
                           className="text-red-600 hover:text-red-800 hover:bg-red-50 h-8 px-2 text-xs font-bold disabled:opacity-30"
                         >
@@ -697,6 +705,61 @@ export default function UsuariosManagerPage() {
                   </Button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Deletion Confirmation Modal */}
+      {deleteConfirmOpen && userToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in"
+          onClick={() => {
+            if (!submitting) setDeleteConfirmOpen(false);
+          }}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full relative border border-border animate-in fade-in zoom-in-95 duration-200 text-left"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-modal-title"
+          >
+            <div className="p-6">
+              <div className="flex gap-3 items-start mb-4 text-red-600">
+                <AlertCircle className="h-6 w-6 shrink-0 text-red-600" />
+                <div>
+                  <h3 id="delete-modal-title" className="font-serif font-bold text-lg text-primary">
+                    Excluir Usuário?
+                  </h3>
+                  <p className="text-xs text-text-secondary mt-1">
+                    Esta ação não pode ser desfeita.
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-xs text-text-primary mb-6 leading-relaxed">
+                Deseja realmente <strong className="text-red-600">EXCLUIR permanentemente</strong> o usuário{" "}
+                <strong>{userToDelete.name}</strong>? Todos os agendamentos e registros vinculados a ele serão deletados.
+              </div>
+
+              <div className="flex justify-end gap-3 border-t border-border pt-4">
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => setDeleteConfirmOpen(false)}
+                  className="px-4 py-2 border border-border hover:bg-gray-50 rounded-lg text-xs font-semibold text-text-secondary transition-colors disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                <Button
+                  onClick={confirmDeleteUser}
+                  loading={submitting}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-widest px-4 py-2 shadow border-none"
+                >
+                  Excluir Permanentemente
+                </Button>
+              </div>
             </div>
           </div>
         </div>
