@@ -84,9 +84,11 @@ export default function PortalClientLayout({
   React.useEffect(() => {
     // Check session via HttpOnly cookie — the browser sends it automatically
     const checkAuth = async () => {
-      // First, try to use cached display data from localStorage for instant load
+      // If we already have initialUser from the server cookie, skip localStorage
+      // override to prevent hydration mismatch (server HTML uses cookie data,
+      // localStorage may have stale/different role).
       const userStr = localStorage.getItem("user");
-      if (userStr) {
+      if (!initialUser && userStr) {
         try {
           const user = JSON.parse(userStr);
           setUserName(user.name ?? "");
@@ -101,7 +103,7 @@ export default function PortalClientLayout({
 
       // Evita chamadas de rede redundantes caso tenha sido verificado muito recentemente (cooldown)
       const now = Date.now();
-      if (userStr && (now - lastAuthCheck < AUTH_CHECK_COOLDOWN)) {
+      if ((userStr || initialUser) && (now - lastAuthCheck < AUTH_CHECK_COOLDOWN)) {
         return;
       }
 
