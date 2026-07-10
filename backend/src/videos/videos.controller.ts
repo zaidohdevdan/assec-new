@@ -23,7 +23,7 @@ export class VideosController {
   /** POST /videos — Admin only */
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.EDITOR)
   create(@Body() dto: CreateVideoDto) {
     return this.videosService.create(dto);
   }
@@ -48,7 +48,7 @@ export class VideosController {
   /** PUT /videos/:id — Admin only */
   @Put(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.EDITOR)
   update(@Param('id') id: string, @Body() dto: UpdateVideoDto) {
     return this.videosService.update(id, dto);
   }
@@ -56,7 +56,7 @@ export class VideosController {
   /** DELETE /videos/:id — Admin only */
   @Delete(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.EDITOR)
   remove(@Param('id') id: string) {
     return this.videosService.remove(id);
   }

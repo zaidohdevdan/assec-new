@@ -191,10 +191,6 @@ export default function PortalClientLayout({
       { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
       { label: "Gerenciar Usuários", href: "/portal/usuarios", icon: Users },
       { label: "Terminal Root", href: "/portal/terminal", icon: Terminal },
-      { label: "Painel Administrativo", href: "/dashboard", icon: Shield },
-      { label: "Avisos/Notícias", href: "/dashboard/notices", icon: FileText },
-      { label: "Gerenciar Benefícios", href: "/dashboard/benefits", icon: Heart },
-      { label: "Vídeos (Shorts)", href: "/dashboard/videos", icon: Video },
       { label: "Meu Perfil", href: "/portal/perfil", icon: User },
     ]
     : userRole === "PRESIDENT"
@@ -202,20 +198,37 @@ export default function PortalClientLayout({
         { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
         { label: "Fluxo Financeiro", href: "/portal/financas", icon: CreditCard },
         { label: "Relatório de Demandas", href: "/portal/demandas", icon: Calendar },
+        { label: "Notícias & Avisos", href: "/portal/noticias", icon: FileText },
+        { label: "Convênios & Benefícios", href: "/portal/beneficios", icon: Heart },
         { label: "Meu Perfil", href: "/portal/perfil", icon: User },
       ]
-      : userRole === "PROFESSIONAL"
+      : userRole === "CONTABILIDADE"
         ? [
           { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
-          { label: "Minha Agenda", href: "/portal/agenda", icon: Calendar },
+          { label: "Fluxo Financeiro", href: "/portal/financas", icon: CreditCard },
           { label: "Meu Perfil", href: "/portal/perfil", icon: User },
         ]
-        : [
-          { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
-          { label: "Meus Agendamentos", href: "/portal/agendamentos", icon: Calendar },
-          { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
-          { label: "Meu Perfil", href: "/portal/perfil", icon: User },
-        ];
+        : userRole === "EDITOR"
+          ? [
+            { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
+            { label: "Painel Administrativo", href: "/dashboard", icon: Shield },
+            { label: "Avisos/Notícias", href: "/dashboard/notices", icon: FileText },
+            { label: "Gerenciar Benefícios", href: "/dashboard/benefits", icon: Heart },
+            { label: "Vídeos (Shorts)", href: "/dashboard/videos", icon: Video },
+            { label: "Meu Perfil", href: "/portal/perfil", icon: User },
+          ]
+          : userRole === "PROFESSIONAL"
+            ? [
+              { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
+              { label: "Minha Agenda", href: "/portal/agenda", icon: Calendar },
+              { label: "Meu Perfil", href: "/portal/perfil", icon: User },
+            ]
+            : [
+              { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
+              { label: "Meus Agendamentos", href: "/portal/agendamentos", icon: Calendar },
+              { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
+              { label: "Meu Perfil", href: "/portal/perfil", icon: User },
+            ];
 
   return (
     <div className="flex min-h-screen bg-bg-page text-text-primary">
@@ -236,6 +249,10 @@ export default function PortalClientLayout({
                   ? "Portal do Admin"
                   : userRole === "PRESIDENT"
                   ? "Painel da Diretoria"
+                  : userRole === "CONTABILIDADE"
+                  ? "Gestão Contábil"
+                  : userRole === "EDITOR"
+                  ? "Editoria / Imprensa"
                   : userRole === "PROFESSIONAL"
                   ? "Portal do Profissional"
                   : "Portal do Associado"}
@@ -265,6 +282,10 @@ export default function PortalClientLayout({
                   ? "Administrador"
                   : userRole === "PRESIDENT"
                   ? "Presidente"
+                  : userRole === "CONTABILIDADE"
+                  ? "Contabilidade"
+                  : userRole === "EDITOR"
+                  ? "Editor de Conteúdo"
                   : userRole === "PROFESSIONAL"
                   ? `Profissional${userSpecialty ? ` (${userSpecialty})` : ""}`
                   : "Associado Ativo"}
@@ -368,6 +389,10 @@ export default function PortalClientLayout({
                       ? "Administrador"
                       : userRole === "PRESIDENT"
                       ? "Presidente"
+                      : userRole === "CONTABILIDADE"
+                      ? "Contabilidade"
+                      : userRole === "EDITOR"
+                      ? "Editor de Conteúdo"
                       : userRole === "PROFESSIONAL"
                       ? `Profissional${userSpecialty ? ` (${userSpecialty})` : ""}`
                       : "Associado Ativo"}

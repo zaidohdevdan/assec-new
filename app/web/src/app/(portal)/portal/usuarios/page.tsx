@@ -17,7 +17,7 @@ const userFormSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   email: z.string().email("E-mail inválido"),
   password: z.string().optional().or(z.literal("")),
-  role: z.enum(["USER", "PROFESSIONAL", "ADMIN", "PRESIDENT"]),
+  role: z.enum(["USER", "PROFESSIONAL", "ADMIN", "PRESIDENT", "CONTABILIDADE", "EDITOR"]),
   status: z.string().min(1, "Selecione o status"),
   cpf: z.string().optional().or(z.literal("")),
   rg: z.string().optional().or(z.literal("")),
@@ -312,6 +312,8 @@ export default function UsuariosManagerPage() {
               <option value="PROFESSIONAL">Profissional (PROFESSIONAL)</option>
               <option value="ADMIN">Administrador (ADMIN)</option>
               <option value="PRESIDENT">Presidente (PRESIDENT)</option>
+              <option value="CONTABILIDADE">Contabilidade (CONTABILIDADE)</option>
+              <option value="EDITOR">Editor (EDITOR)</option>
             </select>
           </div>
 
@@ -590,6 +592,8 @@ export default function UsuariosManagerPage() {
                       <option value="PROFESSIONAL">Profissional (PROFESSIONAL)</option>
                       <option value="ADMIN">Administrador (ADMIN)</option>
                       <option value="PRESIDENT">Presidente (PRESIDENT)</option>
+                      <option value="CONTABILIDADE">Contabilidade (CONTABILIDADE)</option>
+                      <option value="EDITOR">Editor (EDITOR)</option>
                     </select>
                     {errors.role?.message && (
                       <span className="text-xs text-red-600 font-medium mt-1 block">{errors.role.message}</span>

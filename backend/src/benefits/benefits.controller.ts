@@ -22,7 +22,7 @@ export class BenefitsController {
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.EDITOR)
   create(@Body() data: Prisma.BenefitCreateInput) {
     return this.benefitsService.create(data);
   }
@@ -40,14 +40,14 @@ export class BenefitsController {
 
   @Put(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.EDITOR)
   update(@Param('id') id: string, @Body() data: Prisma.BenefitUpdateInput) {
     return this.benefitsService.update(id, data);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.EDITOR)
   remove(@Param('id') id: string) {
     return this.benefitsService.remove(id);
   }

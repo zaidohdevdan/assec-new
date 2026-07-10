@@ -23,7 +23,7 @@ export class NoticesController {
   /** POST /notices — Admin only */
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.EDITOR)
   create(@Body() dto: CreateNoticeDto) {
     return this.noticesService.create(dto);
   }
@@ -48,7 +48,7 @@ export class NoticesController {
   /** PUT /notices/:id — Admin only */
   @Put(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.EDITOR)
   update(@Param('id') id: string, @Body() dto: UpdateNoticeDto) {
     return this.noticesService.update(id, dto);
   }
@@ -56,7 +56,7 @@ export class NoticesController {
   /** DELETE /notices/:id — Admin only */
   @Delete(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.EDITOR)
   remove(@Param('id') id: string) {
     return this.noticesService.remove(id);
   }

@@ -105,6 +105,8 @@ enum Role {
   ADMIN
   PROFESSIONAL
   PRESIDENT
+  CONTABILIDADE
+  EDITOR
 }
 
 model Notification {

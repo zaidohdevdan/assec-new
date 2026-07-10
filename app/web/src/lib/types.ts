@@ -2,7 +2,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: "USER" | "ADMIN" | "PROFESSIONAL" | "PRESIDENT";
+  role: "USER" | "ADMIN" | "PROFESSIONAL" | "PRESIDENT" | "CONTABILIDADE" | "EDITOR";
   cpf: string | null;
   rg: string | null;
   matricula: string | null;

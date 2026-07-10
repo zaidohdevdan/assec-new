@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, CreditCard, User, ShieldCheck, Clock, PlusCircle, ArrowRight, TrendingUp, TrendingDown, Users, Scale, DollarSign, Activity } from "lucide-react";
+import { Calendar, CreditCard, User, ShieldCheck, Clock, PlusCircle, Plus, Newspaper, Video, ArrowRight, TrendingUp, TrendingDown, Users, Scale, DollarSign, Activity, FileText, Heart } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { User as UserType, ScheduleSlot, FinancialStats, MonthlyStats } from "@/lib/types";
 
@@ -25,6 +25,8 @@ export default function PortalPage() {
   const [slots, setSlots] = React.useState<ScheduleSlot[]>([]);
   const [users, setUsers] = React.useState<UserType[]>([]);
   const [finStats, setFinStats] = React.useState<FinancialStats | null>(null);
+  const [noticesCount, setNoticesCount] = React.useState(0);
+  const [benefitsCount, setBenefitsCount] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -42,7 +44,7 @@ export default function PortalPage() {
               const data = await res.json();
               setUsers(data);
             }
-          } else if (parsedUser.role === "PRESIDENT") {
+          } else if (parsedUser.role === "PRESIDENT" || parsedUser.role === "CONTABILIDADE") {
             const resUsers = await apiFetch("/users");
             if (resUsers.ok) {
               const uData = await resUsers.json();
@@ -57,6 +59,17 @@ export default function PortalPage() {
             if (resFin.ok) {
               const fData = await resFin.json();
               setFinStats(fData);
+            }
+          } else if (parsedUser.role === "EDITOR") {
+            const resNotices = await apiFetch("/notices");
+            if (resNotices.ok) {
+              const nData = await resNotices.json();
+              setNoticesCount(nData.length);
+            }
+            const resBenefits = await apiFetch("/benefits");
+            if (resBenefits.ok) {
+              const bData = await resBenefits.json();
+              setBenefitsCount(bData.length);
             }
           } else if (parsedUser.role === "PROFESSIONAL") {
             const res = await apiFetch("/slots");
@@ -255,6 +268,322 @@ export default function PortalPage() {
     );
   }
 
+  // --- Contabilidade Dashboard Render ---
+  if (user.role === "CONTABILIDADE") {
+    const monthlyData = finStats?.monthly || [];
+    const hasMonthlyData = monthlyData.length > 0;
+    
+    let incomePoints = "";
+    let expensePoints = "";
+    const chartLabels: string[] = [];
+    
+    if (hasMonthlyData) {
+      const maxVal = Math.max(...monthlyData.map(d => Math.max(d.income, d.expense)), 1);
+      const width = 500;
+      const height = 150;
+      const padding = 25;
+      const chartW = width - padding * 2;
+      const chartH = height - padding * 2;
+      
+      monthlyData.slice().reverse().forEach((d, idx) => {
+        const x = padding + (idx / Math.max(monthlyData.length - 1, 1)) * chartW;
+        const incomeY = height - padding - (d.income / maxVal) * chartH;
+        const expenseY = height - padding - (d.expense / maxVal) * chartH;
+        
+        incomePoints += `${idx === 0 ? "M" : "L"} ${x} ${incomeY} `;
+        expensePoints += `${idx === 0 ? "M" : "L"} ${x} ${expenseY} `;
+        chartLabels.push(d.month);
+      });
+    }
+
+    return (
+      <div className="space-y-8 animate-none">
+        {/* Welcome Hero for Contabilidade */}
+        <div className="bg-gradient-to-r from-emerald-800 to-slate-900 p-6 sm:p-8 rounded-xl text-white shadow-lg relative overflow-hidden border border-emerald-700">
+          <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none">
+            <CreditCard className="h-64 w-64 text-white" />
+          </div>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <span className="bg-accent text-primary text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                Setor de Gestão Contábil
+              </span>
+              <h1 className="font-serif font-bold text-2xl sm:text-3xl mt-3">
+                Olá, {user.name}!
+              </h1>
+              <p className="text-sm text-gray-300 mt-2 max-w-xl">
+                Gerencie os lançamentos do fluxo de caixa, emita relatórios consolidados e supervisione a saúde financeira da associação.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Link href="/portal/financas">
+                <Button className="bg-accent text-primary hover:bg-accent-light font-bold text-xs uppercase tracking-widest px-5 py-3 shadow border-none">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Novo Lançamento
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="flex items-center gap-4 p-6 bg-white border border-border shadow-sm">
+            <div className="p-4 bg-emerald-50 text-emerald-600 rounded-lg">
+              <TrendingUp className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-2xl font-extrabold text-primary block">
+                {loading ? "..." : finStats ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(finStats.totalIncome) : "R$ 0,00"}
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                Total de Receitas
+              </span>
+            </div>
+          </Card>
+
+          <Card className="flex items-center gap-4 p-6 bg-white border border-border shadow-sm">
+            <div className="p-4 bg-rose-50 text-rose-600 rounded-lg">
+              <TrendingDown className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-2xl font-extrabold text-primary block">
+                {loading ? "..." : finStats ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(finStats.totalExpense) : "R$ 0,00"}
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                Total de Despesas
+              </span>
+            </div>
+          </Card>
+
+          <Card className="flex items-center gap-4 p-6 bg-white border border-border shadow-sm">
+            <div className="p-4 bg-primary text-accent rounded-lg">
+              <DollarSign className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-2xl font-extrabold text-primary block">
+                {loading ? "..." : finStats ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(finStats.balance) : "R$ 0,00"}
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                Saldo Atual em Caixa
+              </span>
+            </div>
+          </Card>
+        </div>
+
+        {/* Content Box */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2 p-6 bg-white border border-border shadow-sm">
+            <h2 className="font-serif font-bold text-lg text-primary flex items-center gap-2 mb-4">
+              <Activity className="h-5 w-5 text-accent-dark" />
+              <span>Evolução do Fluxo de Caixa Mensal</span>
+            </h2>
+            
+            {loading && <div className="text-sm text-text-secondary">Carregando histórico...</div>}
+            
+            {!loading && hasMonthlyData && (
+              <div>
+                <div className="bg-slate-50 p-4 rounded-lg border border-border">
+                  <svg viewBox="0 0 500 150" className="w-full h-auto overflow-visible">
+                    <defs>
+                      <linearGradient id="incomeGradCont" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10b981" stopOpacity="0.15"/>
+                        <stop offset="100%" stopColor="#10b981" stopOpacity="0.0"/>
+                      </linearGradient>
+                      <linearGradient id="expenseGradCont" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.15"/>
+                        <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.0"/>
+                      </linearGradient>
+                    </defs>
+                    
+                    <line x1="25" y1="25" x2="475" y2="25" stroke="#e2e8f0" strokeDasharray="3,3" />
+                    <line x1="25" y1="75" x2="475" y2="75" stroke="#e2e8f0" strokeDasharray="3,3" />
+                    <line x1="25" y1="125" x2="475" y2="125" stroke="#cbd5e1" strokeWidth="1.5" />
+                    
+                    {incomePoints && <path d={`${incomePoints} L 475 125 L 25 125 Z`} fill="url(#incomeGradCont)" />}
+                    {expensePoints && <path d={`${expensePoints} L 475 125 L 25 125 Z`} fill="url(#expenseGradCont)" />}
+                    
+                    {incomePoints && <path d={incomePoints} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
+                    {expensePoints && <path d={expensePoints} fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
+                    
+                    {monthlyData.slice().reverse().map((d, idx) => {
+                      const maxVal = Math.max(...monthlyData.map(i => Math.max(i.income, i.expense)), 1);
+                      const x = 25 + (idx / Math.max(monthlyData.length - 1, 1)) * 450;
+                      const incomeY = 150 - 25 - (d.income / maxVal) * 100;
+                      const expenseY = 150 - 25 - (d.expense / maxVal) * 100;
+                      
+                      return (
+                        <g key={idx}>
+                          <circle cx={x} cy={incomeY} r="3.5" className="fill-emerald-500 stroke-white stroke-2" />
+                          <circle cx={x} cy={expenseY} r="3.5" className="fill-rose-500 stroke-white stroke-2" />
+                        </g>
+                      );
+                    })}
+                  </svg>
+                  
+                  <div className="flex justify-between px-6 mt-2 text-[9px] font-bold text-text-muted">
+                    {chartLabels.map((l, i) => (
+                      <span key={i}>{l}</span>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex justify-center gap-4 text-[10px] font-bold text-text-secondary mt-3">
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-emerald-500 rounded-full" /> Receitas</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-rose-500 rounded-full" /> Despesas</span>
+                </div>
+              </div>
+            )}
+            
+            {!loading && !hasMonthlyData && (
+              <div className="text-sm text-text-muted py-6 text-center">Nenhum histórico mensal disponível.</div>
+            )}
+          </Card>
+
+          <Card className="p-6 bg-white border border-border shadow-sm">
+            <h2 className="font-serif font-bold text-base text-primary flex items-center gap-2 mb-4">
+              <ShieldCheck className="h-5 w-5 text-accent-dark" />
+              <span>Ações do Caixa</span>
+            </h2>
+            <div className="space-y-3">
+              <Link href="/portal/financas" className="block p-3 border border-border rounded-lg bg-gray-50/50 hover:bg-gray-100/50 transition-colors">
+                <p className="font-bold text-xs text-primary uppercase tracking-wider">Lançamentos Completos</p>
+                <p className="text-[11px] text-text-secondary mt-0.5">Veja a planilha geral de receitas e despesas registradas.</p>
+              </Link>
+              <Link href="/portal/financas" className="block p-3 border border-border rounded-lg bg-gray-50/50 hover:bg-gray-100/50 transition-colors">
+                <p className="font-bold text-xs text-primary uppercase tracking-wider">Exportar Relatórios</p>
+                <p className="text-[11px] text-text-secondary mt-0.5">Gere planilhas em CSV (Excel) ou demonstrativos para PDF.</p>
+              </Link>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Editor Dashboard Render ---
+  if (user.role === "EDITOR") {
+    return (
+      <div className="space-y-8 animate-none">
+        {/* Welcome Hero for Editor */}
+        <div className="bg-gradient-to-r from-slate-700 to-indigo-900 p-6 sm:p-8 rounded-xl text-white shadow-lg relative overflow-hidden border border-indigo-700">
+          <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none">
+            <FileText className="h-64 w-64 text-white" />
+          </div>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <span className="bg-accent text-primary text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                Redação e Comunicação Social
+              </span>
+              <h1 className="font-serif font-bold text-2xl sm:text-3xl mt-3">
+                Olá, {user.name}!
+              </h1>
+              <p className="text-sm text-gray-300 mt-2 max-w-xl">
+                Publique novas notícias, anuncie benefícios para os associados e interaja postando vídeos curtos no portal.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Link href="/dashboard/notices">
+                <Button className="bg-accent text-primary hover:bg-accent-light font-bold text-xs uppercase tracking-widest px-5 py-3 shadow border-none">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Publicar Notícia
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="flex items-center gap-4 p-6 bg-white border border-border shadow-sm">
+            <div className="p-4 bg-indigo-50 text-indigo-600 rounded-lg">
+              <Newspaper className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-2xl font-extrabold text-primary block">
+                {loading ? "..." : noticesCount}
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                Notícias Publicadas
+              </span>
+            </div>
+          </Card>
+
+          <Card className="flex items-center gap-4 p-6 bg-white border border-border shadow-sm">
+            <div className="p-4 bg-rose-50 text-rose-600 rounded-lg">
+              <Heart className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-2xl font-extrabold text-primary block">
+                {loading ? "..." : benefitsCount}
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                Benefícios & Convênios
+              </span>
+            </div>
+          </Card>
+
+          <Card className="flex items-center gap-4 p-6 bg-white border border-border shadow-sm">
+            <div className="p-4 bg-amber-50 text-amber-600 rounded-lg">
+              <Video className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-2xl font-extrabold text-primary block">
+                Ativo
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                Postagem de Shorts
+              </span>
+            </div>
+          </Card>
+        </div>
+
+        {/* Content Box */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2 p-6 bg-white border border-border shadow-sm">
+            <h2 className="font-serif font-bold text-lg text-primary flex items-center gap-2 mb-4">
+              <Newspaper className="h-5 w-5 text-accent-dark" />
+              <span>Painel de Edição Rápida</span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Link href="/dashboard/notices" className="p-4 border border-border rounded-lg bg-gray-50/50 hover:bg-gray-100/50 transition-colors">
+                <FileText className="h-6 w-6 text-indigo-600 mb-2" />
+                <p className="font-bold text-xs text-primary uppercase tracking-wider">Avisos e Notícias</p>
+                <p className="text-[11px] text-text-secondary mt-1">Crie comunicados urgentes, notícias institucionais e notas gerais para os associados.</p>
+              </Link>
+              <Link href="/dashboard/benefits" className="p-4 border border-border rounded-lg bg-gray-50/50 hover:bg-gray-100/50 transition-colors">
+                <Heart className="h-6 w-6 text-rose-500 mb-2" />
+                <p className="font-bold text-xs text-primary uppercase tracking-wider">Convênios e Hotéis</p>
+                <p className="text-[11px] text-text-secondary mt-1">Atualize parcerias educacionais, planos de saúde ou pousadas de colônia de férias.</p>
+              </Link>
+              <Link href="/dashboard/videos" className="p-4 border border-border rounded-lg bg-gray-50/50 hover:bg-gray-100/50 transition-colors">
+                <Video className="h-6 w-6 text-amber-500 mb-2" />
+                <p className="font-bold text-xs text-primary uppercase tracking-wider">Vídeos Shorts</p>
+                <p className="text-[11px] text-text-secondary mt-1">Compartilhe vídeos de eventos ou informativos em formato vertical para o feed mobile.</p>
+              </Link>
+              <div className="p-4 border border-dashed border-border rounded-lg flex flex-col justify-center items-center text-center">
+                <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider">Novas Funcionalidades</span>
+                <p className="text-[11px] text-text-muted mt-1">Mais opções de edição de mídia social serão integradas em breve.</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-white border border-border shadow-sm">
+            <h2 className="font-serif font-bold text-base text-primary flex items-center gap-2 mb-4">
+              <ShieldCheck className="h-5 w-5 text-accent-dark" />
+              <span>Instruções Editoriais</span>
+            </h2>
+            <div className="text-xs text-text-secondary space-y-3 leading-relaxed">
+              <p>📌 <strong>Notícias:</strong> Dê preferência a imagens leves na capa (JPEG/PNG) e resumos concisos para facilitar o compartilhamento no WhatsApp.</p>
+              <p>📌 <strong>Convênios:</strong> Certifique-se de preencher a localização geográfica e comodidades disponíveis (Wi-Fi, piscina, etc.) nas pousadas.</p>
+              <p>📌 <strong>Vídeos:</strong> Os Shorts devem ser gravados em formato vertical (9:16) e ter duração sugerida menor que 60 segundos.</p>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   // --- President Dashboard Render ---
   if (user.role === "PRESIDENT") {
     const associates = users.filter((u) => u.role === "USER").length;
@@ -262,6 +591,32 @@ export default function PortalPage() {
     const recentSchedules = [...schedules]
       .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
       .slice(0, 4);
+
+    const monthlyData = finStats?.monthly || [];
+    const hasMonthlyData = monthlyData.length > 0;
+    
+    let incomePoints = "";
+    let expensePoints = "";
+    const chartLabels: string[] = [];
+    
+    if (hasMonthlyData) {
+      const maxVal = Math.max(...monthlyData.map(d => Math.max(d.income, d.expense)), 1);
+      const width = 500;
+      const height = 150;
+      const padding = 25;
+      const chartW = width - padding * 2;
+      const chartH = height - padding * 2;
+      
+      monthlyData.slice().reverse().forEach((d, idx) => {
+        const x = padding + (idx / Math.max(monthlyData.length - 1, 1)) * chartW;
+        const incomeY = height - padding - (d.income / maxVal) * chartH;
+        const expenseY = height - padding - (d.expense / maxVal) * chartH;
+        
+        incomePoints += `${idx === 0 ? "M" : "L"} ${x} ${incomeY} `;
+        expensePoints += `${idx === 0 ? "M" : "L"} ${x} ${expenseY} `;
+        chartLabels.push(d.month);
+      });
+    }
 
     return (
       <div className="space-y-8 animate-none">
@@ -290,6 +645,34 @@ export default function PortalPage() {
                 </Button>
               </Link>
             </div>
+          </div>
+        </div>
+
+        {/* Executive Quick Actions */}
+        <div className="bg-white border border-border p-4 rounded-xl shadow-sm flex flex-wrap gap-4 items-center">
+          <span className="text-xs font-extrabold uppercase tracking-wider text-text-secondary flex items-center gap-1.5">
+            <Activity className="h-4 w-4 text-accent-dark" />
+            Atalhos Executivos:
+          </span>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/portal/noticias">
+              <Button variant="outline" className="border-border text-primary hover:bg-slate-50 hover:text-accent-dark font-bold text-xs uppercase py-1.5 px-3 h-auto">
+                <FileText className="h-3.5 w-3.5 mr-1.5 text-accent-dark" />
+                Supervisionar Avisos
+              </Button>
+            </Link>
+            <Link href="/portal/beneficios">
+              <Button variant="outline" className="border-border text-primary hover:bg-slate-50 hover:text-accent-dark font-bold text-xs uppercase py-1.5 px-3 h-auto">
+                <Heart className="h-3.5 w-3.5 mr-1.5 text-rose-500" />
+                Supervisionar Convênios
+              </Button>
+            </Link>
+            <Link href="/portal/financas">
+              <Button variant="outline" className="border-border text-primary hover:bg-slate-50 hover:text-accent-dark font-bold text-xs uppercase py-1.5 px-3 h-auto">
+                <CreditCard className="h-3.5 w-3.5 mr-1.5 text-emerald-500" />
+                Exportar Finanças
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -383,18 +766,69 @@ export default function PortalPage() {
                 </div>
 
                 <div className="border-t border-border pt-4">
-                  <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider block mb-2">Resumo de Lançamentos</span>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {finStats.monthly && finStats.monthly.slice(0, 4).map((m: MonthlyStats, idx: number) => (
-                      <div key={idx} className="flex justify-between items-center p-2.5 border border-border rounded-lg bg-gray-50/50">
-                        <span className="text-xs font-bold text-primary">{m.month}</span>
-                        <div className="flex gap-3 text-xs">
-                          <span className="text-emerald-600 font-semibold">+{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(m.income)}</span>
-                          <span className="text-rose-600 font-semibold">-{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(m.expense)}</span>
+                  <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider block mb-3">Evolução do Fluxo de Caixa Mensal</span>
+                  {hasMonthlyData ? (
+                    <div className="space-y-4">
+                      {/* SVG line chart */}
+                      <div className="bg-slate-50 p-4 rounded-lg border border-border">
+                        <svg viewBox="0 0 500 150" className="w-full h-auto overflow-visible">
+                          <defs>
+                            <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#10b981" stopOpacity="0.15"/>
+                              <stop offset="100%" stopColor="#10b981" stopOpacity="0.0"/>
+                            </linearGradient>
+                            <linearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.15"/>
+                              <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.0"/>
+                            </linearGradient>
+                          </defs>
+                          
+                          {/* Grid Lines */}
+                          <line x1="25" y1="25" x2="475" y2="25" stroke="#e2e8f0" strokeDasharray="3,3" />
+                          <line x1="25" y1="75" x2="475" y2="75" stroke="#e2e8f0" strokeDasharray="3,3" />
+                          <line x1="25" y1="125" x2="475" y2="125" stroke="#cbd5e1" strokeWidth="1.5" />
+                          
+                          {/* Filled Areas */}
+                          {incomePoints && <path d={`${incomePoints} L 475 125 L 25 125 Z`} fill="url(#incomeGrad)" />}
+                          {expensePoints && <path d={`${expensePoints} L 475 125 L 25 125 Z`} fill="url(#expenseGrad)" />}
+                          
+                          {/* Colored lines */}
+                          {incomePoints && <path d={incomePoints} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
+                          {expensePoints && <path d={expensePoints} fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
+                          
+                          {/* Data points */}
+                          {monthlyData.slice().reverse().map((d, idx) => {
+                            const maxVal = Math.max(...monthlyData.map(i => Math.max(i.income, i.expense)), 1);
+                            const x = 25 + (idx / Math.max(monthlyData.length - 1, 1)) * 450;
+                            const incomeY = 150 - 25 - (d.income / maxVal) * 100;
+                            const expenseY = 150 - 25 - (d.expense / maxVal) * 100;
+                            
+                            return (
+                              <g key={idx}>
+                                <circle cx={x} cy={incomeY} r="3.5" className="fill-emerald-500 stroke-white stroke-2" />
+                                <circle cx={x} cy={expenseY} r="3.5" className="fill-rose-500 stroke-white stroke-2" />
+                              </g>
+                            );
+                          })}
+                        </svg>
+                        
+                        {/* Axis Labels */}
+                        <div className="flex justify-between px-6 mt-2 text-[9px] font-bold text-text-muted">
+                          {chartLabels.map((l, i) => (
+                            <span key={i}>{l}</span>
+                          ))}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                      
+                      {/* Legend */}
+                      <div className="flex justify-center gap-4 text-[10px] font-bold text-text-secondary">
+                        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-emerald-500 rounded-full" /> Receitas</span>
+                        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-rose-500 rounded-full" /> Despesas</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-text-muted py-6 text-center">Nenhum histórico mensal disponível.</div>
+                  )}
                 </div>
               </div>
             )}

@@ -21,7 +21,7 @@ export class FinancialsController {
   constructor(private readonly financialsService: FinancialsService) {}
 
   @Post()
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.CONTABILIDADE)
   create(@Body() data: Prisma.FinancialRecordCreateInput) {
     // Convert date string/input to actual Date object if it arrives as string
     if (data.date && typeof data.date === 'string') {
@@ -31,25 +31,25 @@ export class FinancialsController {
   }
 
   @Get()
-  @Roles(Role.ADMIN, Role.PRESIDENT)
+  @Roles(Role.ADMIN, Role.PRESIDENT, Role.CONTABILIDADE)
   findAll() {
     return this.financialsService.findAll();
   }
 
   @Get('stats')
-  @Roles(Role.ADMIN, Role.PRESIDENT)
+  @Roles(Role.ADMIN, Role.PRESIDENT, Role.CONTABILIDADE)
   getStats() {
     return this.financialsService.getStats();
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN, Role.PRESIDENT)
+  @Roles(Role.ADMIN, Role.PRESIDENT, Role.CONTABILIDADE)
   findOne(@Param('id') id: string) {
     return this.financialsService.findOne(id);
   }
 
   @Put(':id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.CONTABILIDADE)
   update(
     @Param('id') id: string,
     @Body() data: Prisma.FinancialRecordUpdateInput,
@@ -61,7 +61,7 @@ export class FinancialsController {
   }
 
   @Delete(':id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.CONTABILIDADE)
   remove(@Param('id') id: string) {
     return this.financialsService.remove(id);
   }

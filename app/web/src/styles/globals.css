@@ -243,3 +243,48 @@ nav {
   word-break: normal;
   white-space: pre;
 }
+
+/* Print styles for cleaner PDFs and reports */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt !important;
+  }
+  /* Hide sidebar, header, navigation controls, and other UI panels */
+  aside, 
+  nav, 
+  header, 
+  footer, 
+  button, 
+  select, 
+  input,
+  .no-print {
+    display: none !important;
+  }
+  /* Force main content wrapper to span full page width */
+  main, 
+  .print-full-width {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
+  }
+  /* Simplify table styling and borders for printing */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 1.5rem !important;
+  }
+  th, td {
+    border: 1px solid #cbd5e1 !important;
+    padding: 8px !important;
+    color: black !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+

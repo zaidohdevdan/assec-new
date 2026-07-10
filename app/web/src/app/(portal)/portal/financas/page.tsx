@@ -13,7 +13,9 @@ import {
   Trash2, 
   Filter, 
   FileSpreadsheet,
-  AlertCircle
+  AlertCircle,
+  Download,
+  Printer
 } from "lucide-react";
 
 interface FinancialRecord {
@@ -137,14 +139,46 @@ export default function FinancasPage() {
     }
   };
 
+  const handleExportCSV = () => {
+    if (records.length === 0) return;
+    
+    // CSV Header (UTF-8 BOM is added for correct characters display in Excel)
+    const headers = ["Descrição", "Categoria", "Data", "Tipo", "Valor (R$)"];
+    const rows = records.map((rec) => [
+      `"${rec.description.replace(/"/g, '""')}"`,
+      `"${rec.category}"`,
+      new Date(rec.date).toLocaleDateString("pt-BR"),
+      rec.type === "INCOME" ? "Receita" : "Despesa",
+      rec.amount.toFixed(2),
+    ]);
+
+    const csvContent = 
+      "data:text/csv;charset=utf-8,\uFEFF" + 
+      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `balanco-financeiro-assec-${new Date().getFullYear()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handlePrintPDF = () => {
+    window.print();
+  };
+
   if (!user) {
     return null;
   }
 
   const isAdmin = user.role === "ADMIN";
   const isPresident = user.role === "PRESIDENT";
+  const isContabilidade = user.role === "CONTABILIDADE";
+  const canManage = isAdmin || isContabilidade;
 
-  if (!isAdmin && !isPresident) {
+  if (!isAdmin && !isPresident && !isContabilidade) {
     return (
       <div className="p-8 text-center text-rose-600 font-semibold">
         Acesso negado. Esta área é restrita à diretoria e administração.
@@ -172,15 +206,35 @@ export default function FinancasPage() {
               : "Controle financeiro da associação. Cadastre lançamentos, audite despesas e acompanhe o balanço."}
           </p>
         </div>
-        {isAdmin && (
+        <div className="flex flex-wrap gap-2 self-start sm:self-center">
           <Button
-            onClick={() => setShowAddModal(true)}
-            className="bg-accent text-primary hover:bg-accent-light font-bold text-xs uppercase tracking-widest px-4 py-2.5 shadow border-none self-start sm:self-center"
+            variant="outline"
+            onClick={handleExportCSV}
+            className="border-border text-primary hover:bg-slate-50 font-bold text-xs uppercase tracking-widest px-4 py-2.5 shadow"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Lançamento
+            <Download className="h-4 w-4 mr-2" />
+            Exportar CSV
           </Button>
-        )}
+          
+          <Button
+            variant="outline"
+            onClick={handlePrintPDF}
+            className="border-border text-primary hover:bg-slate-50 font-bold text-xs uppercase tracking-widest px-4 py-2.5 shadow"
+          >
+            <Printer className="h-4 w-4 mr-2" />
+            Imprimir PDF
+          </Button>
+          
+          {canManage && (
+            <Button
+              onClick={() => setShowAddModal(true)}
+              className="bg-accent text-primary hover:bg-accent-light font-bold text-xs uppercase tracking-widest px-4 py-2.5 shadow border-none"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Novo Lançamento
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -330,7 +384,7 @@ export default function FinancasPage() {
                   <th className="p-4">Categoria</th>
                   <th className="p-4">Data</th>
                   <th className="p-4 text-right">Valor</th>
-                  {isAdmin && <th className="p-4 text-center">Ações</th>}
+                  {canManage && <th className="p-4 text-center">Ações</th>}
                 </tr>
               </thead>
               <tbody>
@@ -349,7 +403,7 @@ export default function FinancasPage() {
                       {rec.type === "INCOME" ? "+" : ""}
                       {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(rec.amount)}
                     </td>
-                    {isAdmin && (
+                    {canManage && (
                       <td className="p-4 text-center">
                         <button
                           type="button"
@@ -370,7 +424,7 @@ export default function FinancasPage() {
       </Card>
 
       {/* Add Record Modal */}
-      {showAddModal && isAdmin && (
+      {showAddModal && canManage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden border border-border">
             <div className="p-6 border-b border-border bg-slate-50 flex justify-between items-center">
