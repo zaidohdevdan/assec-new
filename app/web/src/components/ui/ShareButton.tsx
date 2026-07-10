@@ -127,109 +127,193 @@ export function ShareButton({ article }: ShareButtonProps) {
     canvas.width = 1080;
     canvas.height = isFeed ? 1080 : 1920;
 
-    // 1. Draw Background Gradient
-    let gradient;
+    // Set text baseline to top for consistent vertical layouts
+    ctx.textBaseline = "top";
+
+    // 1. Draw Background Gradient & Premium Accents
+    const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    let primaryColor = "#FFFFFF";
+    let accentColor = "#FFC107"; // ASSEC Gold
+    let mutedTextColor = "rgba(255, 255, 255, 0.75)";
+    let glassBg = "rgba(255, 255, 255, 0.05)";
+    let glassBorder = "rgba(255, 255, 255, 0.1)";
+
     if (theme === "azul") {
-      gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, "#0B1A30");
-      gradient.addColorStop(1, "#050C16");
-      ctx.fillStyle = gradient;
+      bgGradient.addColorStop(0, "#0a192f");
+      bgGradient.addColorStop(0.5, "#020c1b");
+      bgGradient.addColorStop(1, "#010409");
+      ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Subtle decorative lines (Gold/White)
-      ctx.strokeStyle = "rgba(255, 213, 79, 0.08)";
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height * 0.1, 400, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.strokeStyle = "rgba(255, 224, 130, 0.05)";
+      // Elegant gold outer border (thin margin)
+      ctx.strokeStyle = "rgba(218, 165, 32, 0.25)"; // Gold
       ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, canvas.height * 0.7);
-      ctx.lineTo(canvas.width, canvas.height * 0.78);
-      ctx.moveTo(0, canvas.height * 0.73);
-      ctx.lineTo(canvas.width, canvas.height * 0.81);
-      ctx.stroke();
-    } else if (theme === "dourado") {
-      gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, "#E2A93E");
-      gradient.addColorStop(0.5, "#FFD54F");
-      gradient.addColorStop(1, "#B57C1E");
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeRect(35, 35, canvas.width - 70, canvas.height - 70);
 
-      // Gold pattern
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+      // Secondary inset border
+      ctx.strokeStyle = "rgba(218, 165, 32, 0.1)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(45, 45, canvas.width - 90, canvas.height - 90);
+
+      // Gold corner details
+      const cSize = 25;
+      ctx.strokeStyle = "rgba(218, 165, 32, 0.6)";
       ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, 450, 0, Math.PI * 2);
-      ctx.stroke();
-    } else {
-      // moderno (escuro)
-      gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, "#1F2937");
-      gradient.addColorStop(1, "#111827");
-      ctx.fillStyle = gradient;
+      // Top-Left
+      ctx.beginPath(); ctx.moveTo(35, 35 + cSize); ctx.lineTo(35, 35); ctx.lineTo(35 + cSize, 35); ctx.stroke();
+      // Top-Right
+      ctx.beginPath(); ctx.moveTo(canvas.width - 35, 35 + cSize); ctx.lineTo(canvas.width - 35, 35); ctx.lineTo(canvas.width - 35 - cSize, 35); ctx.stroke();
+      // Bottom-Left
+      ctx.beginPath(); ctx.moveTo(35, canvas.height - 35 - cSize); ctx.lineTo(35, canvas.height - 35); ctx.lineTo(35 + cSize, canvas.height - 35); ctx.stroke();
+      // Bottom-Right
+      ctx.beginPath(); ctx.moveTo(canvas.width - 35, canvas.height - 35 - cSize); ctx.lineTo(canvas.width - 35, canvas.height - 35); ctx.lineTo(canvas.width - 35 - cSize, canvas.height - 35); ctx.stroke();
+
+      primaryColor = "#FFFFFF";
+      accentColor = "#FFD54F";
+      mutedTextColor = "rgba(255, 255, 255, 0.75)";
+      glassBg = "rgba(255, 255, 255, 0.05)";
+      glassBorder = "rgba(255, 255, 255, 0.1)";
+    } else if (theme === "dourado") {
+      bgGradient.addColorStop(0, "#FCE7A2");
+      bgGradient.addColorStop(0.5, "#E2A93E");
+      bgGradient.addColorStop(1, "#B57C1E");
+      ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Cyber Grid
-      ctx.strokeStyle = "rgba(59, 130, 246, 0.08)";
+      // Dark elegant border
+      ctx.strokeStyle = "rgba(8, 24, 45, 0.2)";
       ctx.lineWidth = 2;
-      for (let i = 0; i < canvas.width; i += 120) {
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i, canvas.height);
-        ctx.stroke();
-      }
+      ctx.strokeRect(35, 35, canvas.width - 70, canvas.height - 70);
+
+      // Dark corner details
+      const cSize = 25;
+      ctx.strokeStyle = "rgba(8, 24, 45, 0.5)";
+      ctx.lineWidth = 3;
+      // Top-Left
+      ctx.beginPath(); ctx.moveTo(35, 35 + cSize); ctx.lineTo(35, 35); ctx.lineTo(35 + cSize, 35); ctx.stroke();
+      // Top-Right
+      ctx.beginPath(); ctx.moveTo(canvas.width - 35, 35 + cSize); ctx.lineTo(canvas.width - 35, 35); ctx.lineTo(canvas.width - 35 - cSize, 35); ctx.stroke();
+      // Bottom-Left
+      ctx.beginPath(); ctx.moveTo(35, canvas.height - 35 - cSize); ctx.lineTo(35, canvas.height - 35); ctx.lineTo(35 + cSize, canvas.height - 35); ctx.stroke();
+      // Bottom-Right
+      ctx.beginPath(); ctx.moveTo(canvas.width - 35, canvas.height - 35 - cSize); ctx.lineTo(canvas.width - 35, canvas.height - 35); ctx.lineTo(canvas.width - 35 - cSize, canvas.height - 35); ctx.stroke();
+
+      primaryColor = "#0B1A30";
+      accentColor = "#334155";
+      mutedTextColor = "rgba(8, 24, 45, 0.8)";
+      glassBg = "rgba(255, 255, 255, 0.25)";
+      glassBorder = "rgba(255, 255, 255, 0.4)";
+    } else { // moderno (escuro)
+      bgGradient.addColorStop(0, "#1e1b4b"); // Deep purple
+      bgGradient.addColorStop(1, "#030712"); // Midnight black
+      ctx.fillStyle = bgGradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Modern neon border
+      ctx.strokeStyle = "rgba(99, 102, 241, 0.3)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(35, 35, canvas.width - 70, canvas.height - 70);
+
+      // Neon corner highlights
+      const cSize = 25;
+      ctx.strokeStyle = "#818cf8";
+      ctx.lineWidth = 3;
+      // Top-Left
+      ctx.beginPath(); ctx.moveTo(35, 35 + cSize); ctx.lineTo(35, 35); ctx.lineTo(35 + cSize, 35); ctx.stroke();
+      // Top-Right
+      ctx.beginPath(); ctx.moveTo(canvas.width - 35, 35 + cSize); ctx.lineTo(canvas.width - 35, 35); ctx.lineTo(canvas.width - 35 - cSize, 35); ctx.stroke();
+      // Bottom-Left
+      ctx.beginPath(); ctx.moveTo(35, canvas.height - 35 - cSize); ctx.lineTo(35, canvas.height - 35); ctx.lineTo(35 + cSize, canvas.height - 35); ctx.stroke();
+      // Bottom-Right
+      ctx.beginPath(); ctx.moveTo(canvas.width - 35, canvas.height - 35 - cSize); ctx.lineTo(canvas.width - 35, canvas.height - 35); ctx.lineTo(canvas.width - 35 - cSize, canvas.height - 35); ctx.stroke();
+
+      primaryColor = "#FFFFFF";
+      accentColor = "#a5b4fc";
+      mutedTextColor = "rgba(243, 244, 246, 0.75)";
+      glassBg = "rgba(255, 255, 255, 0.04)";
+      glassBorder = "rgba(255, 255, 255, 0.08)";
     }
 
-    const textColor = theme === "dourado" ? "#0B1A30" : "#FFFFFF";
-    const subtitleColor = theme === "dourado" ? "#060F1E" : "#FFC107";
-    const bodyTextColor = theme === "dourado" ? "#1e293b" : "rgba(255, 255, 255, 0.9)";
-
     // 2. Draw ASSEC Logo
-    const logoY = isFeed ? 70 : 120;
-    const logoHeight = isFeed ? 130 : 160;
+    const logoY = isFeed ? 65 : 120;
+    const logoHeight = isFeed ? 120 : 150;
     const logoWidth = logoHeight;
     const logoX = (canvas.width - logoWidth) / 2;
+
+    // Logo Background Glow
+    const gradGlow = ctx.createRadialGradient(canvas.width / 2, logoY + logoHeight / 2, 10, canvas.width / 2, logoY + logoHeight / 2, logoHeight);
+    gradGlow.addColorStop(0, theme === "dourado" ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.1)");
+    gradGlow.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = gradGlow;
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, logoY + logoHeight / 2, logoHeight, 0, Math.PI * 2);
+    ctx.fill();
 
     try {
       const logoImg = await getLogo();
       ctx.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
     } catch {
-      ctx.fillStyle = subtitleColor;
+      ctx.fillStyle = accentColor;
       ctx.font = "bold 44px Georgia, serif";
       ctx.textAlign = "center";
-      ctx.fillText("ASSEC", canvas.width / 2, logoY + 80);
+      ctx.fillText("ASSEC", canvas.width / 2, logoY + 40);
     }
 
     // Branding text
-    ctx.fillStyle = textColor;
+    ctx.fillStyle = primaryColor;
     ctx.textAlign = "center";
-    ctx.font = "bold 20px sans-serif";
-    ctx.letterSpacing = "4px";
-    const brandingY = logoY + logoHeight + 35;
+    ctx.font = "bold 18px sans-serif";
+    ctx.letterSpacing = "5px";
+    const brandingY = logoY + logoHeight + 30;
     ctx.fillText("ASSOCIAÇÃO DOS SERVIDORES DA SEGURANÇA DO CEARÁ", canvas.width / 2, brandingY);
 
-    // 3. Draw Cover Image
-    let currentY = brandingY + 60;
+    // 3. Draw Category / Type Badge
+    const badgeText = article.type.toUpperCase();
+    ctx.font = "bold 16px sans-serif";
+    ctx.letterSpacing = "2px";
+    const badgeW = ctx.measureText(badgeText).width + 30;
+    const badgeH = 32;
+    const badgeX = (canvas.width - badgeW) / 2;
+    const badgeY = brandingY + 30;
+
+    // Draw badge background
+    ctx.fillStyle = theme === "dourado" ? "rgba(8, 24, 45, 0.15)" : "rgba(255, 255, 255, 0.15)";
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 16);
+    } else {
+      ctx.rect(badgeX, badgeY, badgeW, badgeH);
+    }
+    ctx.fill();
+
+    // Draw badge text
+    ctx.fillStyle = theme === "dourado" ? "#0B1A30" : accentColor;
+    ctx.textAlign = "center";
+    ctx.fillText(badgeText, canvas.width / 2, badgeY + 8);
+
+    // 4. Draw Cover Image
+    let currentY = badgeY + badgeH + 40;
     let hasImage = false;
 
     if (includeCoverImage && article.coverImage) {
       try {
         const coverImg = await getCoverImage(article.coverImage);
         if (coverImg) {
-          const imgWidth = 900;
-          const imgHeight = isFeed ? 360 : 480;
+          const imgWidth = 920;
+          const imgHeight = isFeed ? 380 : 520;
           const imgX = (canvas.width - imgWidth) / 2;
           const imgY = currentY;
+
+          // Shadow under cover image
+          ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+          ctx.shadowBlur = 20;
+          ctx.shadowOffsetY = 10;
 
           ctx.save();
           // Clip path for rounded corners
           ctx.beginPath();
           if (ctx.roundRect) {
-            ctx.roundRect(imgX, imgY, imgWidth, imgHeight, 24);
+            ctx.roundRect(imgX, imgY, imgWidth, imgHeight, 20);
           } else {
             ctx.rect(imgX, imgY, imgWidth, imgHeight);
           }
@@ -251,18 +335,23 @@ export function ShareButton({ article }: ShareButtonProps) {
           ctx.drawImage(coverImg, sx, sy, sWidth, sHeight, imgX, imgY, imgWidth, imgHeight);
           ctx.restore();
 
+          // Reset shadow
+          ctx.shadowColor = "transparent";
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetY = 0;
+
           // Border around image
-          ctx.strokeStyle = theme === "dourado" ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.15)";
-          ctx.lineWidth = 4;
+          ctx.strokeStyle = theme === "dourado" ? "rgba(8, 24, 45, 0.1)" : "rgba(255, 255, 255, 0.15)";
+          ctx.lineWidth = 3;
           ctx.beginPath();
           if (ctx.roundRect) {
-            ctx.roundRect(imgX, imgY, imgWidth, imgHeight, 24);
+            ctx.roundRect(imgX, imgY, imgWidth, imgHeight, 20);
           } else {
             ctx.rect(imgX, imgY, imgWidth, imgHeight);
           }
           ctx.stroke();
 
-          currentY += imgHeight + 50;
+          currentY += imgHeight + 45;
           hasImage = true;
         }
       } catch {
@@ -270,58 +359,101 @@ export function ShareButton({ article }: ShareButtonProps) {
       }
     }
 
-    // 4. Draw Title
-    ctx.fillStyle = textColor;
-    ctx.textAlign = "left";
-    ctx.font = isFeed ? "bold 42px Georgia, serif" : "bold 48px Georgia, serif";
+    // 5. Draw Glassmorphic Content Card (Title & Summary)
+    const contentW = 920;
+    const contentX = (canvas.width - contentW) / 2;
+    const contentPad = 40;
 
-    const titleX = 90;
-    const maxWidth = 900;
-    const titleLineHeight = isFeed ? 54 : 60;
-    const titleLines = wrapText(ctx, article.title, maxWidth);
+    // Save current height to calculate box bounds
+    const textStartY = currentY;
 
-    // Story visual balance adjustment
+    // Adjust layout for Stories without image
     if (!isFeed && !hasImage) {
-      currentY += 140;
+      currentY += 120;
     }
 
-    titleLines.forEach((line) => {
-      ctx.fillText(line, titleX, currentY);
-      currentY += titleLineHeight;
-    });
+    // Setup typography for measurement
+    ctx.font = isFeed ? "bold 38px Georgia, serif" : "bold 44px Georgia, serif";
+    const titleLineHeight = isFeed ? 52 : 58;
+    const titleLines = wrapText(ctx, article.title, contentW - (contentPad * 2));
 
-    currentY += 24;
+    ctx.font = isFeed ? "italic 24px sans-serif" : "italic 28px sans-serif";
+    const summaryLineHeight = isFeed ? 38 : 44;
+    const summaryLines = resumo ? wrapText(ctx, resumo, contentW - (contentPad * 2)) : [];
 
-    // 5. Draw Summary
-    if (resumo) {
-      ctx.fillStyle = bodyTextColor;
-      ctx.font = isFeed ? "italic 26px sans-serif" : "italic 30px sans-serif";
-      const summaryLineHeight = isFeed ? 40 : 46;
-      const summaryLines = wrapText(ctx, resumo, maxWidth);
+    // Calculate total height needed for texts
+    const titleTotalH = titleLines.length * titleLineHeight;
+    const summaryTotalH = summaryLines.length > 0 ? (summaryLines.length * summaryLineHeight) + 25 : 0;
+    const totalContentH = titleTotalH + summaryTotalH + (contentPad * 2);
 
-      summaryLines.forEach((line) => {
-        // Enforce boundary check to avoid clipping in Feed mode
-        if (isFeed && hasImage && currentY > canvas.height - 180) {
-          return;
-        }
-        ctx.fillText(line, titleX, currentY);
-        currentY += summaryLineHeight;
-      });
-    }
+    // Draw Glassmorphic container box
+    ctx.save();
+    // Shadow for glass card
+    ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
+    ctx.shadowBlur = 30;
+    ctx.shadowOffsetY = 15;
 
-    // 6. Draw Footer Info
-    ctx.fillStyle = subtitleColor;
-    ctx.textAlign = "center";
-    ctx.font = "bold 22px sans-serif";
-    ctx.letterSpacing = "2px";
-    const footerY = canvas.height - 90;
-
-    // Footer divider
-    ctx.strokeStyle = theme === "dourado" ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.12)";
+    ctx.fillStyle = glassBg;
+    ctx.strokeStyle = glassBorder;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(90, footerY - 45);
-    ctx.lineTo(990, footerY - 45);
+    if (ctx.roundRect) {
+      ctx.roundRect(contentX, textStartY, contentW, totalContentH, 24);
+    } else {
+      ctx.rect(contentX, textStartY, contentW, totalContentH);
+    }
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+
+    // Draw Title inside Glass Card
+    ctx.fillStyle = primaryColor;
+    ctx.textAlign = "left";
+    ctx.font = isFeed ? "bold 38px Georgia, serif" : "bold 44px Georgia, serif";
+
+    let textDrawY = textStartY + contentPad;
+    titleLines.forEach((line) => {
+      ctx.fillText(line, contentX + contentPad, textDrawY);
+      textDrawY += titleLineHeight;
+    });
+
+    // Draw Divider Line inside Glass Card
+    if (summaryLines.length > 0) {
+      ctx.strokeStyle = theme === "dourado" ? "rgba(8, 24, 45, 0.1)" : "rgba(255, 255, 255, 0.1)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(contentX + contentPad, textDrawY + 12);
+      ctx.lineTo(contentX + contentW - contentPad, textDrawY + 12);
+      ctx.stroke();
+
+      textDrawY += 25;
+    }
+
+    // Draw Summary inside Glass Card
+    ctx.fillStyle = mutedTextColor;
+    ctx.font = isFeed ? "italic 24px sans-serif" : "italic 28px sans-serif";
+    summaryLines.forEach((line) => {
+      // Avoid text overflowing bottom of card
+      if (isFeed && hasImage && textDrawY > canvas.height - 180) {
+        return;
+      }
+      ctx.fillText(line, contentX + contentPad, textDrawY);
+      textDrawY += summaryLineHeight;
+    });
+
+    // 6. Draw Footer Info
+    ctx.fillStyle = theme === "dourado" ? "#0B1A30" : accentColor;
+    ctx.textAlign = "center";
+    ctx.font = "bold 20px sans-serif";
+    ctx.letterSpacing = "3px";
+    const footerY = canvas.height - 85;
+
+    // Footer divider line
+    ctx.strokeStyle = theme === "dourado" ? "rgba(8, 24, 45, 0.15)" : "rgba(255, 255, 255, 0.15)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(80, footerY - 40);
+    ctx.lineTo(1000, footerY - 40);
     ctx.stroke();
 
     ctx.fillText("Leia a notícia completa em: assecce.com.br", canvas.width / 2, footerY);
@@ -359,7 +491,7 @@ export function ShareButton({ article }: ShareButtonProps) {
   const handleWhatsAppShare = () => {
     if (typeof window === "undefined") return;
     const url = `${window.location.origin}/noticias/${article.id}`;
-    const formattedText = `🚨 *${article.title}*\n\n${resumo}\n\n👉 Acesse a matéria completa no portal da ASSEC:\n${url}`;
+    const formattedText = `📣 *INFORME OFICIAL | ASSEC CEARÁ*\n────────────────────────\n\n📰 *${article.title}*\n\n💬 "${resumo}"\n\n────────────────────────\n🔗 *Leia a matéria completa no site:*\n${url}`;
     const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(formattedText)}`;
     window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
@@ -367,7 +499,7 @@ export function ShareButton({ article }: ShareButtonProps) {
   const handleCopyText = async () => {
     if (typeof window === "undefined") return;
     const url = `${window.location.origin}/noticias/${article.id}`;
-    const formattedText = `🚨 *${article.title}*\n\n${resumo}\n\n👉 Acesse a matéria completa no portal da ASSEC:\n${url}`;
+    const formattedText = `📣 *INFORME OFICIAL | ASSEC CEARÁ*\n────────────────────────\n\n📰 *${article.title}*\n\n💬 "${resumo}"\n\n────────────────────────\n🔗 *Leia a matéria completa no site:*\n${url}`;
     try {
       await navigator.clipboard.writeText(formattedText);
       setCopiedText(true);
@@ -438,22 +570,20 @@ export function ShareButton({ article }: ShareButtonProps) {
           <div className="grid grid-cols-2 p-1.5 bg-slate-100 rounded-xl mb-6">
             <button
               onClick={() => setActiveTab("whatsapp")}
-              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all ${
-                activeTab === "whatsapp"
+              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all ${activeTab === "whatsapp"
                   ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-500 hover:text-slate-800"
-              }`}
+                }`}
             >
               <MessageSquare className="h-4 w-4 text-[#25D366]" />
               WhatsApp (Texto)
             </button>
             <button
               onClick={() => setActiveTab("instagram")}
-              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all ${
-                activeTab === "instagram"
+              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all ${activeTab === "instagram"
                   ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-500 hover:text-slate-800"
-              }`}
+                }`}
             >
               <Smartphone className="h-4 w-4 text-[#C13584]" />
               Instagram (Imagem Card)
@@ -462,7 +592,7 @@ export function ShareButton({ article }: ShareButtonProps) {
 
           {/* Main Layout Area */}
           <div className="flex flex-col lg:flex-row gap-8 items-stretch">
-            
+
             {/* Controls Side */}
             <div className="flex-1 flex flex-col gap-6">
               {/* Textarea to customize summary */}
@@ -487,8 +617,8 @@ export function ShareButton({ article }: ShareButtonProps) {
                     <Type className="h-4 w-4 text-primary" />
                     Visualização da mensagem
                   </h4>
-                  <div className="bg-white border border-slate-200 rounded-lg p-4 font-mono text-[11px] text-slate-600 whitespace-pre-wrap select-all leading-relaxed shadow-sm">
-                    {`🚨 *${article.title}*\n\n${resumo}\n\n👉 Acesse a matéria completa no portal da ASSEC:\nhttps://assecce.com.br/noticias/${article.id}`}
+                  <div className="bg-white border border-slate-200 rounded-lg p-4 font-mono text-[10px] text-slate-600 whitespace-pre-wrap select-all leading-relaxed shadow-sm">
+                    {`📣 *INFORME OFICIAL | ASSEC CEARÁ*\n────────────────────────\n\n📰 *${article.title}*\n\n💬 "${resumo}"\n\n────────────────────────\n🔗 *Leia a matéria completa no site:*\nhttps://assecce.com.br/noticias/${article.id}`}
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3 mt-2">
@@ -533,11 +663,10 @@ export function ShareButton({ article }: ShareButtonProps) {
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={() => setFormat("feed")}
-                        className={`flex flex-col items-center gap-2 p-3 rounded-xl border text-left transition-all ${
-                          format === "feed"
+                        className={`flex flex-col items-center gap-2 p-3 rounded-xl border text-left transition-all ${format === "feed"
                             ? "border-primary bg-primary/5 text-primary ring-2 ring-primary/20"
                             : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
-                        }`}
+                          }`}
                       >
                         <span className="w-8 h-8 rounded border-2 border-current aspect-square block shrink-0" />
                         <div className="text-center">
@@ -547,11 +676,10 @@ export function ShareButton({ article }: ShareButtonProps) {
                       </button>
                       <button
                         onClick={() => setFormat("story")}
-                        className={`flex flex-col items-center gap-2 p-3 rounded-xl border text-left transition-all ${
-                          format === "story"
+                        className={`flex flex-col items-center gap-2 p-3 rounded-xl border text-left transition-all ${format === "story"
                             ? "border-primary bg-primary/5 text-primary ring-2 ring-primary/20"
                             : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
-                        }`}
+                          }`}
                       >
                         <span className="w-6 h-9 rounded border-2 border-current block shrink-0" />
                         <div className="text-center">
@@ -571,31 +699,28 @@ export function ShareButton({ article }: ShareButtonProps) {
                     <div className="grid grid-cols-3 gap-2">
                       <button
                         onClick={() => setTheme("azul")}
-                        className={`py-2 px-3 rounded-lg border text-xs font-bold transition-all ${
-                          theme === "azul"
+                        className={`py-2 px-3 rounded-lg border text-xs font-bold transition-all ${theme === "azul"
                             ? "border-[#0B1A30] bg-[#0B1A30] text-white ring-2 ring-[#0B1A30]/30 shadow-md"
                             : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
-                        }`}
+                          }`}
                       >
                         Azul ASSEC
                       </button>
                       <button
                         onClick={() => setTheme("dourado")}
-                        className={`py-2 px-3 rounded-lg border text-xs font-bold transition-all ${
-                          theme === "dourado"
+                        className={`py-2 px-3 rounded-lg border text-xs font-bold transition-all ${theme === "dourado"
                             ? "border-[#E2A93E] bg-[#FFD54F] text-slate-900 ring-2 ring-[#E2A93E]/30 shadow-md"
                             : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
-                        }`}
+                          }`}
                       >
                         Dourado Nobre
                       </button>
                       <button
                         onClick={() => setTheme("moderno")}
-                        className={`py-2 px-3 rounded-lg border text-xs font-bold transition-all ${
-                          theme === "moderno"
+                        className={`py-2 px-3 rounded-lg border text-xs font-bold transition-all ${theme === "moderno"
                             ? "border-[#1F2937] bg-[#1F2937] text-white ring-2 ring-[#1F2937]/30 shadow-md"
                             : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
-                        }`}
+                          }`}
                       >
                         Moderno Escuro
                       </button>
@@ -668,7 +793,7 @@ export function ShareButton({ article }: ShareButtonProps) {
                   /* Mock phone message bubbles for WhatsApp */
                   <div className="w-full max-w-[280px] bg-[#E5DDD5] border border-slate-300 rounded-xl shadow-2xl p-4 flex flex-col gap-3 min-h-[320px] relative justify-end">
                     <div className="absolute inset-0 bg-[radial-gradient(#dfdcd6_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
-                    
+
                     {/* Mock bubble */}
                     <div className="bg-white rounded-lg p-3 shadow-sm max-w-[85%] text-[10px] text-slate-800 relative self-start border border-slate-100 flex flex-col gap-1.5 animate-none">
                       <p className="font-semibold text-[#075E54] text-[9px]">ASSEC Ceará</p>
@@ -688,14 +813,17 @@ export function ShareButton({ article }: ShareButtonProps) {
                           />
                         </div>
                       )}
-                      <div>
+                      <div className="flex flex-col gap-1 text-[8px]">
+                        <p className="text-[#075E54] font-bold text-[7px] tracking-wider uppercase">INFORME OFICIAL</p>
+                        <div className="h-px bg-slate-200 my-0.5" />
                         <p className="font-semibold text-slate-900 leading-tight text-[9px]">
                           {article.title}
                         </p>
-                        <p className="text-slate-600 mt-1 line-clamp-3 leading-relaxed text-[8px]">
-                          {resumo}
+                        <p className="text-slate-600 line-clamp-3 leading-relaxed text-[8px] italic">
+                          &quot;{resumo}&quot;
                         </p>
-                        <p className="text-blue-600 underline mt-1 text-[8px] truncate">
+                        <div className="h-px bg-slate-200 my-0.5" />
+                        <p className="text-blue-600 underline truncate text-[7px]">
                           {`https://assecce.com.br/noticias/${article.id}`}
                         </p>
                       </div>
