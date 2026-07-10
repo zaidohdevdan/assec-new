@@ -95,9 +95,7 @@ export async function generateMetadata({
   }
 
   const canonicalUrl = `https://assecce.com.br/noticias/${id}`;
-  const ogImage = article.coverImage
-    ? (article.coverImage.startsWith("http") ? article.coverImage : `https://assecce.com.br${article.coverImage}`)
-    : "https://assecce.com.br/escudo-logo.webp";
+  const ogImage = `https://assecce.com.br/noticia-imagem/${id}`;
 
   return {
     title: `${article.title} | Notícias ASSEC`,
