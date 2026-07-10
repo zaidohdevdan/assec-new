@@ -15,7 +15,8 @@ import {
   FileSpreadsheet,
   AlertCircle,
   Download,
-  Printer
+  Printer,
+  Loader2
 } from "lucide-react";
 
 interface FinancialRecord {
@@ -33,6 +34,7 @@ export default function FinancasPage() {
   const [records, setRecords] = React.useState<FinancialRecord[]>([]);
   const [stats, setStats] = React.useState<FinancialStats | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [mounted, setMounted] = React.useState(false);
 
   // Filters
   const [typeFilter, setTypeFilter] = React.useState<string>("Todos");
@@ -50,12 +52,28 @@ export default function FinancasPage() {
   const categories = ["Mensalidades", "Lazer", "Jurídico", "Administrativo", "Eventos"];
 
   React.useEffect(() => {
+    setMounted(true);
     const userStr = localStorage.getItem("user");
     if (userStr) {
       const parsedUser = JSON.parse(userStr);
       setUser(parsedUser);
       loadData();
     }
+
+    const handleProfileUpdate = () => {
+      const updatedUserStr = localStorage.getItem("user");
+      if (updatedUserStr) {
+        try {
+          setUser(JSON.parse(updatedUserStr));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    window.addEventListener("user-profile-updated", handleProfileUpdate);
+    return () => {
+      window.removeEventListener("user-profile-updated", handleProfileUpdate);
+    };
   }, []);
 
   const loadData = async () => {
@@ -169,8 +187,15 @@ export default function FinancasPage() {
     window.print();
   };
 
-  if (!user) {
-    return null;
+  if (!mounted || !user) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center bg-transparent">
+        <div className="flex flex-col items-center gap-3 text-text-secondary animate-pulse">
+          <Loader2 className="h-10 w-10 animate-spin text-accent-dark" />
+          <span className="text-xs font-semibold">Carregando dados financeiros...</span>
+        </div>
+      </div>
+    );
   }
 
   const isAdmin = user.role === "ADMIN";
