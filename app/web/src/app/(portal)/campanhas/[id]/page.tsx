@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { apiFetch, apiFetchJson } from "@/lib/api";
+import Link from "next/link";
 
 type Status = "PENDENTE" | "CONTATADO" | "CONVERTIDO" | "REJEITADO";
 
@@ -136,12 +137,12 @@ export default function CampaignDetailPage({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <a
+          <Link
             href="/campanhas"
             className="text-xs text-accent-dark font-semibold hover:underline flex items-center gap-1 mb-1"
           >
             ← Campanhas
-          </a>
+          </Link>
           <h1 className="font-serif font-bold text-xl text-primary">
             {data?.campaign.name ?? "Carregando..."}
           </h1>

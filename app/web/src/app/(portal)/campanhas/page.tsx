@@ -100,7 +100,7 @@ export default function AdminCampanhasPage() {
     }
   };
 
-  const handleExport = (id: string, name: string) => {
+  const handleExport = (id: string) => {
     // Abre CSV diretamente via window para forçar download com cookie de sessão
     const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
     window.open(`${base}/campaign/admin/${id}/export`, "_blank");
@@ -339,7 +339,7 @@ export default function AdminCampanhasPage() {
                       Ver cadastros
                     </a>
                     <button
-                      onClick={() => handleExport(c.id, c.name)}
+                      onClick={() => handleExport(c.id)}
                       className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg transition-colors"
                     >
                       ↓ CSV
