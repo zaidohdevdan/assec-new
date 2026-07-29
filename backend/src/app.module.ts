@@ -14,6 +14,7 @@ import { NetworkModule } from './network/network.module';
 import { BenefitsModule } from './benefits/benefits.module';
 import { FinancialsModule } from './financials/financials.module';
 import { VideosModule } from './videos/videos.module';
+import { CampaignModule } from './campaign/campaign.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { VideosModule } from './videos/videos.module';
     NotificationsModule,
     NetworkModule,
     VideosModule,
+    CampaignModule,
   ],
   controllers: [AppController],
   providers: [AppService],

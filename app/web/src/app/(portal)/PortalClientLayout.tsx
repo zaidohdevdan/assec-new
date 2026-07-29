@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, CreditCard, User, Users, LogOut, ArrowLeft, Loader2, Menu, X, Bell, Check, Shield, Terminal, FileText, Landmark, Heart, Video } from "lucide-react";
+import { LayoutDashboard, Calendar, CreditCard, User, Users, LogOut, ArrowLeft, Loader2, Menu, X, Bell, Check, Shield, Terminal, FileText, Landmark, Heart, Video, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { User as UserType, Notification } from "@/lib/types";
@@ -205,6 +205,7 @@ export default function PortalClientLayout({
     ? [
       { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
       { label: "Gerenciar Usuários", href: "/portal/usuarios", icon: Users },
+      { label: "Campanhas", href: "/campanhas", icon: Megaphone },
       { label: "Terminal Root", href: "/portal/terminal", icon: Terminal },
       { label: "Meu Perfil", href: "/portal/perfil", icon: User },
     ]
@@ -215,12 +216,14 @@ export default function PortalClientLayout({
         { label: "Relatório de Demandas", href: "/portal/demandas", icon: Calendar },
         { label: "Notícias & Avisos", href: "/portal/noticias", icon: FileText },
         { label: "Convênios & Benefícios", href: "/portal/beneficios", icon: Heart },
+        { label: "Campanhas", href: "/campanhas", icon: Megaphone },
         { label: "Meu Perfil", href: "/portal/perfil", icon: User },
       ]
       : userRole === "CONTABILIDADE"
         ? [
           { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
           { label: "Fluxo Financeiro", href: "/portal/financas", icon: CreditCard },
+          { label: "Campanhas", href: "/campanhas", icon: Megaphone },
           { label: "Meu Perfil", href: "/portal/perfil", icon: User },
         ]
         : userRole === "EDITOR"
