@@ -32,7 +32,7 @@ const Footer = () => {
                 <span className="font-serif font-extrabold text-lg leading-none tracking-wider text-white group-hover:text-accent transition-colors duration-300">
                   ASSEC
                 </span>
-                <span className="text-[7.5px] font-sans font-bold uppercase tracking-wider text-accent mt-1 block max-w-[280px] leading-tight">
+                <span className="text-[10px] sm:text-xs font-sans font-bold uppercase tracking-wider text-accent mt-1 block max-w-[280px] leading-tight">
                   Associação dos Servidores da Segurança do Ceará
                 </span>
               </div>

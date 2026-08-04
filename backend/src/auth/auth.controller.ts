@@ -17,16 +17,23 @@ import type {
 } from 'express';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
+import { RolesGuard } from './roles.guard';
+import { Roles } from './roles.decorator';
+import { Role } from '@prisma/client';
 import { UsersService } from '../users/users.service';
 import { type AuthenticatedRequest } from './auth.types';
 import { z } from 'zod';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import * as crypto from 'crypto';
 
+import { SkipCsrf } from './csrf.guard';
+
 const loginSchema = z.object({
   email: z.email(),
   password: z.string().min(6),
 });
+
+type LoginDto = z.infer<typeof loginSchema>;
 
 const registerSchema = z.object({
   email: z.email(),
@@ -38,7 +45,6 @@ const registerSchema = z.object({
   org: z.string().optional(),
 });
 
-type LoginDto = z.infer<typeof loginSchema>;
 type RegisterDto = z.infer<typeof registerSchema>;
 
 const resetPasswordSchema = z.object({
@@ -59,6 +65,7 @@ export class AuthController {
     private usersService: UsersService,
   ) {}
 
+  @SkipCsrf()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @UsePipes(new ZodValidationPipe(loginSchema))
@@ -103,15 +110,16 @@ export class AuthController {
         email: userPublic.email,
         role: userPublic.role,
         status: userPublic.status,
-        photoUrl: (userPublic as any).photoUrl ?? null,
-        avatarUrl: (userPublic as any).avatarUrl ?? null,
-        specialty: (userPublic as any).specialty ?? null,
-        org: (userPublic as any).org ?? null,
-        matricula: (userPublic as any).matricula ?? null,
+        photoUrl: userPublic.photoUrl ?? null,
+        avatarUrl: userPublic.avatarUrl ?? null,
+        specialty: userPublic.specialty ?? null,
+        org: userPublic.org ?? null,
+        matricula: userPublic.matricula ?? null,
       },
     };
   }
 
+  @SkipCsrf()
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Response({ passthrough: true }) res: ExpressResponse) {
@@ -122,6 +130,8 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       path: '/',
     });
+    res.clearCookie('assec_user_profile', { path: '/' });
+    res.clearCookie('assec_csrf', { path: '/' });
     return { success: true, message: 'Sessão encerrada com sucesso.' };
   }
 
@@ -144,6 +154,7 @@ export class AuthController {
     return { csrfToken };
   }
 
+  @SkipCsrf()
   @Post('register')
   @UsePipes(new ZodValidationPipe(registerSchema))
   async register(@Body() registerDto: RegisterDto) {
@@ -151,6 +162,8 @@ export class AuthController {
   }
 
   @Post('reset-password')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(resetPasswordSchema))
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     const success = await this.usersService.updatePassword(

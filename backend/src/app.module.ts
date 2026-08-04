@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -15,6 +16,7 @@ import { BenefitsModule } from './benefits/benefits.module';
 import { FinancialsModule } from './financials/financials.module';
 import { VideosModule } from './videos/videos.module';
 import { CampaignModule } from './campaign/campaign.module';
+import { CsrfGuard } from './auth/csrf.guard';
 
 @Module({
   imports: [
@@ -34,6 +36,11 @@ import { CampaignModule } from './campaign/campaign.module';
     CampaignModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // Global CSRF protection — all POST/PUT/PATCH/DELETE endpoints are validated.
+    // Use @SkipCsrf() decorator to exclude pre-auth endpoints (login, register, etc.)
+    { provide: APP_GUARD, useClass: CsrfGuard },
+  ],
 })
 export class AppModule {}

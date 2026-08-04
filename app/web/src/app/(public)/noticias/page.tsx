@@ -205,7 +205,7 @@ function NoticiasContent() {
                   )}
                   <div className="flex-1 p-5 sm:p-8 flex flex-col justify-between">
                     <div>
-                      <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold uppercase tracking-widest mb-4">
+                      <div className="flex flex-wrap items-center gap-3 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-4">
                         <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${getCatStyle(featuredArticle.type).text}`}>
                           <Tag className="h-3 w-3" />
                           {featuredArticle.type}
@@ -214,7 +214,7 @@ function NoticiasContent() {
                           <Calendar className="h-3.5 w-3.5 text-slate-400" />
                           {new Date(featuredArticle.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
                         </span>
-                        <span className="bg-red-500 text-white px-2 py-0.5 rounded text-[8px] tracking-widest font-black uppercase flex items-center gap-1">
+                        <span className="bg-red-500 text-white px-2 py-0.5 rounded text-[10px] tracking-widest font-black uppercase flex items-center gap-1">
                           <Sparkles className="h-2.5 w-2.5" />
                           Destaque
                         </span>
@@ -305,7 +305,7 @@ function NoticiasContent() {
                   </Link>
 
                   <div className="flex flex-col flex-1 p-5">
-                    <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-widest mb-3">
+                    <div className="flex items-center justify-between text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-3">
                       <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full ${style.text}`}>
                         <Tag className="h-2.5 w-2.5" />
                         {style.text && art.type}

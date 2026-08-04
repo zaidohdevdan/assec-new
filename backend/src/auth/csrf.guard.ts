@@ -3,7 +3,21 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  SetMetadata,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+
+/**
+ * Decorator to skip CSRF validation on specific endpoints.
+ * Use on pre-auth endpoints like login, register, and public contact form.
+ *
+ * @example
+ * @SkipCsrf()
+ * @Post('login')
+ * async login() { ... }
+ */
+export const SKIP_CSRF_KEY = 'skipCsrf';
+export const SkipCsrf = () => SetMetadata(SKIP_CSRF_KEY, true);
 
 /**
  * CsrfGuard implements the double-submit cookie pattern.
@@ -15,15 +29,27 @@ import {
  *    must include the token in the `X-CSRF-Token` header.
  * 3. This guard compares the header value against the cookie value.
  *
- * Safe methods (GET, HEAD, OPTIONS) are skipped.
+ * Safe methods (GET, HEAD, OPTIONS) are skipped automatically.
+ * Endpoints decorated with @SkipCsrf() are also skipped.
  */
 @Injectable()
 export class CsrfGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
+
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
 
     // Safe methods don't change state — skip CSRF check
     if (['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
+      return true;
+    }
+
+    // Skip if endpoint is decorated with @SkipCsrf()
+    const skipCsrf = this.reflector.getAllAndOverride<boolean>(SKIP_CSRF_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (skipCsrf) {
       return true;
     }
 

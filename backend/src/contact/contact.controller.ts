@@ -1,5 +1,10 @@
-import { Controller, Post, Body, Get, UsePipes } from '@nestjs/common';
+import { Controller, Post, Body, Get, UsePipes, UseGuards } from '@nestjs/common';
 import { ContactService } from './contact.service';
+import { AuthGuard } from '../auth/auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { SkipCsrf } from '../auth/csrf.guard';
+import { Role } from '@prisma/client';
 import { z } from 'zod';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
@@ -16,6 +21,7 @@ type CreateContactDto = z.infer<typeof createContactSchema>;
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
+  @SkipCsrf()
   @Post()
   @UsePipes(new ZodValidationPipe(createContactSchema))
   async create(@Body() createContactDto: CreateContactDto) {
@@ -24,6 +30,8 @@ export class ContactController {
   }
 
   @Get()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.PRESIDENT)
   async findAll() {
     return this.contactService.getMessages();
   }

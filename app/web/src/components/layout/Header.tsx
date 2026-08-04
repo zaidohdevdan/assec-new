@@ -82,9 +82,11 @@ const Header = () => {
   const handleLogout = async () => {
     await apiFetch("/auth/logout", { method: "POST" }).catch(() => null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     setIsAdmin(false);
     setUser(null);
-    window.location.reload();
+    window.location.href = "/login";
   };
 
   const toggleMenu = () => setIsOpen(!isOpen);

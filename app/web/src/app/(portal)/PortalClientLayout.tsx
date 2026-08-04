@@ -179,6 +179,8 @@ export default function PortalClientLayout({
   }, []);
 
   const handleLogout = async () => {
+    // Reset auth check timestamp
+    lastAuthCheck = 0;
     // Call backend to clear the HttpOnly session cookie (browser cannot clear it via JS)
     await apiFetch("/auth/logout", { method: "POST" }).catch(() => null);
     // Clear the non-sensitive display cache from localStorage

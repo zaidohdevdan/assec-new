@@ -38,8 +38,8 @@ backups/
 # Windows metadata
 *Zone.Identifier
 
-#mackdown
-assec-new_relatorio_tecnico.mackdown
+#markdown
+assec-new_relatorio_tecnico.md
 assec-new_relatorio_tecnico.pdf
 
 #pwa
