@@ -40,10 +40,15 @@ export class SlotsService {
 
   async findAll(filters: { type?: string; professionalId?: string }) {
     if (filters.type) {
-      // Find available slots for associates to book
+      // SV-SE locale generates YYYY-MM-DD format in local server time
+      const today = new Date().toLocaleDateString('sv-SE');
+      // Find available slots for associates to book from today onwards (no past dates)
       return this.prisma.scheduleSlot.findMany({
         where: {
           status: 'Disponível',
+          date: {
+            gte: today,
+          },
           professional: {
             specialty: filters.type,
           },

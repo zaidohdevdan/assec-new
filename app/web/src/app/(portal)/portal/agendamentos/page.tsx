@@ -97,10 +97,12 @@ export default function AgendamentosPage() {
       try {
         const res = await apiFetch(`/slots?type=${encodeURIComponent(selectedType)}`);
         if (res.ok) {
-          const data = await res.json();
-          setAvailableSlots(data);
-          if (data.length > 0) {
-            setValue("slotId", data[0].id);
+          const data: ScheduleSlot[] = await res.json();
+          const todayStr = new Date().toLocaleDateString("sv-SE");
+          const validSlots = data.filter((s) => s.date >= todayStr);
+          setAvailableSlots(validSlots);
+          if (validSlots.length > 0) {
+            setValue("slotId", validSlots[0].id);
           } else {
             setValue("slotId", "");
           }

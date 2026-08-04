@@ -186,6 +186,7 @@ export default function ProfessionalAgendaPage() {
             <Input
               label="Data de Atendimento"
               type="date"
+              min={new Date().toLocaleDateString("sv-SE")}
               error={errors.date?.message}
               {...register("date")}
             />
