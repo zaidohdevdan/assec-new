@@ -207,7 +207,6 @@ export default function PortalClientLayout({
     ? [
       { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
       { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
-      { label: "Meus Agendamentos", href: "/portal/agendamentos", icon: Calendar },
       { label: "Gerenciar Usuários", href: "/portal/usuarios", icon: Users },
       { label: "Fluxo Financeiro", href: "/portal/financas", icon: Landmark },
       { label: "Relatório de Demandas", href: "/portal/demandas", icon: FileText },
@@ -219,7 +218,6 @@ export default function PortalClientLayout({
       ? [
         { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
         { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
-        { label: "Meus Agendamentos", href: "/portal/agendamentos", icon: Calendar },
         { label: "Fluxo Financeiro", href: "/portal/financas", icon: Landmark },
         { label: "Relatório de Demandas", href: "/portal/demandas", icon: FileText },
         { label: "Notícias & Avisos", href: "/portal/noticias", icon: FileText },
@@ -231,7 +229,6 @@ export default function PortalClientLayout({
         ? [
           { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
           { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
-          { label: "Meus Agendamentos", href: "/portal/agendamentos", icon: Calendar },
           { label: "Fluxo Financeiro", href: "/portal/financas", icon: Landmark },
           { label: "Campanhas", href: "/campanhas", icon: Megaphone },
           { label: "Meu Perfil", href: "/portal/perfil", icon: User },
@@ -240,7 +237,6 @@ export default function PortalClientLayout({
           ? [
             { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
             { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
-            { label: "Meus Agendamentos", href: "/portal/agendamentos", icon: Calendar },
             { label: "Painel Administrativo", href: "/dashboard", icon: Shield },
             { label: "Avisos/Notícias", href: "/dashboard/notices", icon: FileText },
             { label: "Gerenciar Benefícios", href: "/dashboard/benefits", icon: Heart },
@@ -252,7 +248,6 @@ export default function PortalClientLayout({
               { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
               { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
               { label: "Minha Agenda", href: "/portal/agenda", icon: Calendar },
-              { label: "Meus Agendamentos", href: "/portal/agendamentos", icon: Calendar },
               { label: "Meu Perfil", href: "/portal/perfil", icon: User },
             ]
             : [
