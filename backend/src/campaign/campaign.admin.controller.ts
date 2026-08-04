@@ -16,7 +16,7 @@ import { CampaignService } from './campaign.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { PreRegistrationStatus } from '@prisma/client';
+import { PreRegistrationStatus, Role } from '@prisma/client';
 import { z } from 'zod';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
@@ -25,7 +25,9 @@ const createCampaignSchema = z.object({
   slug: z
     .string()
     .min(3)
-    .regex(/^[a-z0-9-]+$/, 'Slug deve conter apenas letras minúsculas, números e hífens'),
+    .regex(/^[a-z0-9-]+$/, {
+      message: 'Slug deve conter apenas letras minúsculas, números e hífens',
+    }),
   description: z.string().optional(),
   expiresAt: z.string().datetime({ message: 'Data de expiração inválida (ISO 8601)' }),
   maxSubmissions: z.number().int().positive().optional(),
@@ -35,7 +37,7 @@ type CreateCampaignDto = z.infer<typeof createCampaignSchema>;
 
 @Controller('campaign/admin')
 @UseGuards(AuthGuard, RolesGuard)
-@Roles('ADMIN', 'PRESIDENT', 'CONTABILIDADE')
+@Roles(Role.ADMIN, Role.PRESIDENT, Role.CONTABILIDADE)
 export class CampaignAdminController {
   constructor(private readonly campaignService: CampaignService) {}
 

@@ -115,6 +115,9 @@ export class AuthController {
         specialty: userPublic.specialty ?? null,
         org: userPublic.org ?? null,
         matricula: userPublic.matricula ?? null,
+        since: (userPublic.since ?? new Date()).toISOString(),
+        createdAt: (userPublic.createdAt ?? new Date()).toISOString(),
+        updatedAt: (userPublic.updatedAt ?? new Date()).toISOString(),
       },
     };
   }
