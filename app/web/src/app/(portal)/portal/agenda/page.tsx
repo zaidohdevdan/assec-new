@@ -39,6 +39,11 @@ export default function ProfessionalAgendaPage() {
   // Filter states
   const [statusFilter, setStatusFilter] = React.useState<string>("Todos");
   const [dateFilter, setDateFilter] = React.useState<string>("");
+  const [minDate, setMinDate] = React.useState<string | undefined>(undefined);
+
+  React.useEffect(() => {
+    setMinDate(new Date().toLocaleDateString("sv-SE"));
+  }, []);
 
   const filteredSlots = slots.filter((slot) => {
     const matchesStatus = statusFilter === "Todos" || slot.status === statusFilter;
@@ -186,7 +191,7 @@ export default function ProfessionalAgendaPage() {
             <Input
               label="Data de Atendimento"
               type="date"
-              min={new Date().toLocaleDateString("sv-SE")}
+              min={minDate}
               error={errors.date?.message}
               {...register("date")}
             />
