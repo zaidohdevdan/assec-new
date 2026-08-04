@@ -102,6 +102,16 @@ export class AuthController {
       maxAge: 60 * 60 * 1000, // 1 hour, matching JWT_EXPIRES_IN
     });
 
+    // Generate and set CSRF cookie for double-submit cookie protection
+    const csrfToken = crypto.randomBytes(32).toString('hex');
+    res.cookie('assec_csrf', csrfToken, {
+      httpOnly: false, // Non-HttpOnly so JS can read it for X-CSRF-Token header
+      sameSite: 'lax',
+      secure: isProduction,
+      path: '/',
+      maxAge: 60 * 60 * 1000,
+    });
+
     // Return public user data only; token is set in HttpOnly cookie
     return {
       user: {

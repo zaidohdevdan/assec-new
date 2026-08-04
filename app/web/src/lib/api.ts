@@ -17,16 +17,54 @@ export async function apiFetch(
   const method = (options.method ?? 'GET').toUpperCase();
   const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
 
-  return fetch(`${API_BASE}${path}`, {
+  // If making a state-changing request and CSRF token cookie is missing, fetch it first
+  if (
+    isStateChanging &&
+    typeof window !== 'undefined' &&
+    !getCsrfToken() &&
+    path !== '/auth/csrf'
+  ) {
+    try {
+      await fetch(`${API_BASE}/auth/csrf`, { credentials: 'include' });
+    } catch {
+      // ignore network errors on CSRF pre-fetch
+    }
+  }
+
+  let token = getCsrfToken();
+  let res = await fetch(`${API_BASE}${path}`, {
     ...options,
     credentials: 'include', // Automatically sends HttpOnly cookie with every request
     headers: {
       'Content-Type': 'application/json',
       // Include CSRF token for state-changing requests (double-submit cookie pattern)
-      ...(isStateChanging ? { 'X-CSRF-Token': getCsrfToken() } : {}),
+      ...(isStateChanging && token ? { 'X-CSRF-Token': token } : {}),
       ...(options.headers ?? {}),
     },
   });
+
+  // Automatic 1-retry on 403 CSRF error: fetch a fresh token and retry the state-changing request
+  if (res.status === 403 && isStateChanging && path !== '/auth/csrf') {
+    try {
+      const csrfRes = await fetch(`${API_BASE}/auth/csrf`, { credentials: 'include' });
+      if (csrfRes.ok) {
+        token = getCsrfToken();
+        res = await fetch(`${API_BASE}${path}`, {
+          ...options,
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'X-CSRF-Token': token } : {}),
+            ...(options.headers ?? {}),
+          },
+        });
+      }
+    } catch {
+      // return original response if retry fails
+    }
+  }
+
+  return res;
 }
 
 /**
