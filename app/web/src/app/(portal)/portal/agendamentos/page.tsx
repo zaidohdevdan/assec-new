@@ -24,7 +24,8 @@ const formatDateString = (dateStr: string) => {
 // Validation schema for scheduling requests
 const scheduleSchema = z.object({
   type: z.string().min(1, "Selecione o tipo de agendamento"),
-  title: z.string().min(5, "O título deve ter pelo menos 5 caracteres"),
+  title: z.string().min(1, "Selecione a finalidade do agendamento"),
+  customTitle: z.string().optional(),
   slotId: z.string().min(1, "Selecione uma vaga disponível"),
   info: z.string().optional(),
 });
@@ -80,13 +81,15 @@ export default function AgendamentosPage() {
     resolver: zodResolver(scheduleSchema),
     defaultValues: {
       type: "Assistência Jurídica",
-      title: "",
+      title: "Primeira Consulta",
+      customTitle: "",
       slotId: "",
       info: "",
     },
   });
 
   const selectedType = watch("type");
+  const selectedTitle = watch("title");
 
   // Fetch available slots when category changes
   React.useEffect(() => {
@@ -138,12 +141,18 @@ export default function AgendamentosPage() {
   const onSubmit = async (data: ScheduleFormData) => {
     setSubmitError(null);
     setActionLoading("submitting");
+
+    const finalTitle =
+      data.title === "Outros" && data.customTitle?.trim()
+        ? `Outros (${data.customTitle.trim()})`
+        : data.title;
+
     try {
       const res = await apiFetch("/schedules", {
         method: "POST",
         body: JSON.stringify({
           slotId: data.slotId,
-          title: data.title,
+          title: finalTitle,
           info: data.info,
         }),
       });
@@ -406,12 +415,33 @@ export default function AgendamentosPage() {
                   )}
                 </div>
 
-                <Input
-                  label="Título / Finalidade do Agendamento"
-                  placeholder="Ex: Consulta jurídica trabalhista"
-                  error={errors.title?.message}
-                  {...register("title")}
-                />
+                <div>
+                  <label htmlFor="title" className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+                    Título / Finalidade do Agendamento
+                  </label>
+                  <select
+                    id="title"
+                    className="flex h-10 w-full rounded-md border border-border bg-bg-surface px-3 py-2 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
+                    {...register("title")}
+                  >
+                    <option value="Primeira Consulta">Primeira Consulta</option>
+                    <option value="Retorno">Retorno</option>
+                    <option value="Acompanhamento">Acompanhamento</option>
+                    <option value="Outros">Outros</option>
+                  </select>
+                  {errors.title?.message && (
+                    <span className="text-xs text-red-600 font-medium mt-1 block">{errors.title.message}</span>
+                  )}
+                </div>
+
+                {selectedTitle === "Outros" && (
+                  <Input
+                    label="Especifique a Finalidade (Opcional)"
+                    placeholder="Ex: Dúvidas contratuais, Exame específico..."
+                    error={errors.customTitle?.message}
+                    {...register("customTitle")}
+                  />
+                )}
 
                 <div>
                   <label htmlFor="slotId" className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
