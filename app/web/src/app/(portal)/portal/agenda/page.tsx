@@ -245,9 +245,11 @@ export default function ProfessionalAgendaPage() {
                       onChange={(e) => setStatusFilter(e.target.value)}
                       className="flex h-9 w-full rounded-md border border-border bg-bg-surface px-2.5 py-1 text-xs text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                     >
-                      <option value="Todos">Todos</option>
+                      <option value="Todos">Todos os Status</option>
                       <option value="Disponível">Disponível</option>
                       <option value="Reservado">Reservado</option>
+                      <option value="Expirado">Expirado (Passado)</option>
+                      <option value="Realizado">Realizado (Concluído)</option>
                     </select>
                   </div>
 
@@ -303,7 +305,11 @@ export default function ProfessionalAgendaPage() {
                     <tbody className="divide-y divide-border">
                       {filteredSlots.map((slot) => {
                         const isReserved = slot.status === "Reservado";
+                        const isRealizado = slot.status === "Realizado";
+                        const isExpirado = slot.status === "Expirado";
+                        const isPastOrFinished = isRealizado || isExpirado;
                         const associate = slot.schedule?.user;
+
                         return (
                           <tr key={slot.id} className="text-text-primary hover:bg-gray-50/30">
                             <td className="py-4 pr-4 font-semibold">
@@ -318,9 +324,13 @@ export default function ProfessionalAgendaPage() {
                               <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
                                 isReserved
                                   ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                  : "bg-gray-50 text-gray-600 border-gray-200"
+                                  : isRealizado
+                                    ? "bg-blue-50 text-blue-700 border-blue-200"
+                                    : isExpirado
+                                      ? "bg-slate-100 text-slate-500 border-slate-200"
+                                      : "bg-amber-50 text-amber-700 border-amber-200"
                               }`}>
-                                {isReserved ? (
+                                {isReserved || isRealizado ? (
                                   <CheckCircle2 className="h-3 w-3" />
                                 ) : (
                                   <Clock className="h-3 w-3" />
@@ -329,7 +339,7 @@ export default function ProfessionalAgendaPage() {
                               </span>
                             </td>
                             <td className="py-4 px-4">
-                              {isReserved && associate ? (
+                              {(isReserved || isRealizado) && associate ? (
                                 <div className="space-y-1">
                                   <div className="flex items-center gap-1.5 font-bold text-xs text-primary">
                                     <User className="h-3.5 w-3.5 text-accent-dark shrink-0" />
@@ -354,15 +364,19 @@ export default function ProfessionalAgendaPage() {
                               )}
                             </td>
                             <td className="py-4 pl-4 text-right">
-                              <Button
-                                variant="ghost"
-                                onClick={() => handleRevokeSlot(slot)}
-                                loading={actionLoading === slot.id}
-                                className="text-red-600 hover:text-red-800 hover:bg-red-50 h-8 px-2 text-xs font-bold"
-                              >
-                                <Trash2 className="h-4 w-4 mr-1" />
-                                Revogar
-                              </Button>
+                              {isPastOrFinished ? (
+                                <span className="text-xs text-text-muted italic pr-2">Encerrado</span>
+                              ) : (
+                                <Button
+                                  variant="ghost"
+                                  onClick={() => handleRevokeSlot(slot)}
+                                  loading={actionLoading === slot.id}
+                                  className="text-red-600 hover:text-red-800 hover:bg-red-50 h-8 px-2 text-xs font-bold"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Revogar
+                                </Button>
+                              )}
                             </td>
                           </tr>
                         );

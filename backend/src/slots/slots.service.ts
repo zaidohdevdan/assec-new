@@ -67,8 +67,9 @@ export class SlotsService {
     }
 
     if (filters.professionalId) {
+      const today = new Date().toLocaleDateString('sv-SE');
       // Find professional's own slots for management
-      return this.prisma.scheduleSlot.findMany({
+      const slots = await this.prisma.scheduleSlot.findMany({
         where: {
           professionalId: filters.professionalId,
         },
@@ -87,6 +88,18 @@ export class SlotsService {
           },
         },
         orderBy: [{ date: 'asc' }, { time: 'asc' }],
+      });
+
+      return slots.map((s) => {
+        if (s.date < today) {
+          if (s.status === 'Disponível') {
+            return { ...s, status: 'Expirado' };
+          }
+          if (s.status === 'Reservado') {
+            return { ...s, status: 'Realizado' };
+          }
+        }
+        return s;
       });
     }
 
