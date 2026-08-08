@@ -4,7 +4,7 @@ import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
-import { User as UserType, FinancialStats, MonthlyStats } from "@/lib/types";
+import { User as UserType, FinancialStats, MonthlyStats, FinancialRecord, FinancialType } from "@/lib/types";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -18,16 +18,6 @@ import {
   Printer,
   Loader2
 } from "lucide-react";
-
-interface FinancialRecord {
-  id: string;
-  description: string;
-  amount: number;
-  type: string; // "INCOME" | "EXPENSE"
-  category: string;
-  date: string;
-  createdAt: string;
-}
 
 export default function FinancasPage() {
   const [user, setUser] = React.useState<UserType | null>(null);

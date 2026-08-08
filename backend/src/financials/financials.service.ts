@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, FinancialType } from '@prisma/client';
 
 @Injectable()
 export class FinancialsService {
@@ -48,12 +48,14 @@ export class FinancialsService {
     let totalExpense = 0;
 
     for (const t of typeTotals) {
-      const sum = t._sum.amount ?? 0;
-      if (t.type === 'INCOME') {
+      const sum = Number(t._sum.amount ?? 0);
+      if (t.type === FinancialType.INCOME) {
         totalIncome = sum;
-      } else if (t.type === 'EXPENSE') {
+      } else if (t.type === FinancialType.EXPENSE) {
         totalExpense = Math.abs(sum);
       }
+      // Any other future financial types (e.g. REFUND, TRANSFER, ADJUSTMENT) are intentionally
+      // not lumped into expenses, preventing silent accounting classification errors.
     }
 
     const monthNames = [

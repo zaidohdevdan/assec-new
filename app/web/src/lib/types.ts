@@ -53,6 +53,19 @@ export interface Schedule {
   updatedAt: string;
 }
 
+export type FinancialType = 'INCOME' | 'EXPENSE';
+
+export interface FinancialRecord {
+  id: string;
+  description: string;
+  amount: number;
+  type: FinancialType;
+  category: string;
+  date: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface MonthlyStats {
   month: string;
   income: number;
