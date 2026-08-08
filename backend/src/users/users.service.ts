@@ -1,11 +1,15 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import {
+  PrismaService,
+  Prisma,
+  UserStatus,
+  Role,
+} from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { Prisma, UserStatus, Role } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(data: Prisma.UserCreateInput) {
     const sanitizedData = { ...data };
