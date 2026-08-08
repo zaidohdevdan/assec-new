@@ -54,14 +54,12 @@ export class AuthGuard implements CanActivate {
     }
 
     // 3. Feature: Account-status check — query the DB for the current status.
-    //    This ensures that admin account suspension takes effect immediately,
-    //    even for users who are already logged in with a valid JWT.
-    // TODO(security): Add a short-TTL in-memory cache (e.g., 30s) here if latency becomes a concern.
-    const dbUser = await this.usersService.findById(payload.sub);
-    if (!dbUser) {
+    //    Uses a 30s in-memory cache to eliminate repetitive DB queries on every HTTP request.
+    const status = await this.getUserStatusCached(payload.sub);
+    if (!status) {
       throw new UnauthorizedException('Usuário não encontrado.');
     }
-    if (dbUser.status !== 'Ativo') {
+    if (status !== 'Ativo') {
       throw new UnauthorizedException(
         'Conta suspensa ou inativa. Entre em contato com o administrador.',
       );
@@ -70,5 +68,30 @@ export class AuthGuard implements CanActivate {
     // 4. Attach verified payload to the request object for use by controllers
     request.user = payload;
     return true;
+  }
+
+  private statusCache = new Map<string, { status: string; expiresAt: number }>();
+  private readonly CACHE_TTL_MS = 30_000; // 30 seconds
+
+  private async getUserStatusCached(userId: string): Promise<string | null> {
+    const now = Date.now();
+    const cached = this.statusCache.get(userId);
+
+    if (cached && cached.expiresAt > now) {
+      return cached.status;
+    }
+
+    const dbUser = await this.usersService.findById(userId);
+    if (!dbUser) {
+      this.statusCache.delete(userId);
+      return null;
+    }
+
+    this.statusCache.set(userId, {
+      status: dbUser.status,
+      expiresAt: now + this.CACHE_TTL_MS,
+    });
+
+    return dbUser.status;
   }
 }

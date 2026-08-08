@@ -151,7 +151,6 @@ export class AuthController {
   /**
    * Generates a CSRF token for use in state-changing requests.
    * Clients should send this token as the X-CSRF-Token header.
-   * TODO(security): Implement full double-submit cookie CSRF validation per request.
    */
   @Get('csrf')
   getCsrfToken(@Response({ passthrough: true }) res: ExpressResponse) {
