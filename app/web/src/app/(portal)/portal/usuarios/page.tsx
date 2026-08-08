@@ -389,20 +389,20 @@ export default function UsuariosManagerPage() {
                     </td>
                     <td className="py-4 px-4 font-semibold">
                       <span className={`inline-block text-[9px] font-bold uppercase px-2 py-0.5 rounded border ${user.role === "ADMIN"
-                          ? "bg-slate-100 text-slate-800 border-slate-200"
-                          : user.role === "PROFESSIONAL"
-                            ? "bg-blue-50 text-blue-700 border-blue-200"
-                            : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        ? "bg-slate-100 text-slate-800 border-slate-200"
+                        : user.role === "PROFESSIONAL"
+                          ? "bg-blue-50 text-blue-700 border-blue-200"
+                          : "bg-emerald-50 text-emerald-700 border-emerald-200"
                         }`}>
                         {user.role}
                       </span>
                     </td>
                     <td className="py-4 px-4">
                       <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase px-2 py-0.5 rounded border ${user.status === "Ativo"
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                          : user.status === "Suspenso"
-                            ? "bg-amber-50 text-amber-700 border-amber-200"
-                            : "bg-red-50 text-red-700 border-red-200"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : user.status === "Suspenso"
+                          ? "bg-amber-50 text-amber-700 border-amber-200"
+                          : "bg-red-50 text-red-700 border-red-200"
                         }`}>
                         {user.status}
                       </span>
@@ -672,12 +672,23 @@ export default function UsuariosManagerPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Input
-                    label="Organização / Corporação"
-                    placeholder="Ex: Polícia Militar do Ceará"
-                    error={errors.org?.message}
-                    {...register("org")}
-                  />
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-text-primary">Cargo na organização</label>
+                    <select
+                      className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/50 transition-colors"
+                      {...register("position")}
+                    >
+                      <option value="">Selecione o cargo...</option>
+                      <option value="POLICIAL PENAL">POLICIAL PENAL</option>
+                      <option value="POLICIAL MILITAR">POLICIAL MILITAR</option>
+                      <option value="POLICIAL CIVIL">POLICIAL CIVIL</option>
+                      <option value="BOMBEIRO MILITAR">BOMBEIRO MILITAR</option>
+                      <option value="PERITO CRIMINAL">PERITO CRIMINAL</option>
+                    </select>
+                    {errors.org?.message && (
+                      <span className="text-xs text-red-500">{errors.org.message}</span>
+                    )}
+                  </div>
 
                   <Input
                     label={editingUser ? "Senha (deixe em branco para manter)" : "Senha de Acesso"}
