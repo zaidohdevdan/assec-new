@@ -229,9 +229,10 @@ export default function PerfilPage() {
           {/* Profile fields */}
           <div className="space-y-4">
             <Input
-              label="Nome Completo"
-              placeholder="Seu nome completo"
+              label="Nome de Exibição / Como prefere ser chamado"
+              placeholder="Ex: Daniel, Sargento Almeida, etc."
               error={errors.name?.message}
+              hint="Este é o nome exibido nos seus acessos ao portal. O nome oficial para fins cadastrais é gerenciado pela administração."
               {...register("name")}
             />
 
