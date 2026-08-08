@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserStatus {
+  Ativo
+  Inativo
+  Suspenso
+}
+
 model User {
   id         String     @id @default(uuid())
   email      String     @unique
@@ -16,7 +22,7 @@ model User {
   cpf        String?    @unique
   rg         String?
   matricula  String?    @unique
-  status     String     @default("Ativo")
+  status     UserStatus @default(Ativo)
   org        String?
   since      DateTime   @default(now())
   createdAt  DateTime   @default(now())
