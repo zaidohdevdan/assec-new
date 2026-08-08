@@ -22,50 +22,65 @@ export class SchedulesService {
   }) {
     const { userId, slotId, title, info } = data;
 
-    // Fetch slot to ensure it's available
-    const slot = await this.prisma.scheduleSlot.findUnique({
-      where: { id: slotId },
-      include: { professional: true },
+    // Use interactive transaction with atomic conditional update to guarantee zero race conditions / double bookings
+    const result = await this.prisma.$transaction(async (tx) => {
+      // 1. Atomic update — only succeeds if the slot is STILL 'Disponível'
+      const updatedSlot = await tx.scheduleSlot.updateMany({
+        where: {
+          id: slotId,
+          status: 'Disponível',
+        },
+        data: {
+          status: 'Reservado',
+        },
+      });
+
+      if (updatedSlot.count === 0) {
+        throw new ConflictException(
+          'Esta vaga já foi reservada por outro associado ou não está mais disponível.',
+        );
+      }
+
+      // 2. Fetch slot with professional details
+      const slot = await tx.scheduleSlot.findUnique({
+        where: { id: slotId },
+        include: { professional: true },
+      });
+
+      if (!slot) {
+        throw new NotFoundException('Vaga não encontrada');
+      }
+
+      // 3. Create schedule within the same atomic transaction
+      const schedule = await tx.schedule.create({
+        data: {
+          title,
+          info,
+          date: slot.date,
+          time: slot.time,
+          type: slot.professional.specialty || 'Geral',
+          user: { connect: { id: userId } },
+          slot: { connect: { id: slotId } },
+        },
+        include: {
+          user: true,
+        },
+      });
+
+      return { schedule, slot };
     });
 
-    if (!slot) {
-      throw new NotFoundException('Vaga não encontrada');
-    }
+    // 4. Notify the professional (outside transaction to avoid blocking DB rollback)
+    const formattedDate = result.slot.date.split('-').reverse().join('/');
+    await this.notifications
+      .create(
+        result.slot.professionalId,
+        'Novo Agendamento Confirmado',
+        `O associado ${result.schedule.user.name} agendou um atendimento de ${result.slot.professional.specialty || 'Serviços'} para o dia ${formattedDate} às ${result.slot.time}.`,
+      )
+      .catch(() => null);
 
-    if (slot.status !== 'Disponível') {
-      throw new ConflictException('Esta vaga já está ocupada ou cancelada');
-    }
-
-    // Mark slot as Booked (Reservado)
-    await this.prisma.scheduleSlot.update({
-      where: { id: slotId },
-      data: { status: 'Reservado' },
-    });
-
-    const schedule = await this.prisma.schedule.create({
-      data: {
-        title,
-        info,
-        date: slot.date,
-        time: slot.time,
-        type: slot.professional.specialty || 'Geral',
-        user: { connect: { id: userId } },
-        slot: { connect: { id: slotId } },
-      },
-      include: {
-        user: true,
-      },
-    });
-
-    // Notify the professional about the new booking
-    const formattedDate = slot.date.split('-').reverse().join('/');
-    await this.notifications.create(
-      slot.professionalId,
-      'Novo Agendamento Confirmado',
-      `O associado ${schedule.user.name} agendou um atendimento de ${slot.professional.specialty || 'Serviços'} para o dia ${formattedDate} às ${slot.time}.`,
-    );
-
-    return schedule;
+    return result.schedule;
   }
 
   async findByUser(userId: string) {
