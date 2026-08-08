@@ -1,7 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserStatus, Role } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -70,11 +70,11 @@ export class UsersService {
       email: string;
       password?: string;
       name: string;
-      role: 'USER' | 'ADMIN' | 'PROFESSIONAL' | 'PRESIDENT' | 'CONTABILIDADE' | 'EDITOR';
+      role: Role;
       cpf: string | null;
       rg: string | null;
       matricula: string | null;
-      status: string;
+      status: UserStatus;
       org: string | null;
       photoUrl: string | null;
       avatarUrl: string | null;
