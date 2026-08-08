@@ -81,14 +81,25 @@ export class UsersService {
     }>,
   ) {
     const updateData = { ...data };
-    if (updateData.password) {
+    if (updateData.password && updateData.password.trim().length > 0) {
       updateData.password = await bcrypt.hash(updateData.password, 10);
+    } else {
+      delete updateData.password;
     }
-    if (updateData.cpf === '') {
-      updateData.cpf = null;
+    if (updateData.cpf === '' || updateData.cpf === undefined) {
+      if (updateData.cpf === '') updateData.cpf = null;
     }
-    if (updateData.matricula === '') {
-      updateData.matricula = null;
+    if (updateData.rg === '') {
+      updateData.rg = null;
+    }
+    if (updateData.matricula === '' || updateData.matricula === undefined) {
+      if (updateData.matricula === '') updateData.matricula = null;
+    }
+    if (updateData.org === '') {
+      updateData.org = null;
+    }
+    if (updateData.specialty === '') {
+      updateData.specialty = null;
     }
 
     // Check unique constraints before updating to provide a clean ConflictException

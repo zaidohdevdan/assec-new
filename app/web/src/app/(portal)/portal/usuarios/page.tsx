@@ -13,18 +13,32 @@ import { User as UserType } from "@/lib/types";
 import { compressImage } from "@/lib/image";
 
 // Form validation schema
-const userFormSchema = z.object({
-  name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
-  email: z.string().email("E-mail inválido"),
-  password: z.string().optional().or(z.literal("")),
-  role: z.enum(["USER", "PROFESSIONAL", "ADMIN", "PRESIDENT", "CONTABILIDADE", "EDITOR"]),
-  status: z.string().min(1, "Selecione o status"),
-  cpf: z.string().optional().or(z.literal("")),
-  rg: z.string().optional().or(z.literal("")),
-  matricula: z.string().optional().or(z.literal("")),
-  org: z.string().optional().or(z.literal("")),
-  specialty: z.string().optional().or(z.literal("")),
-});
+const userFormSchema = z
+  .object({
+    name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
+    email: z.string().email("E-mail inválido"),
+    password: z.string().optional().or(z.literal("")),
+    confirmPassword: z.string().optional().or(z.literal("")),
+    role: z.enum(["USER", "PROFESSIONAL", "ADMIN", "PRESIDENT", "CONTABILIDADE", "EDITOR"]),
+    status: z.string().min(1, "Selecione o status"),
+    cpf: z.string().optional().or(z.literal("")),
+    rg: z.string().optional().or(z.literal("")),
+    matricula: z.string().optional().or(z.literal("")),
+    org: z.string().optional().or(z.literal("")),
+    specialty: z.string().optional().or(z.literal("")),
+  })
+  .refine(
+    (data) => {
+      if (data.password && data.password.trim().length > 0) {
+        return data.password === data.confirmPassword;
+      }
+      return true;
+    },
+    {
+      message: "As senhas não coincidem",
+      path: ["confirmPassword"],
+    }
+  );
 
 type UserFormData = z.infer<typeof userFormSchema>;
 
@@ -124,6 +138,7 @@ export default function UsuariosManagerPage() {
       name: "",
       email: "",
       password: "",
+      confirmPassword: "",
       role: "USER",
       status: "Ativo",
       cpf: "",
@@ -145,6 +160,7 @@ export default function UsuariosManagerPage() {
       name: user.name || "",
       email: user.email || "",
       password: "", // Leave blank for edit unless resetting
+      confirmPassword: "",
       role: user.role || "USER",
       status: user.status || "Ativo",
       cpf: user.cpf || "",
@@ -689,13 +705,23 @@ export default function UsuariosManagerPage() {
                       <span className="text-xs text-red-500">{errors.org.message}</span>
                     )}
                   </div>
+                </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
-                    label={editingUser ? "Senha (deixe em branco para manter)" : "Senha de Acesso"}
+                    label={editingUser ? "Nova Senha (deixe em branco para manter)" : "Senha de Acesso"}
                     type="password"
                     placeholder={editingUser ? "••••••••" : "Insira uma senha segura"}
                     error={errors.password?.message}
                     {...register("password")}
+                  />
+
+                  <Input
+                    label={editingUser ? "Confirmar Nova Senha" : "Confirmar Senha"}
+                    type="password"
+                    placeholder={editingUser ? "••••••••" : "Repita a senha"}
+                    error={errors.confirmPassword?.message}
+                    {...register("confirmPassword")}
                   />
                 </div>
 
