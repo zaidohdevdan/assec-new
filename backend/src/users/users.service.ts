@@ -80,30 +80,41 @@ export class UsersService {
       specialty: string | null;
     }>,
   ) {
-    const updateData = { ...data };
-    if (updateData.password && updateData.password.trim().length > 0) {
-      updateData.password = await bcrypt.hash(updateData.password, 10);
-    } else {
-      delete updateData.password;
+    const updateData: Prisma.UserUpdateInput = {};
+
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.email !== undefined) updateData.email = data.email;
+    if (data.role !== undefined) updateData.role = data.role as Role;
+    if (data.status !== undefined) updateData.status = data.status as UserStatus;
+
+    if (data.cpf !== undefined) {
+      updateData.cpf = data.cpf === '' ? null : data.cpf;
     }
-    if (updateData.cpf === '' || updateData.cpf === undefined) {
-      if (updateData.cpf === '') updateData.cpf = null;
+    if (data.rg !== undefined) {
+      updateData.rg = data.rg === '' ? null : data.rg;
     }
-    if (updateData.rg === '') {
-      updateData.rg = null;
+    if (data.matricula !== undefined) {
+      updateData.matricula = data.matricula === '' ? null : data.matricula;
     }
-    if (updateData.matricula === '' || updateData.matricula === undefined) {
-      if (updateData.matricula === '') updateData.matricula = null;
+    if (data.org !== undefined) {
+      updateData.org = data.org === '' ? null : data.org;
     }
-    if (updateData.org === '') {
-      updateData.org = null;
+    if (data.specialty !== undefined) {
+      updateData.specialty = data.specialty === '' ? null : data.specialty;
     }
-    if (updateData.specialty === '') {
-      updateData.specialty = null;
+    if (data.photoUrl !== undefined) {
+      updateData.photoUrl = data.photoUrl === '' ? null : data.photoUrl;
+    }
+    if (data.avatarUrl !== undefined) {
+      updateData.avatarUrl = data.avatarUrl === '' ? null : data.avatarUrl;
+    }
+
+    if (data.password && typeof data.password === 'string' && data.password.trim().length > 0) {
+      updateData.password = await bcrypt.hash(data.password, 10);
     }
 
     // Check unique constraints before updating to provide a clean ConflictException
-    if (updateData.email) {
+    if (updateData.email && typeof updateData.email === 'string') {
       const emailConflict = await this.prisma.user.findFirst({
         where: {
           email: updateData.email,
@@ -115,7 +126,7 @@ export class UsersService {
       }
     }
 
-    if (updateData.cpf) {
+    if (updateData.cpf && typeof updateData.cpf === 'string') {
       const cpfConflict = await this.prisma.user.findFirst({
         where: {
           cpf: updateData.cpf,
@@ -127,7 +138,7 @@ export class UsersService {
       }
     }
 
-    if (updateData.matricula) {
+    if (updateData.matricula && typeof updateData.matricula === 'string') {
       const matriculaConflict = await this.prisma.user.findFirst({
         where: {
           matricula: updateData.matricula,
