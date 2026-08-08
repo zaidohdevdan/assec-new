@@ -676,9 +676,9 @@ export default function UsuariosManagerPage() {
                     <label className="text-xs font-semibold text-text-primary">Cargo na organização</label>
                     <select
                       className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/50 transition-colors"
-                      {...register("position")}
+                      {...register("org")}
                     >
-                      <option value="">Selecione o cargo...</option>
+                      <option value="">Selecione a corporação...</option>
                       <option value="POLICIAL PENAL">POLICIAL PENAL</option>
                       <option value="POLICIAL MILITAR">POLICIAL MILITAR</option>
                       <option value="POLICIAL CIVIL">POLICIAL CIVIL</option>
