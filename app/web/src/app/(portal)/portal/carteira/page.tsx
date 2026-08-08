@@ -97,6 +97,12 @@ export default function CarteiraPage() {
             padding: 0 !important;
             margin: 0 !important;
           }
+          /* ISO 7810 ID-1 standard: 85.6mm × 54mm */
+          #print-area .card-id {
+            width: 85.6mm !important;
+            height: 54mm !important;
+            border-radius: 3mm !important;
+          }
           /* Forçar cores de fundo nos navegadores */
           * {
             -webkit-print-color-adjust: exact !important;
@@ -191,7 +197,7 @@ export default function CarteiraPage() {
           {/* Printable Area containing Front and Back Cards */}
           <div id="print-area" className="col-span-1 xl:col-span-2 flex flex-col md:flex-row gap-6 justify-center">
             {/* FRONT OF THE CARD */}
-            <div className="w-[340px] h-[215px] rounded-xl bg-gradient-to-br from-primary via-secondary to-primary-light text-white p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden border border-accent/40 shrink-0 animate-none">
+            <div className="card-id w-[340px] h-[215px] rounded-xl bg-gradient-to-br from-primary via-secondary to-primary-light text-white p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden border border-accent/40 shrink-0 animate-none">
               {/* Background design elements */}
               <div className="absolute right-[-20px] top-[-20px] w-36 h-36 bg-accent/5 rounded-full blur-xl pointer-events-none" />
               <div className="absolute left-[-20px] bottom-[-20px] w-36 h-36 bg-white/5 rounded-full blur-xl pointer-events-none" />
@@ -299,7 +305,7 @@ export default function CarteiraPage() {
             </div>
 
             {/* BACK OF THE CARD */}
-            <div className="w-[340px] h-[215px] rounded-xl bg-gradient-to-br from-primary via-secondary to-primary-light text-white p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden border border-accent/40 shrink-0">
+            <div className="card-id w-[340px] h-[215px] rounded-xl bg-gradient-to-br from-primary via-secondary to-primary-light text-white p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden border border-accent/40 shrink-0">
               {/* Background design elements */}
               <div className="absolute right-[-20px] bottom-[-20px] w-36 h-36 bg-accent/5 rounded-full blur-xl pointer-events-none" />
               <div className="absolute left-[-20px] top-[-20px] w-36 h-36 bg-white/5 rounded-full blur-xl pointer-events-none" />
