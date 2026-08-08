@@ -49,6 +49,7 @@ export class UsersService {
         id: true,
         email: true,
         name: true,
+        displayName: true,
         role: true,
         cpf: true,
         rg: true,
@@ -69,6 +70,7 @@ export class UsersService {
       email: string;
       password?: string;
       name: string;
+      displayName: string | null;
       role: Role;
       cpf: string | null;
       rg: string | null;
@@ -83,6 +85,9 @@ export class UsersService {
     const updateData: Prisma.UserUpdateInput = {};
 
     if (data.name !== undefined) updateData.name = data.name;
+    if (data.displayName !== undefined) {
+      updateData.displayName = data.displayName === '' ? null : data.displayName;
+    }
     if (data.email !== undefined) updateData.email = data.email;
     if (data.role !== undefined) updateData.role = data.role as Role;
     if (data.status !== undefined) updateData.status = data.status as UserStatus;
@@ -164,6 +169,7 @@ export class UsersService {
         id: true,
         email: true,
         name: true,
+        displayName: true,
         role: true,
         status: true,
         cpf: true,

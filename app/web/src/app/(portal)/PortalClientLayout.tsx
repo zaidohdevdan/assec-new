@@ -114,7 +114,7 @@ export default function PortalClientLayout({
         if (res.ok) {
           lastAuthCheck = Date.now(); // Atualiza o timestamp de sucesso
           const user = await res.json();
-          setUserName(user.name ?? "");
+          setUserName(user.displayName ?? user.name ?? "");
           setUserPhoto(user.avatarUrl ?? null);
           setUserRole(user.role ?? "USER");
           setUserSpecialty(user.specialty ?? null);
@@ -160,7 +160,7 @@ export default function PortalClientLayout({
       if (userStr) {
         try {
           const user = JSON.parse(userStr);
-          setUserName(user.name);
+          setUserName(user.displayName || user.name || "");
           setUserPhoto(user.avatarUrl || null);
           setUserRole(user.role || "USER");
           setUserSpecialty(user.specialty || null);

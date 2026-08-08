@@ -27,13 +27,15 @@ export class UsersController {
     @Request() req: AuthenticatedRequest,
     @Body()
     data: Partial<{
-      name: string;
+      displayName: string;
       avatarUrl: string;
     }>,
   ) {
     const userId = req.user.sub;
-    const updatePayload: Partial<{ name: string; avatarUrl: string }> = {};
-    if (data.name !== undefined) updatePayload.name = data.name;
+    const updatePayload: Partial<{ displayName: string | null; avatarUrl: string | null }> = {};
+    if (data.displayName !== undefined) {
+      updatePayload.displayName = data.displayName.trim() === '' ? null : data.displayName.trim();
+    }
     if (data.avatarUrl !== undefined) updatePayload.avatarUrl = data.avatarUrl;
 
     return this.usersService.update(userId, updatePayload);

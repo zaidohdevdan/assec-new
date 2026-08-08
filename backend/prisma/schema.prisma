@@ -18,6 +18,7 @@ model User {
   email      String     @unique
   password   String
   name       String
+  displayName String?
   role       Role       @default(USER)
   cpf        String?    @unique
   rg         String?

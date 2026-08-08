@@ -13,7 +13,8 @@ import { User as UserType } from "@/lib/types";
 import { compressImage } from "@/lib/image";
 
 const profileSchema = z.object({
-  name: z.string().min(3, "O nome deve conter pelo menos 3 caracteres"),
+  name: z.string().optional(),
+  displayName: z.string().optional().or(z.literal("")),
   cpf: z.string().min(11, "CPF deve conter no mínimo 11 dígitos").optional().or(z.literal("")),
   rg: z.string().optional(),
   matricula: z.string().optional(),
@@ -42,6 +43,7 @@ export default function PerfilPage() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: "",
+      displayName: "",
       cpf: "",
       rg: "",
       matricula: "",
@@ -58,6 +60,7 @@ export default function PerfilPage() {
         setPhotoBase64(userData.avatarUrl ?? null);
         reset({
           name: userData.name || "",
+          displayName: userData.displayName || "",
           cpf: userData.cpf || "",
           rg: userData.rg || "",
           matricula: userData.matricula || "",
@@ -228,13 +231,25 @@ export default function PerfilPage() {
 
           {/* Profile fields */}
           <div className="space-y-4">
-            <Input
-              label="Nome de Exibição / Como prefere ser chamado"
-              placeholder="Ex: Daniel, Sargento Almeida, etc."
-              error={errors.name?.message}
-              hint="Este é o nome exibido nos seus acessos ao portal. O nome oficial para fins cadastrais é gerenciado pela administração."
-              {...register("name")}
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label="Nome de Exibição / Apelido"
+                placeholder="Ex: Daniel, Sgt. Almeida"
+                error={errors.displayName?.message}
+                hint="Como você prefere ser chamado nos menus e saudações do portal."
+                {...register("displayName")}
+              />
+
+              <Input
+                label="Nome Completo Oficial"
+                placeholder="Nome civil do associado"
+                error={errors.name?.message}
+                readOnly
+                className="bg-gray-50/80 cursor-not-allowed opacity-80"
+                hint="Alteração cadastral restrita à administração"
+                {...register("name")}
+              />
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
