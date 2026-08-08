@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Printer, Download, CreditCard, ShieldCheck, HelpCircle } from "lucide-react";
 import Image from "next/image";
+import { QRCodeSVG } from "qrcode.react";
 import { User } from "@/lib/types";
 
 export default function CarteiraPage() {
@@ -369,12 +370,12 @@ export default function CarteiraPage() {
                 <div className="col-span-2 flex items-center justify-between gap-1 bg-white p-1.5 rounded-lg border border-gray-200 h-[50px] shadow-sm">
                   <div className="flex items-center justify-center flex-1">
                     {validationUrl ? (
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
-                          validationUrl
-                        )}`}
-                        alt="Validação QR Code"
-                        className="h-9 w-9 object-contain"
+                      <QRCodeSVG
+                        value={validationUrl}
+                        size={36}
+                        bgColor="#ffffff"
+                        fgColor="#000000"
+                        level="M"
                       />
                     ) : (
                       <div className="h-9 w-9 bg-gray-100 animate-pulse rounded" />
