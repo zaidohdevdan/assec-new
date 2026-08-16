@@ -273,23 +273,17 @@ export default function CarteiraPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
+                      <span className="text-[6px] text-gray-400 uppercase block leading-none">Cargo / Patente</span>
+                      <span className="text-[9px] text-gray-200 block truncate font-medium mt-0.5">
+                        {user.org}
+                      </span>
+                    </div>
+                    <div>
                       <span className="text-[6px] text-gray-400 uppercase block leading-none">Matrícula</span>
                       <span className="text-[10px] font-mono font-bold text-accent block leading-none mt-0.5">
                         {user.matricula}
                       </span>
                     </div>
-                    <div>
-                      <span className="text-[6px] text-gray-400 uppercase block leading-none">CPF</span>
-                      <span className="text-[10px] font-mono font-bold text-white block leading-none mt-0.5">
-                        {user.cpf}
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-[6px] text-gray-400 uppercase block leading-none">Cargo / Patente</span>
-                    <span className="text-[9px] text-gray-200 block truncate font-medium mt-0.5">
-                      {user.org}
-                    </span>
                   </div>
                 </div>
               </div>
@@ -340,14 +334,18 @@ export default function CarteiraPage() {
               </div>
 
               {/* Back Details Grid */}
-              <div className="grid grid-cols-2 gap-3 my-1.5 text-left bg-slate-900/60 p-2 rounded-lg border border-white/10 relative z-10 shadow-inner">
+              <div className="grid grid-cols-3 gap-2 my-1.5 text-left bg-slate-900/60 p-2 rounded-lg border border-white/10 relative z-10 shadow-inner">
                 <div>
                   <span className="text-[5.5px] text-gray-400 uppercase font-bold tracking-wider block">Identidade (RG)</span>
-                  <span className="text-[9.5px] font-bold font-mono text-white tracking-wide">{user.rg}</span>
+                  <span className="text-[9px] font-bold font-mono text-white tracking-wide">{user.rg}</span>
                 </div>
                 <div>
-                  <span className="text-[5.5px] text-gray-400 uppercase font-bold tracking-wider block">Situação de Filiação</span>
-                  <span className="text-[9.5px] font-bold text-emerald-400 uppercase tracking-wide flex items-center gap-1">
+                  <span className="text-[5.5px] text-gray-400 uppercase font-bold tracking-wider block">CPF</span>
+                  <span className="text-[9px] font-bold font-mono text-white tracking-wide">{user.cpf}</span>
+                </div>
+                <div>
+                  <span className="text-[5.5px] text-gray-400 uppercase font-bold tracking-wider block">Situação</span>
+                  <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wide flex items-center gap-1">
                     <span className="h-1 w-1 rounded-full bg-emerald-400 inline-block animate-pulse" />
                     ATIVO
                   </span>
