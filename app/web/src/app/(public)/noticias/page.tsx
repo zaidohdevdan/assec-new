@@ -187,11 +187,12 @@ function NoticiasContent() {
                 className={`border-l-4 ${getCatStyle(featuredArticle.type).border} border border-slate-200 hover:border-slate-300 transition-colors duration-200 bg-white overflow-hidden group`}
               >
                 <div className="flex flex-col md:flex-row">
-                  {/* Cover image Link */}
+                  {/* Cover image — 16:9 on mobile, fixed width sidebar on md+ */}
                   {featuredArticle.coverImage && (
                     <Link
                       href={`/noticias/${featuredArticle.id}`}
-                      className="w-full h-52 md:w-64 md:h-auto md:self-stretch lg:w-80 shrink-0 overflow-hidden block relative"
+                      className="w-full md:w-64 lg:w-80 shrink-0 overflow-hidden block relative"
+                      style={{ aspectRatio: "16/9" }}
                     >
                       <NewsImage
                         src={featuredArticle.coverImage}
@@ -275,7 +276,7 @@ function NoticiasContent() {
           )}
 
           {/* Regular grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-7">
             {regularArticles.map((art) => {
               const style = getCatStyle(art.type);
               return (

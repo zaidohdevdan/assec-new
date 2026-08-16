@@ -4,19 +4,13 @@ import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { RichTextEditor } from "@/components/ui/RichTextEditor";
 import {
   Calendar,
   Trash2,
   Plus,
   X,
   Edit3,
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Link2,
-  Heading2,
-  Heading3,
   ImageIcon,
   Share2,
   Copy,
@@ -24,13 +18,13 @@ import {
   Tag,
   Eye,
   FileText,
-  AlignLeft,
   Upload,
   Globe,
   ToggleLeft,
   ToggleRight,
   Newspaper,
   AlertTriangle,
+  AlignLeft,
 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 
@@ -77,29 +71,6 @@ function getShareUrl(id: string): string {
   return `${window.location.origin}/noticias/${id}`;
 }
 
-// ─── Toolbar button ───────────────────────────────────────────────────────────
-
-function ToolbarBtn({
-  onClick,
-  title,
-  children,
-}: {
-  onClick: () => void;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onMouseDown={(e) => { e.preventDefault(); onClick(); }}
-      title={title}
-      className="p-1.5 rounded hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-    >
-      {children}
-    </button>
-  );
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function NoticesManagementPage() {
@@ -126,8 +97,7 @@ export default function NoticesManagementPage() {
   const [fImageMode, setFImageMode] = React.useState<"url" | "upload">("url");
   const [fActive, setFActive] = React.useState(true);
 
-  // ── Editor ──────────────────────────────────────────────────────────────────
-  const editorRef = React.useRef<HTMLDivElement>(null);
+  // ── Editor (Tiptap) ─────────────────────────────────────────────────────────
   const [editorHtml, setEditorHtml] = React.useState("");
   const [previewMode, setPreviewMode] = React.useState(false);
 
@@ -139,7 +109,6 @@ export default function NoticesManagementPage() {
   const fetchNotices = React.useCallback(async () => {
     setListLoading(true);
     try {
-      // ?all=true returns drafts + published (admin view)
       const res = await apiFetch("/notices?all=true");
       if (res.ok) setNotices(await res.json());
     } catch (err) {
@@ -153,37 +122,11 @@ export default function NoticesManagementPage() {
 
   // ── Form helpers ────────────────────────────────────────────────────────────
 
-  /**
-   * Quando o form abre para edicao, popula o editor com o conteudo salvo.
-   * Precisa rodar APOS o re-render que monta o div[contentEditable] no DOM.
-   */
-  React.useEffect(() => {
-    if (formOpen && editingNotice && editorRef.current) {
-      editorRef.current.innerHTML = sanitizeHtml(editingNotice.content);
-    }
-    // Quando o form fecha (formOpen=false), limpa o editor
-    if (!formOpen && editorRef.current) {
-      editorRef.current.innerHTML = "";
-    }
-  }, [formOpen, editingNotice]);
-
-  /**
-   * Quando volta do modo Prévia para o modo Edição, o div[contentEditable]
-   * é remontado vazio. Este effect restaura o conteúdo a partir de editorHtml.
-   */
-  React.useEffect(() => {
-    if (!previewMode && editorRef.current) {
-      editorRef.current.innerHTML = editorHtml;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [previewMode]);
-
   const resetForm = () => {
     setFTitle(""); setFSummary(""); setFCategory("Institucional");
     setFTags([]); setFTagInput(""); setFCoverImage("");
     setFImageUrlInput(""); setFActive(true); setSubmitError(null);
     setPreviewMode(false);
-    if (editorRef.current) editorRef.current.innerHTML = "";
     setEditorHtml("");
   };
 
@@ -205,8 +148,6 @@ export default function NoticesManagementPage() {
     setFActive(n.active);
     setSubmitError(null);
     setPreviewMode(false);
-    // Nao setar innerHTML aqui — o editor ainda nao esta montado (formOpen=false).
-    // O useEffect abaixo cuida disso apos o re-render.
     setEditorHtml(n.content);
     setFormOpen(true);
     setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 50);
@@ -233,7 +174,7 @@ export default function NoticesManagementPage() {
   /**
    * Redimensiona e recorta a imagem para proporção 16:9 (1280×720 px) usando
    * Canvas API. O crop é centralizado — a imagem nunca fica distorcida.
-   * Retorna uma string base64 (image/jpeg, qualidade 0.88).
+   * Retorna uma string base64 (image/webp ou jpeg, qualidade 0.75).
    */
   const normalizeImage = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -249,20 +190,17 @@ export default function NoticesManagementPage() {
         const srcW = img.naturalWidth;
         const srcH = img.naturalHeight;
 
-        // Calcular a maior área 16:9 que cabe na imagem (crop centralizado)
         const srcRatio = srcW / srcH;
         const tgtRatio = TARGET_W / TARGET_H;
 
         let cropW: number, cropH: number, cropX: number, cropY: number;
 
         if (srcRatio > tgtRatio) {
-          // Imagem mais larga — corta nas laterais
           cropH = srcH;
           cropW = Math.round(srcH * tgtRatio);
           cropX = Math.round((srcW - cropW) / 2);
           cropY = 0;
         } else {
-          // Imagem mais alta — corta em cima e embaixo
           cropW = srcW;
           cropH = Math.round(srcW / tgtRatio);
           cropX = 0;
@@ -297,10 +235,7 @@ export default function NoticesManagementPage() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Resetar input para permitir re-seleção do mesmo arquivo
     e.target.value = "";
-
     try {
       const b64 = await normalizeImage(file);
       setFCoverImage(b64);
@@ -311,41 +246,12 @@ export default function NoticesManagementPage() {
     }
   };
 
-  // ── Rich Text Editor ─────────────────────────────────────────────────────────
-
-  const exec = (cmd: string, val?: string) => {
-    editorRef.current?.focus();
-    document.execCommand(cmd, false, val);
-    syncEditor();
-  };
-
-  const syncEditor = () => {
-    if (editorRef.current) setEditorHtml(editorRef.current.innerHTML);
-  };
-
-  const insertLink = () => {
-    const url = prompt("Cole a URL do link:");
-    if (url) exec("createLink", url);
-  };
-
-  const insertInlineImage = () => {
-    const url = fImageUrlInput.trim();
-    if (!url || !editorRef.current) return;
-    editorRef.current.focus();
-    document.execCommand(
-      "insertHTML", false,
-      `<img src="${url}" alt="" style="max-width:100%;border-radius:6px;margin:8px 0;" />`
-    );
-    syncEditor();
-  };
-
   // ── Submit ──────────────────────────────────────────────────────────────────
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const body = editorRef.current?.innerHTML ?? "";
     if (!fTitle.trim()) { setSubmitError("O título é obrigatório."); return; }
-    if (!body || body === "<br>" || body.trim() === "") {
+    if (!editorHtml || editorHtml === "<p></p>" || editorHtml.trim() === "") {
       setSubmitError("O conteúdo não pode estar vazio.");
       return;
     }
@@ -353,7 +259,7 @@ export default function NoticesManagementPage() {
     const payload = {
       title: fTitle.trim(),
       summary: fSummary.trim() || null,
-      content: sanitizeHtml(body),
+      content: sanitizeHtml(editorHtml),
       type: fCategory,
       tags: fTags,
       coverImage: fCoverImage || null,
@@ -467,10 +373,10 @@ export default function NoticesManagementPage() {
         <Card className="border border-border shadow-lg overflow-hidden">
 
           {/* Form top bar */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-slate-50">
-            <div className="flex items-center gap-2.5">
-              <FileText className="h-5 w-5 text-accent-dark" />
-              <h2 className="font-serif font-bold text-lg text-primary">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-border bg-slate-50">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <FileText className="h-5 w-5 text-accent-dark shrink-0" />
+              <h2 className="font-serif font-bold text-lg text-primary truncate">
                 {editingNotice ? "Editar Comunicado" : "Novo Comunicado"}
               </h2>
               {editingNotice && (
@@ -484,7 +390,7 @@ export default function NoticesManagementPage() {
             <button
               type="button"
               onClick={() => setFActive((p) => !p)}
-              className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border transition-all ${
+              className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border transition-all shrink-0 ${
                 fActive
                   ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
                   : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"
@@ -495,7 +401,7 @@ export default function NoticesManagementPage() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
 
             {/* Error banner */}
             {submitError && (
@@ -609,7 +515,7 @@ export default function NoticesManagementPage() {
               </div>
 
               {fImageMode === "url" ? (
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="url"
                     placeholder="https://exemplo.com/imagem.jpg"
@@ -617,21 +523,15 @@ export default function NoticesManagementPage() {
                     onChange={(e) => setFImageUrlInput(e.target.value)}
                     className="flex-1 h-10 rounded-md border border-border bg-bg-surface px-3 py-2 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setFCoverImage(fImageUrlInput.trim())}
-                    className="bg-primary text-white font-bold text-xs px-4 rounded-md hover:bg-primary-light transition-colors shrink-0"
-                  >
-                    Usar como capa
-                  </button>
-                  <button
-                    type="button"
-                    onClick={insertInlineImage}
-                    title="Inserir imagem no corpo do texto"
-                    className="bg-slate-100 text-text-primary font-bold text-xs px-3 rounded-md hover:bg-slate-200 border border-border transition-colors shrink-0"
-                  >
-                    Inserir no texto
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setFCoverImage(fImageUrlInput.trim())}
+                      className="flex-1 sm:flex-none bg-primary text-white font-bold text-xs px-4 h-10 rounded-md hover:bg-primary-light transition-colors"
+                    >
+                      Usar como capa
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <label className="flex items-center gap-4 cursor-pointer border-2 border-dashed border-border rounded-md p-5 hover:bg-slate-50 transition-colors">
@@ -644,7 +544,7 @@ export default function NoticesManagementPage() {
                 </label>
               )}
 
-              {/* Cover preview */}
+              {/* Cover preview — always 16:9 */}
               {fCoverImage && (
                 <div className="relative mt-1 group w-full overflow-hidden rounded-md border border-border" style={{ aspectRatio: "16/9" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -668,7 +568,7 @@ export default function NoticesManagementPage() {
               )}
             </div>
 
-            {/* ── Rich Text Editor ──────────────────────────────────────────────── */}
+            {/* ── Rich Text Editor (Tiptap) ──────────────────────────────────────── */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-semibold text-text-primary flex items-center gap-1.5">
@@ -677,13 +577,7 @@ export default function NoticesManagementPage() {
                 </label>
                 <button
                   type="button"
-                  onClick={() => {
-                    // Sincroniza o HTML do DOM antes de mostrar a prévia
-                    if (editorRef.current) {
-                      setEditorHtml(editorRef.current.innerHTML);
-                    }
-                    setPreviewMode((p) => !p);
-                  }}
+                  onClick={() => setPreviewMode((p) => !p)}
                   className="flex items-center gap-1.5 text-xs font-bold text-text-secondary hover:text-primary border border-border rounded px-2.5 py-1 transition-colors"
                 >
                   <Eye className="h-3.5 w-3.5" />
@@ -692,59 +586,24 @@ export default function NoticesManagementPage() {
               </div>
 
               {!previewMode ? (
-                <div className="border border-border rounded-md overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-border-focus">
-                  {/* Toolbar */}
-                  <div className="flex flex-wrap items-center gap-0.5 px-2 py-2 bg-slate-50 border-b border-border">
-                    <ToolbarBtn onClick={() => exec("bold")} title="Negrito">
-                      <Bold className="h-3.5 w-3.5" />
-                    </ToolbarBtn>
-                    <ToolbarBtn onClick={() => exec("italic")} title="Itálico">
-                      <Italic className="h-3.5 w-3.5" />
-                    </ToolbarBtn>
-                    <div className="w-px h-5 bg-border mx-1" />
-                    <ToolbarBtn onClick={() => exec("formatBlock", "h2")} title="Título H2">
-                      <Heading2 className="h-3.5 w-3.5" />
-                    </ToolbarBtn>
-                    <ToolbarBtn onClick={() => exec("formatBlock", "h3")} title="Subtítulo H3">
-                      <Heading3 className="h-3.5 w-3.5" />
-                    </ToolbarBtn>
-                    <ToolbarBtn onClick={() => exec("formatBlock", "p")} title="Parágrafo">
-                      <AlignLeft className="h-3.5 w-3.5" />
-                    </ToolbarBtn>
-                    <div className="w-px h-5 bg-border mx-1" />
-                    <ToolbarBtn onClick={() => exec("insertUnorderedList")} title="Lista com marcadores">
-                      <List className="h-3.5 w-3.5" />
-                    </ToolbarBtn>
-                    <ToolbarBtn onClick={() => exec("insertOrderedList")} title="Lista numerada">
-                      <ListOrdered className="h-3.5 w-3.5" />
-                    </ToolbarBtn>
-                    <div className="w-px h-5 bg-border mx-1" />
-                    <ToolbarBtn onClick={insertLink} title="Inserir link">
-                      <Link2 className="h-3.5 w-3.5" />
-                    </ToolbarBtn>
-                    <div className="w-px h-5 bg-border mx-1" />
-                    <ToolbarBtn onClick={() => exec("removeFormat")} title="Remover formatação">
-                      <span className="text-[10px] font-bold px-0.5">T̶</span>
-                    </ToolbarBtn>
-                  </div>
-
-                  {/* Editable div */}
-                  <div
-                    ref={editorRef}
-                    contentEditable
-                    suppressContentEditableWarning
-                    onInput={syncEditor}
-                    onBlur={syncEditor}
-                    data-placeholder="Escreva o conteúdo completo do comunicado aqui..."
-                    className="min-h-[240px] px-5 py-4 text-sm text-text-primary outline-none bg-white leading-relaxed prose prose-sm max-w-none [&:empty]:before:content-[attr(data-placeholder)] [&:empty]:before:text-text-muted"
-                  />
-                </div>
+                <RichTextEditor
+                  value={editorHtml}
+                  onChange={setEditorHtml}
+                  minHeight={280}
+                />
               ) : (
                 <div
-                  className="min-h-[240px] px-5 py-4 border border-border rounded-md bg-slate-50 prose prose-sm max-w-none text-text-primary text-sm leading-relaxed"
+                  className="min-h-[280px] px-5 py-4 border border-border rounded-md bg-slate-50 news-content prose prose-sm max-w-none text-text-primary text-sm leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(editorHtml) }}
                 />
               )}
+
+              <p className="text-[11px] text-text-muted flex flex-wrap gap-x-4 gap-y-1">
+                <span><kbd className="bg-slate-100 px-1 rounded font-mono">Ctrl+B</kbd> Negrito</span>
+                <span><kbd className="bg-slate-100 px-1 rounded font-mono">Ctrl+I</kbd> Itálico</span>
+                <span><kbd className="bg-slate-100 px-1 rounded font-mono">Ctrl+Z</kbd> Desfazer</span>
+                <span><kbd className="bg-slate-100 px-1 rounded font-mono">Ctrl+K</kbd> Link</span>
+              </p>
             </div>
 
             {/* ── Form footer ───────────────────────────────────────────────────── */}
@@ -810,9 +669,9 @@ export default function NoticesManagementPage() {
 
       {/* ── Notices list ───────────────────────────────────────────────────────── */}
       <Card className="p-0 overflow-hidden border border-border">
-        {/* Table header */}
+        {/* Table header — visible on sm+ */}
         <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 px-5 py-3 bg-slate-50 border-b border-border text-[11px] font-bold uppercase tracking-widest text-text-muted">
-          <span className="w-16">Capa</span>
+          <span className="w-20">Capa</span>
           <span>Comunicado</span>
           <span className="w-28 text-center">Categoria</span>
           <span className="w-28 text-center">Data</span>
@@ -838,10 +697,19 @@ export default function NoticesManagementPage() {
               return (
                 <div
                   key={notice.id}
-                  className={`flex flex-col sm:flex-row sm:items-center gap-4 px-5 py-4 hover:bg-slate-50/60 transition-colors border-l-4 ${style.border}`}
+                  className={`flex flex-col sm:flex-row sm:items-center gap-3 px-4 sm:px-5 py-4 hover:bg-slate-50/60 transition-colors border-l-4 ${style.border}`}
                 >
-                  {/* Cover thumbnail — proporção 16:9 fixa */}
-                  <div className="shrink-0 w-[88px] overflow-hidden rounded border border-border" style={{ aspectRatio: "16/9" }}>
+                  {/* ── Cover thumbnail ──────────────────────────────────────────
+                      Mobile: full-width 16:9 card above content
+                      Desktop (sm+): small 96px thumbnail on the left
+                  */}
+                  <div
+                    className={`
+                      overflow-hidden rounded border border-border shrink-0
+                      w-full sm:w-24
+                    `}
+                    style={{ aspectRatio: "16/9" }}
+                  >
                     {notice.coverImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -867,7 +735,7 @@ export default function NoticesManagementPage() {
                           Rascunho
                         </span>
                       )}
-                      {notice.tags.slice(0, 4).map((t) => (
+                      {notice.tags.slice(0, 3).map((t) => (
                         <span key={t} className="text-[10px] text-text-muted font-medium">
                           #{t}
                         </span>
@@ -877,7 +745,7 @@ export default function NoticesManagementPage() {
                       {notice.title}
                     </p>
                     {notice.summary && (
-                      <p className="text-xs text-text-muted mt-0.5 truncate">{notice.summary}</p>
+                      <p className="text-xs text-text-muted mt-0.5 line-clamp-1">{notice.summary}</p>
                     )}
                     <div className="flex items-center gap-1 text-text-muted text-xs mt-1">
                       <Calendar className="h-3 w-3" />
@@ -886,7 +754,7 @@ export default function NoticesManagementPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-1 shrink-0 self-end sm:self-auto">
                     {/* Share */}
                     <button
                       type="button"
