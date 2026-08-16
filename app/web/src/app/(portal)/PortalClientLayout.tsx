@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, CreditCard, User, Users, LogOut, ArrowLeft, Loader2, Menu, X, Bell, Check, Shield, Terminal, FileText, Landmark, Heart, Video, Megaphone } from "lucide-react";
+import { LayoutDashboard, Calendar, CreditCard, User, Users, LogOut, ArrowLeft, Loader2, Menu, X, Bell, Check, Shield, Terminal, FileText, Landmark, Heart, Video, Megaphone, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { User as UserType, Notification } from "@/lib/types";
@@ -206,6 +206,7 @@ export default function PortalClientLayout({
   const menuItems = userRole === "ADMIN"
     ? [
       { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
+      { label: "Métricas de Visitas", href: "/dashboard", icon: TrendingUp },
       { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
       { label: "Gerenciar Usuários", href: "/portal/usuarios", icon: Users },
       { label: "Fluxo Financeiro", href: "/portal/financas", icon: Landmark },
@@ -217,6 +218,7 @@ export default function PortalClientLayout({
     : userRole === "PRESIDENT"
       ? [
         { label: "Visão Geral", href: "/portal", icon: LayoutDashboard },
+        { label: "Métricas de Visitas", href: "/dashboard", icon: TrendingUp },
         { label: "Carteira Virtual", href: "/portal/carteira", icon: CreditCard },
         { label: "Fluxo Financeiro", href: "/portal/financas", icon: Landmark },
         { label: "Relatório de Demandas", href: "/portal/demandas", icon: FileText },

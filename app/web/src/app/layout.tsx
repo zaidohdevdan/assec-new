@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import { CookieBanner } from "@/components/ui/CookieBanner";
+import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 
 export const metadata = {
   metadataBase: new URL("https://assecce.com.br"),
@@ -132,6 +133,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-bg-page text-text-primary antialiased min-h-screen flex flex-col">
+        <AnalyticsTracker />
         <main id="main" className="flex-1 flex flex-col w-full min-w-0">{children}</main>
         <CookieBanner />
       </body>

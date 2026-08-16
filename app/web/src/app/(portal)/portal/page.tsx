@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, CreditCard, User, ShieldCheck, Clock, PlusCircle, Plus, Newspaper, Video, ArrowRight, TrendingUp, TrendingDown, Users, Scale, DollarSign, Activity, FileText, Heart, Loader2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { User as UserType, ScheduleSlot, FinancialStats, MonthlyStats } from "@/lib/types";
+import { AdminAnalyticsSection } from "@/components/analytics/AdminAnalyticsSection";
 
 interface ScheduleItem {
   id: string;
@@ -276,6 +277,9 @@ export default function PortalPage() {
             </div>
           </Card>
         </div>
+
+        {/* Métricas de Visitas no Site (Logados vs Não Logados) */}
+        <AdminAnalyticsSection />
       </div>
     );
   }
@@ -892,6 +896,9 @@ export default function PortalPage() {
             )}
           </Card>
         </div>
+
+        {/* Métricas de Visitas no Site (Logados vs Não Logados) */}
+        <AdminAnalyticsSection />
       </div>
     );
   }

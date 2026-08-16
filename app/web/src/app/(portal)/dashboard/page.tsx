@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Landmark, Mail, Calendar, UserCheck, X, Heart } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { AdminAnalyticsSection } from "@/components/analytics/AdminAnalyticsSection";
 
 interface MessageItem {
   id: string;
@@ -153,6 +154,9 @@ export default function DashboardPage() {
           </div>
         </Card>
       </div>
+
+      {/* Analytics Section (Visitas Logados vs Não Logados) */}
+      <AdminAnalyticsSection />
 
       {/* Content Grid */}
       <div className="grid grid-cols-1 gap-6">

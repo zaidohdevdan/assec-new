@@ -36,6 +36,7 @@ model User {
   specialty  String?
   slots      ScheduleSlot[] @relation("ProfessionalSlots")
   notifications Notification[]
+  pageVisits PageVisit[]
 }
 
 model ContactMessage {
@@ -189,3 +190,21 @@ enum PreRegistrationStatus {
   CONVERTIDO
   REJEITADO
 }
+
+model PageVisit {
+  id        String   @id @default(uuid())
+  path      String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  isLogged  Boolean  @default(false)
+  sessionId String?
+  ipHash    String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([isLogged])
+  @@index([path])
+  @@index([userId])
+}
+

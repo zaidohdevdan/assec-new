@@ -16,6 +16,7 @@ import { BenefitsModule } from './benefits/benefits.module';
 import { FinancialsModule } from './financials/financials.module';
 import { VideosModule } from './videos/videos.module';
 import { CampaignModule } from './campaign/campaign.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 import { CsrfGuard } from './auth/csrf.guard';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 
@@ -35,6 +36,7 @@ import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter'
     NetworkModule,
     VideosModule,
     CampaignModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [
