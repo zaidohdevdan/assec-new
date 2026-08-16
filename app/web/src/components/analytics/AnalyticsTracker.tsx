@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 const SESSION_STORAGE_KEY = "assec_anon_sid";
+const LAST_VISIT_TIME_KEY = "assec_last_visit_time";
+const LAST_VISIT_PATH_KEY = "assec_last_visit_path";
+const DEBOUNCE_COOLDOWN_MS = 5000; // 5 segundos de cooldown para recarregamentos na mesma rota
 
 function getOrCreateSessionId(): string {
   if (typeof window === "undefined") return "";
@@ -22,21 +25,26 @@ function getOrCreateSessionId(): string {
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
-  const lastTrackedRef = React.useRef<{ path: string; time: number } | null>(null);
 
   React.useEffect(() => {
-    if (!pathname) return;
+    if (!pathname || typeof window === "undefined") return;
 
-    // Debounce duplicate hits on same path within 3 seconds
     const now = Date.now();
-    if (
-      lastTrackedRef.current &&
-      lastTrackedRef.current.path === pathname &&
-      now - lastTrackedRef.current.time < 3000
-    ) {
-      return;
+    try {
+      const lastPath = sessionStorage.getItem(LAST_VISIT_PATH_KEY);
+      const lastTimeStr = sessionStorage.getItem(LAST_VISIT_TIME_KEY);
+      const lastTime = lastTimeStr ? parseInt(lastTimeStr, 10) : 0;
+
+      // Ignore duplicate hits on same path within 5 seconds (prevents F5 / reload inflation)
+      if (lastPath === pathname && now - lastTime < DEBOUNCE_COOLDOWN_MS) {
+        return;
+      }
+
+      sessionStorage.setItem(LAST_VISIT_PATH_KEY, pathname);
+      sessionStorage.setItem(LAST_VISIT_TIME_KEY, now.toString());
+    } catch {
+      // ignore storage access errors
     }
-    lastTrackedRef.current = { path: pathname, time: now };
 
     const payload = JSON.stringify({
       path: pathname,

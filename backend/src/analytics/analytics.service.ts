@@ -78,18 +78,15 @@ export class AnalyticsService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * Generates a privacy-compliant IP hash using SHA-256 and daily rotating salt.
-   * Conforms to LGPD/GDPR: Cannot reverse-engineer user IP.
+   * Generates a privacy-compliant IP hash using HMAC-SHA256 with server secret and daily rotation.
+   * Conforms to LGPD/GDPR: Irreversible, stable across server restarts, and rotates daily.
    */
   private generateIpHash(ip: string): string {
     const today = new Date().toISOString().slice(0, 10);
-    if (today !== this.lastSaltDate) {
-      this.dailySalt = crypto.randomBytes(16).toString('hex');
-      this.lastSaltDate = today;
-    }
+    const secretKey = process.env.JWT_SECRET || 'assec_analytics_salt_key';
     return crypto
-      .createHash('sha256')
-      .update(`${ip || 'unknown'}-${this.dailySalt}-${today}`)
+      .createHmac('sha256', secretKey)
+      .update(`${ip || 'unknown'}-${today}`)
       .digest('hex');
   }
 
