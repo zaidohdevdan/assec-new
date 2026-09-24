@@ -95,18 +95,24 @@ export function VideoShortsSection() {
   const handleScroll = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, clientWidth } = scrollContainerRef.current;
-      const cardWidth = clientWidth > 640 ? 280 : 240;
-      const index = Math.round(scrollLeft / (cardWidth + 16)); // card width + gap
-      setActiveScrollIndex(index);
+      const isMobile = clientWidth <= 640;
+      const cardWidth = isMobile ? Math.min(clientWidth * 0.76, 290) : 280;
+      const gap = isMobile ? 16 : 24;
+      const index = Math.round(scrollLeft / (cardWidth + gap));
+      setActiveScrollIndex(Math.min(Math.max(0, index), videos.length - 1));
     }
   };
 
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
       const { scrollLeft, clientWidth } = scrollContainerRef.current;
+      const isMobile = clientWidth <= 640;
+      const cardWidth = isMobile ? Math.min(clientWidth * 0.76, 290) : 280;
+      const gap = isMobile ? 16 : 24;
+      const step = cardWidth + gap;
       const scrollTo = direction === "left" 
-        ? scrollLeft - clientWidth * 0.75 
-        : scrollLeft + clientWidth * 0.75;
+        ? scrollLeft - step 
+        : scrollLeft + step;
       
       scrollContainerRef.current.scrollTo({
         left: scrollTo,
@@ -118,9 +124,11 @@ export function VideoShortsSection() {
   const scrollToCard = (index: number) => {
     if (scrollContainerRef.current) {
       const clientWidth = scrollContainerRef.current.clientWidth;
-      const cardWidth = clientWidth > 640 ? 280 : 240;
+      const isMobile = clientWidth <= 640;
+      const cardWidth = isMobile ? Math.min(clientWidth * 0.76, 290) : 280;
+      const gap = isMobile ? 16 : 24;
       scrollContainerRef.current.scrollTo({
-        left: index * (cardWidth + 16),
+        left: index * (cardWidth + gap),
         behavior: "smooth"
       });
     }
@@ -141,7 +149,7 @@ export function VideoShortsSection() {
   }
 
   return (
-    <section className="py-16 sm:py-24 bg-white border-b border-border overflow-hidden">
+    <section className="py-16 sm:py-24 bg-[#F8FAFC] border-b border-border overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         
         {/* Section Header */}
@@ -159,9 +167,9 @@ export function VideoShortsSection() {
             </p>
           </div>
           
-          {/* Navigation Arrows for scroll shelf */}
+          {/* Navigation Arrows — apenas desktop (no mobile usa swipe) */}
           {videos.length > 1 && (
-            <div className={`flex gap-2 shrink-0 self-end sm:self-auto ${videos.length <= 4 ? "md:hidden" : "md:flex"}`}>
+            <div className="hidden sm:flex gap-2 shrink-0 self-end sm:self-auto">
               <button 
                 onClick={() => scroll("left")}
                 className="h-10 w-10 rounded-full border border-border flex items-center justify-center text-text-primary hover:bg-slate-50 transition-colors shadow-sm focus-visible:ring-2 focus-visible:ring-accent"
@@ -183,40 +191,54 @@ export function VideoShortsSection() {
         {/* Outer container with indicator overlays */}
         <div className="relative">
           {/* Left edge shadow indicator */}
-          <div className="absolute left-0 top-0 bottom-6 w-8 bg-gradient-to-r from-white to-transparent z-20 pointer-events-none md:hidden" />
+          <div className="absolute left-0 top-0 bottom-6 w-8 bg-gradient-to-r from-[#F8FAFC] to-transparent z-20 pointer-events-none md:hidden" />
           
           {/* Right edge shadow indicator */}
-          <div className="absolute right-0 top-0 bottom-6 w-8 bg-gradient-to-l from-white to-transparent z-20 pointer-events-none md:hidden" />
+          <div className="absolute right-0 top-0 bottom-6 w-8 bg-gradient-to-l from-[#F8FAFC] to-transparent z-20 pointer-events-none md:hidden" />
 
           {/* Videos Shelf (Horizontal Scroll Container) */}
           <div 
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0"
+            className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory -mx-4 px-[12vw] sm:mx-0 sm:px-0 scroll-px-[12vw] sm:scroll-px-0"
             style={{ scrollbarWidth: "none" }}
           >
-            {videos.map((video) => {
+            {videos.map((video, index) => {
               const youtubeId = getYouTubeId(video.youtubeUrl);
               if (!youtubeId) return null;
 
               return (
                 <div 
                   key={video.id} 
-                  className="flex-shrink-0 w-[240px] sm:w-[280px] snap-start"
+                  className="flex-shrink-0 w-[76vw] max-w-[290px] sm:w-[280px] sm:max-w-none snap-center sm:snap-start"
                 >
                   <Card className="overflow-hidden border border-border bg-slate-50 shadow-sm transition-all hover:shadow-md hover:border-accent duration-300 flex flex-col h-full rounded-2xl p-0">
                     {/* Aspect Ratio 9:16 for vertical Shorts */}
                     <div className="relative w-full aspect-[9/16] bg-black group overflow-hidden">
-                      {/* High quality thumbnail from youtube */}
+                    {/* High quality thumbnail from youtube */}
                       <Image
-                        src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
+                        src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
                         alt={video.title}
                         fill
-                        sizes="(max-width: 640px) 240px, 280px"
+                        priority={index < 2}
+                        sizes="(max-width: 640px) 76vw, 280px"
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          // Fallback to hqdefault if maxresdefault is not available
+                          const target = e.currentTarget as HTMLImageElement;
+                          if (!target.src.includes('hqdefault')) {
+                            target.src = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+                          }
+                        }}
                       />
                       {/* Dark Overlay gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 opacity-90 transition-opacity group-hover:opacity-95" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/20 opacity-95 transition-opacity group-hover:opacity-100" />
+                      
+                      {/* YouTube Brand Badge - top right */}
+                      <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full border border-white/10">
+                        <Youtube className="h-3 w-3 text-red-500 fill-red-500" />
+                        <span className="text-[9px] font-bold text-white uppercase tracking-wider">Shorts</span>
+                      </div>
                       
                       {/* Play Button Overlay */}
                       <button

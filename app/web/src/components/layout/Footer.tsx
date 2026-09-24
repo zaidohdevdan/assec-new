@@ -1,14 +1,11 @@
-"use client";
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail, MapPin, Instagram } from "lucide-react";
 import { CookieSettingsLink } from "@/components/ui/CookieBanner";
 
-
 const Footer = () => {
-
-  const currentYear = new Date().getFullYear();
+  const currentYear = 2026;
 
   return (
     <footer className="bg-primary text-gray-300 border-t border-primary-light font-sans" role="contentinfo">
