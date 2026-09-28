@@ -131,7 +131,6 @@ export default function HomePage() {
                     src="/foto-bombeiro.jpg"
                     alt="Corpo de Bombeiros e Perícia Forense"
                     fill
-                    priority
                     sizes="(max-width: 768px) 50vw, 20vw"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
@@ -147,10 +146,9 @@ export default function HomePage() {
                 {/* 4. Polícia Penal */}
                 <div className="relative h-44 sm:h-48 md:h-[188px] lg:h-[205px] rounded-2xl overflow-hidden border border-white/20 bg-[#0E2B47] shadow-xl group order-4 md:order-5">
                   <Image
-                    src="/foto-policiapenal.jpg"
+                    src="/foto-policiapenal.webp"
                     alt="Policiais Penais do Ceará"
                     fill
-                    priority
                     sizes="(max-width: 768px) 50vw, 20vw"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
