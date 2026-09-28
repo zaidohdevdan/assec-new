@@ -37,7 +37,7 @@ export default function HomePage() {
               </div>
 
               <h1 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl leading-tight text-white mb-6 tracking-tight">
-                Quem protege o Ceará também merece ser <span className="text-[#D4AF37] relative inline-block font-extrabold">cuidado e defendido</span>.
+                Quem protege o Ceará também merece ser <span className="text-[#D4AF37] relative inline-block font-extrabold">cuidado e defendido</span>
               </h1>
 
               <p className="text-gray-300 text-base sm:text-lg mb-8 leading-relaxed max-w-xl font-sans">
@@ -159,7 +159,7 @@ export default function HomePage() {
                     <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-[#D4AF37] bg-[#071A2D]/90 px-2 py-0.5 rounded backdrop-blur-sm border border-[#D4AF37]/30 mb-0.5">
                       Polícia Penal
                     </span>
-                    <p className="text-white text-xs font-semibold leading-tight drop-shadow-sm">SEAP — Disciplina e custódia</p>
+                    <p className="text-white text-xs font-semibold leading-tight drop-shadow-sm">Disciplina e custódia</p>
                   </div>
                 </div>
 
