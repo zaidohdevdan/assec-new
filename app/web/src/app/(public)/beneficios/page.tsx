@@ -1,14 +1,10 @@
 import * as React from "react";
 import { BeneficiosClient, BenefitItem } from "./BeneficiosClient";
-
-const API_BASE =
-  process.env.INTERNAL_API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:3001";
+import { getServerApiBase } from "@/lib/api";
 
 async function getPublishedBenefits(): Promise<BenefitItem[]> {
   try {
-    const res = await fetch(`${API_BASE}/benefits`, {
+    const res = await fetch(`${getServerApiBase()}/benefits`, {
       next: { revalidate: 60 },
     });
     if (res.ok) {

@@ -1,15 +1,11 @@
 import * as React from "react";
 import { redirect } from "next/navigation";
 import { NoticiasClient, type Article } from "./NoticiasClient";
-
-const API_BASE =
-  process.env.INTERNAL_API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:3001";
+import { getServerApiBase } from "@/lib/api";
 
 async function getNotices(): Promise<Article[]> {
   try {
-    const res = await fetch(`${API_BASE}/notices`, {
+    const res = await fetch(`${getServerApiBase()}/notices`, {
       next: { revalidate: 60 },
     });
     if (res.ok) {

@@ -91,8 +91,8 @@ ok "[Frontend] ESLint aprovado sem erros."
 # ------------------------------------------------------------------------------
 # 6. Frontend — Build de Produção (Next.js)
 # ------------------------------------------------------------------------------
-step "6/6 [Frontend] Executando build de produção (npm run build)..."
-(cd "$ROOT_DIR/app/web" && rm -rf .next && npm run build)
+step "6/6 [Frontend] Executando build de produção (NEXT_PUBLIC_API_URL=/api npm run build)..."
+(cd "$ROOT_DIR/app/web" && rm -rf .next && NEXT_PUBLIC_API_URL=/api npm run build)
 ok "[Frontend] Build de produção Next.js concluído com sucesso."
 
 echo -e "\n${BOLD}${GREEN}======================================================================${RESET}"

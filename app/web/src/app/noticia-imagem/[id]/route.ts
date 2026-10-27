@@ -1,15 +1,13 @@
-const API_BASE =
-  process.env.INTERNAL_API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:3001";
+import { getServerApiBase } from "@/lib/api";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  const apiBase = getServerApiBase();
   try {
-    const url = `${API_BASE}/notices/${id}`;
+    const url = `${apiBase}/notices/${id}`;
     const res = await fetch(url);
     if (!res.ok) {
       return new Response("Notícia não encontrada", { status: 404 });
@@ -52,7 +50,7 @@ export async function GET(
 
     // 3. If it's a relative path (e.g. /uploads/image.jpg), fetch it from backend
     if (coverImage.startsWith("/")) {
-      const imageRes = await fetch(`${API_BASE}${coverImage}`);
+      const imageRes = await fetch(`${apiBase}${coverImage}`);
       if (imageRes.ok) {
         const imageBuffer = await imageRes.arrayBuffer();
         return new Response(imageBuffer, {

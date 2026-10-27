@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { getServerApiBase } from "@/lib/api";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -48,18 +49,10 @@ function getCatStyle(cat: string) {
   );
 }
 
-// Server Components rodam no Node.js, não no browser.
-// Em produção, NEXT_PUBLIC_API_URL="/api" (relativo) não funciona server-side.
-// INTERNAL_API_URL aponta para o backend pela rede Docker (http://backend:3001).
-const API_BASE =
-  process.env.INTERNAL_API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  'http://localhost:3001';
-
 // Helper to fetch single article
 async function getArticle(id: string): Promise<Article | null> {
   try {
-    const url = `${API_BASE}/notices/${id}`;
+    const url = `${getServerApiBase()}/notices/${id}`;
     const res = await fetch(url, { next: { revalidate: 60 } });
     if (res.ok) {
       return await res.json();

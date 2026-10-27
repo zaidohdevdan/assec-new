@@ -10,6 +10,7 @@ import { VideoShortsSection } from "@/components/home/VideoShortsSection";
 import { HeroJuridicoVideoWrapper } from "@/components/home/HeroJuridicoVideoWrapper";
 import { PlantaoJuridicoBadge } from "@/components/home/PlantaoJuridicoBadge";
 import { createMetadata } from "@/lib/seo";
+import { getServerApiBase } from "@/lib/api";
 
 export const metadata = createMetadata({
   title: "ASSEC | Associação dos Servidores da Segurança do Ceará",
@@ -17,14 +18,9 @@ export const metadata = createMetadata({
   path: "/",
 });
 
-const API_BASE =
-  process.env.INTERNAL_API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:3001";
-
 async function getRecentNotices() {
   try {
-    const res = await fetch(`${API_BASE}/notices`, {
+    const res = await fetch(`${getServerApiBase()}/notices`, {
       next: { revalidate: 60 },
     });
     if (res.ok) {

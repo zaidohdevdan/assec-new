@@ -1,6 +1,18 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 /**
+ * Resolves the absolute backend API base URL for Server Components and Route Handlers.
+ * Ignores relative paths like NEXT_PUBLIC_API_URL="/api" which are only valid in the browser.
+ */
+export function getServerApiBase(): string {
+  const internal = process.env.INTERNAL_API_URL;
+  if (internal && internal.startsWith('http')) return internal;
+  const pub = process.env.NEXT_PUBLIC_API_URL;
+  if (pub && pub.startsWith('http')) return pub;
+  return 'http://localhost:3001';
+}
+
+/**
  * Reads the CSRF token from the assec_csrf cookie.
  * Returns empty string if not found (e.g., server-side rendering).
  */

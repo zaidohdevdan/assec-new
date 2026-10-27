@@ -1,9 +1,5 @@
 import { MetadataRoute } from "next";
-
-const API_BASE =
-  process.env.INTERNAL_API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:3001";
+import { getServerApiBase } from "@/lib/api";
 
 interface Notice {
   id: string;
@@ -36,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic routes: fetch active notices from backend
   let noticeEntries: MetadataRoute.Sitemap = [];
   try {
-    const res = await fetch(`${API_BASE}/notices`, {
+    const res = await fetch(`${getServerApiBase()}/notices`, {
       next: { revalidate: 60, tags: ["sitemap"] },
     });
     if (res.ok) {
