@@ -168,6 +168,7 @@ export default function BenefitsReadOnlyPage() {
               <Card key={benefit.id} className="flex flex-col border border-border bg-white overflow-hidden hover:shadow-md transition-shadow">
                 {benefit.image ? (
                   <div className="h-44 w-full overflow-hidden border-b border-border">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={benefit.image}
                       alt={benefit.title}
@@ -246,6 +247,7 @@ export default function BenefitsReadOnlyPage() {
             <div className="p-6 overflow-y-auto space-y-4 flex-1">
               {selectedBenefit.image && (
                 <div className="w-full max-h-56 overflow-hidden rounded-lg border border-border">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={selectedBenefit.image}
                     alt=""

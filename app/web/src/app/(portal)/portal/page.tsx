@@ -4,9 +4,9 @@ import * as React from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, CreditCard, User, ShieldCheck, Clock, PlusCircle, Plus, Newspaper, Video, ArrowRight, TrendingUp, TrendingDown, Users, Scale, DollarSign, Activity, FileText, Heart, Loader2 } from "lucide-react";
+import { Calendar, CreditCard, User, ShieldCheck, Clock, PlusCircle, Plus, Newspaper, Video, ArrowRight, TrendingUp, TrendingDown, Users, DollarSign, Activity, FileText, Heart, Loader2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { User as UserType, ScheduleSlot, FinancialStats, MonthlyStats } from "@/lib/types";
+import { User as UserType, ScheduleSlot, FinancialStats } from "@/lib/types";
 import { AdminAnalyticsSection } from "@/components/analytics/AdminAnalyticsSection";
 
 interface ScheduleItem {

@@ -20,7 +20,6 @@ const Header = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
-  const [isAdmin, setIsAdmin] = React.useState(false);
   const [user, setUser] = React.useState<{ name: string; role: string } | null>(null);
 
   const toggleButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -55,7 +54,6 @@ const Header = () => {
         try {
           const parsedUser = JSON.parse(userStr);
           setUser(parsedUser);
-          if (parsedUser.role === "ADMIN") setIsAdmin(true);
         } catch (err) {
           console.error("Failed to parse user session", err);
         }
@@ -64,7 +62,6 @@ const Header = () => {
       // Se não há usuário no localStorage nem cookie de sessão, o visitante não está autenticado
       if (!userStr && !hasProfileCookie) {
         setUser(null);
-        setIsAdmin(false);
         return;
       }
 
@@ -73,17 +70,14 @@ const Header = () => {
         if (res.ok) {
           const parsedUser = await res.json();
           setUser(parsedUser);
-          setIsAdmin(parsedUser.role === "ADMIN");
           localStorage.setItem("user", JSON.stringify(parsedUser));
         } else {
           setUser(null);
-          setIsAdmin(false);
           localStorage.removeItem("user");
           document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
       } catch {
         setUser(null);
-        setIsAdmin(false);
         localStorage.removeItem("user");
       }
     };
@@ -97,7 +91,6 @@ const Header = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    setIsAdmin(false);
     setUser(null);
     window.location.href = "/login";
   };
@@ -106,7 +99,6 @@ const Header = () => {
 
   return (
     <>
-      <a href="#main" className="sr-only focus:not-sr-only">Ir ao conteúdo</a>
       {/* Institutional top bar */}
       <div className="bg-primary-light py-2 text-center border-b border-primary-light/30">
         <span className="inline-block bg-primary-light/30 backdrop-blur-sm rounded-md px-3 py-1 font-serif text-xs md:text-sm text-white">

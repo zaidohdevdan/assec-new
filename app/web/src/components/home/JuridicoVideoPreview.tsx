@@ -62,10 +62,12 @@ export function JuridicoVideoPreview() {
         className="relative w-full max-w-[260px] aspect-[9/16] rounded-2xl overflow-hidden shadow-lg border border-border bg-black group cursor-pointer"
       >
         {/* Optimized local poster image */}
-        <img
+        <Image
           src="/juridico-poster.webp"
           alt={title}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          fill
+          sizes="260px"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {/* Dark Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 opacity-90 transition-opacity group-hover:opacity-95" />

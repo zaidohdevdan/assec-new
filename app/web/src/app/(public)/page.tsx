@@ -1,22 +1,44 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Shield, CheckCircle2, TrendingUp, Users, ArrowRight, Scale, Palmtree, HeartPulse, GraduationCap, Brain, HeartHandshake, Instagram, Youtube, ExternalLink } from "lucide-react";
+import { Shield, CheckCircle2, ArrowRight, Scale, Palmtree, HeartPulse, GraduationCap, Brain, HeartHandshake, ExternalLink, Clock, FileCheck2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PreAssociateForm } from "@/components/ui/PreAssociateForm";
 import { NewsCarousel } from "@/components/home/NewsCarousel";
 import { VideoShortsSection } from "@/components/home/VideoShortsSection";
-import { JuridicoVideoWrapper } from "@/components/home/JuridicoVideoWrapper";
 import { HeroJuridicoVideoWrapper } from "@/components/home/HeroJuridicoVideoWrapper";
 import { PlantaoJuridicoBadge } from "@/components/home/PlantaoJuridicoBadge";
+import { createMetadata } from "@/lib/seo";
 
-export const metadata = {
+export const metadata = createMetadata({
   title: "ASSEC | Associação dos Servidores da Segurança do Ceará",
   description: "Portal Oficial da ASSEC Ceará. Força, transparência e benefícios exclusivos para os servidores da segurança pública do Estado do Ceará.",
-};
+  path: "/",
+});
 
-export default function HomePage() {
+const API_BASE =
+  process.env.INTERNAL_API_URL ??
+  process.env.NEXT_PUBLIC_API_URL ??
+  "http://localhost:3001";
+
+async function getRecentNotices() {
+  try {
+    const res = await fetch(`${API_BASE}/notices`, {
+      next: { revalidate: 60 },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    }
+  } catch {
+    // Graceful fallback during build / offline
+  }
+  return [];
+}
+
+export default async function HomePage() {
+  const recentNotices = await getRecentNotices();
   return (
     <div className="flex flex-col w-full animate-none">
       {/* Hero Section - Estrutura Humanizada, Tipografia Impecável e Tema ASSEC */}
@@ -44,18 +66,23 @@ export default function HomePage() {
                 União, suporte jurídico de prontidão, saúde e assistência real para policiais militares, civis, penais, bombeiros e peritos forenses.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-10">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-4">
                 <Button asChild variant="accent" className="w-full sm:w-auto h-auto py-3.5 px-8 font-semibold text-center text-sm sm:text-base bg-[#D4AF37] text-[#071A2D] hover:bg-[#F0C75E] transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]">
-                  <Link href="/associe-se" aria-label="Associe-se à ASSEC">
+                  <Link href="#pre-associacao" aria-label="Fazer pré-associação online na ASSEC">
                     Associe-se à ASSEC
                   </Link>
                 </Button>
                 <Button asChild variant="outlineWhite" className="w-full sm:w-auto h-auto py-3.5 px-8 font-semibold text-center text-sm sm:text-base backdrop-blur-sm bg-white/5 hover:bg-white/10 border-white/30 text-white transition-all">
-                  <Link href="/sobre" aria-label="Conheça a história e propósitos da ASSEC">
-                    Conheça Nossos Valores
+                  <Link href="#beneficios" aria-label="Conhecer os benefícios e a assessoria jurídica da ASSEC">
+                    Ver Benefícios e Proteção
                   </Link>
                 </Button>
               </div>
+
+              <p className="text-xs text-gray-300/90 mb-8 flex items-center gap-2 font-sans">
+                <CheckCircle2 className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
+                <span>Pré-cadastro online em 1 minuto • Ativos, Reserva, Reformados e Pensionistas</span>
+              </p>
 
               {/* Indicadores de credibilidade humana com tipografia refinada */}
               <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/15 w-full">
@@ -237,64 +264,94 @@ export default function HomePage() {
       </section>
 
 
-      {/* Stats Section — Faixa escura de credibilidade */}
-      <section className="bg-[#071A2D] border-b border-[#0a2439] py-10 sm:py-12">
+      {/* Faixa de Aderência Institucional & Quem Representamos */}
+      <section className="bg-white border-b border-border py-10 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-0 sm:divide-x sm:divide-white/10">
-            {/* 1. Base Crescente */}
-            <div className="flex flex-col sm:items-center text-left sm:text-center sm:px-6 lg:px-8">
-              <div className="flex items-center gap-2.5 sm:gap-3 mb-2">
-                <div className="p-2 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 shrink-0">
-                  <Users className="h-5 w-5 text-[#D4AF37]" />
-                </div>
-                <h3 className="text-xl sm:text-2xl lg:text-[26px] font-extrabold text-white font-sans tracking-tight whitespace-nowrap">
-                  Base Crescente
-                </h3>
-              </div>
-              <p className="text-gray-300 text-xs sm:text-sm font-normal leading-relaxed max-w-xs">
-                Novos associados todos os dias. A ASSEC cresce junto com a categoria.
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pb-8 border-b border-gray-100">
+            <div className="max-w-xl">
+              <span className="text-accent-dark uppercase tracking-widest text-[11px] font-bold font-sans">
+                Representatividade Estadual
+              </span>
+              <h2 className="font-serif font-bold text-xl sm:text-2xl text-primary mt-1">
+                Quem Pode se Associar à ASSEC
+              </h2>
+              <p className="text-text-secondary text-xs sm:text-sm mt-1 leading-relaxed">
+                Acolhemos servidores da ativa, reserva remunerada, reformados, pensionistas e seus dependentes em todas as forças de segurança do Ceará:
               </p>
             </div>
 
-            {/* 2. Fundada em 2026 */}
-            <div className="flex flex-col sm:items-center text-left sm:text-center sm:px-6 lg:px-8">
-              <div className="flex items-center gap-2.5 sm:gap-3 mb-2">
-                <div className="p-2 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 shrink-0">
-                  <CheckCircle2 className="h-5 w-5 text-[#D4AF37]" />
+            <div className="flex flex-wrap gap-2 sm:gap-2.5">
+              {[
+                { code: "PMCE", name: "Polícia Militar" },
+                { code: "PCCE", name: "Polícia Civil" },
+                { code: "PPCE", name: "Polícia Penal" },
+                { code: "CBMCE", name: "Bombeiro Militar" },
+                { code: "PEFOCE", name: "Perícia Forense" },
+              ].map((corp) => (
+                <div
+                  key={corp.code}
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 border border-border text-primary text-xs font-semibold shadow-2xs"
+                >
+                  <span className="font-extrabold text-accent-dark">{corp.code}</span>
+                  <span className="text-gray-300">•</span>
+                  <span>{corp.name}</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl lg:text-[26px] font-extrabold text-white font-sans tracking-tight whitespace-nowrap">
-                  Fundada em 2026
-                </h3>
+              ))}
+            </div>
+          </div>
+
+          {/* 3 Pilares de Valor Imediato */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
+            <div className="flex items-start gap-3.5">
+              <div className="p-2.5 rounded-xl bg-primary/5 text-accent-dark border border-primary/10 shrink-0 mt-0.5">
+                <Scale className="h-5 w-5" />
               </div>
-              <p className="text-gray-300 text-xs sm:text-sm font-normal leading-relaxed max-w-xs">
-                Uma nova era: gestão moderna, transparente e combativa para os servidores.
-              </p>
+              <div>
+                <h3 className="text-base font-bold text-primary font-sans">
+                  Blindagem Jurídica 24h
+                </h3>
+                <p className="text-text-secondary text-xs sm:text-sm leading-relaxed mt-1">
+                  Advogados especialistas em Direito Militar, Administrativo e Criminal de prontidão para ocorrências e processos disciplinares.
+                </p>
+              </div>
             </div>
 
-            {/* 3. 100% Foco */}
-            <div className="flex flex-col sm:items-center text-left sm:text-center sm:px-6 lg:px-8">
-              <div className="flex items-center gap-2.5 sm:gap-3 mb-2">
-                <div className="p-2 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 shrink-0">
-                  <TrendingUp className="h-5 w-5 text-[#D4AF37]" />
-                </div>
-                <h3 className="text-xl sm:text-2xl lg:text-[26px] font-extrabold text-white font-sans tracking-tight whitespace-nowrap">
-                  100% Foco
-                </h3>
+            <div className="flex items-start gap-3.5">
+              <div className="p-2.5 rounded-xl bg-primary/5 text-accent-dark border border-primary/10 shrink-0 mt-0.5">
+                <HeartPulse className="h-5 w-5" />
               </div>
-              <p className="text-gray-300 text-xs sm:text-sm font-normal leading-relaxed max-w-xs">
-                Na defesa jurídica intransigente, saúde, lazer e valorização do servidor.
-              </p>
+              <div>
+                <h3 className="text-base font-bold text-primary font-sans">
+                  Proteção Familiar Completa
+                </h3>
+                <p className="text-text-secondary text-xs sm:text-sm leading-relaxed mt-1">
+                  Extensão dos convênios de saúde, psicologia, educação e lazer para cônjuges e dependentes sem burocracia.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3.5">
+              <div className="p-2.5 rounded-xl bg-primary/5 text-accent-dark border border-primary/10 shrink-0 mt-0.5">
+                <Shield className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-primary font-sans">
+                  Gestão Moderna e Transparente
+                </h3>
+                <p className="text-text-secondary text-xs sm:text-sm leading-relaxed mt-1">
+                  Fundada em 2026 com portal digital do associado, carteira funcional com QR Code e acompanhamento online de demandas.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
 
-
       {/* Benefits Preview */}
-      <section className="py-16 sm:py-24 bg-bg-page border-b border-border">
+      <section id="beneficios" className="py-16 sm:py-24 bg-bg-page border-b border-border scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-14">
             <span className="text-accent-dark uppercase tracking-widest text-xs font-bold font-sans">Nossos Benefícios</span>
             <h2 className="font-serif font-bold text-3xl sm:text-4xl text-primary mt-2 mb-4">
               Vantagens Exclusivas para Nossos Associados
@@ -305,46 +362,81 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            {/* Destaque Jurídico com Vídeo (5 Colunas) */}
-            <div className="lg:col-span-5 flex">
+            {/* Destaque Jurídico Estruturado (5 Colunas) */}
+            <div id="assessoria-juridica" className="lg:col-span-5 flex scroll-mt-24">
               <Card accentHover className="p-6 sm:p-8 flex flex-col justify-between h-full w-full group bg-white border border-border transition-all duration-300 shadow-sm hover:shadow-md">
                 <div>
-                  <div className="p-3 bg-primary/5 text-accent-dark rounded-xl w-fit mb-5 group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
-                    <Scale className="h-6 w-6" />
+                  <div className="flex items-center justify-between gap-3 mb-5">
+                    <div className="p-3 bg-primary/5 text-accent-dark rounded-xl w-fit group-hover:bg-primary group-hover:text-accent transition-colors duration-300">
+                      <Scale className="h-6 w-6" />
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold uppercase tracking-wider">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                      Plantão 24 Horas
+                    </span>
                   </div>
+
                   <h3 className="font-serif font-bold text-2xl text-primary mb-3">
-                    Assessoria Jurídica
+                    Assessoria Jurídica Especializada
                   </h3>
-                  <p className="text-text-secondary text-sm mb-4 leading-relaxed">
-                    Defesa técnica e suporte especializado para resguardar a atuação profissional e a carreira do servidor de segurança pública.
+                  <p className="text-text-secondary text-sm mb-6 leading-relaxed">
+                    Defesa técnica intransigente para resguardar a atuação operacional, a estabilidade e os direitos de carreira do servidor de segurança pública em todo o Ceará.
                   </p>
 
-                  {/* Interactive YouTube Shorts Lightbox Preview */}
-                  <JuridicoVideoWrapper />
+                  {/* 4 Frentes Jurídicas Escaneáveis */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3.5 mb-6">
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-gray-100 flex items-start gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-support shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-xs font-bold text-primary uppercase tracking-wide">
+                          PAD, Sindicância e Conselho
+                        </h4>
+                        <p className="text-xs text-text-secondary mt-0.5 leading-relaxed">
+                          Defesa administrativa completa perante a CGD e corregedorias.
+                        </p>
+                      </div>
+                    </div>
 
-                  <ul className="space-y-2 mb-6">
-                    <li className="flex items-start gap-2 text-xs text-text-secondary">
-                      <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Defesa em processos administrativos (PADs) e sindicâncias</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-xs text-text-secondary">
-                      <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Acompanhamento especializado em inquéritos policiais</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-xs text-text-secondary">
-                      <svg className="h-4 w-4 text-support shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Consultas jurídicas preventivas e ações de interesse coletivo</span>
-                    </li>
-                  </ul>
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-gray-100 flex items-start gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-support shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-xs font-bold text-primary uppercase tracking-wide">
+                          Inquéritos (IPM e Policial) e Flagrantes
+                        </h4>
+                        <p className="text-xs text-text-secondary mt-0.5 leading-relaxed">
+                          Acompanhamento presencial imediato em ocorrências de serviço e delegacias.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-gray-100 flex items-start gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-support shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-xs font-bold text-primary uppercase tracking-wide">
+                          Direitos de Carreira e Fazenda Pública
+                        </h4>
+                        <p className="text-xs text-text-secondary mt-0.5 leading-relaxed">
+                          Promoções, implantação de gratificações, licenças, reforma e pensões.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-gray-100 flex items-start gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-support shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-xs font-bold text-primary uppercase tracking-wide">
+                          Consultoria Preventiva e Ações Coletivas
+                        </h4>
+                        <p className="text-xs text-text-secondary mt-0.5 leading-relaxed">
+                          Orientação jurídica individualizada e atuação em demandas da categoria.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <Link href="/beneficios?cat=jurídico" aria-label="Conhecer assessoria jurídica oferecida pela ASSEC" className="inline-flex items-center gap-1 text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded w-fit mt-auto pt-4 border-t border-border w-full">
-                  <span>Conhecer assessoria completa</span>
+
+                <Link href="/beneficios?cat=jurídico" aria-label="Conhecer assessoria jurídica oferecida pela ASSEC" className="inline-flex items-center justify-between text-accent-dark font-semibold text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded mt-auto pt-4 border-t border-border w-full">
+                  <span>Conhecer assessoria jurídica completa</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Card>
@@ -452,28 +544,122 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+
+          {/* CTA de Transição para Catálogo Completo ou Filiação */}
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button asChild variant="primary" className="w-full sm:w-auto px-8 py-3 h-auto text-sm font-semibold">
+              <Link href="/beneficios">
+                Explorar Todos os Convênios
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full sm:w-auto px-8 py-3 h-auto text-sm font-semibold">
+              <Link href="#pre-associacao">
+                Quero Garantir Meus Benefícios
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
+
+      {/* Carousel de Notícias e Atuação Institucional (SSR) */}
+      <NewsCarousel initialArticles={recentNotices} />
 
       {/* Vídeos e Shorts Recentes */}
       <VideoShortsSection />
 
-      {/* Carousel de Notícias */}
-      <NewsCarousel />
-
-      {/* Pre-Association Form Section */}
-      <section className="py-16 sm:py-24 bg-white border-b border-border">
+      {/* Pre-Association Form Section — Layout de Alta Conversão em 2 Colunas */}
+      <section id="pre-associacao" className="py-16 sm:py-24 bg-white border-b border-border scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <span className="text-accent-dark uppercase tracking-widest text-xs font-bold font-sans">Filiação Online</span>
-            <h2 className="font-serif font-bold text-3xl sm:text-4xl text-primary mt-2 mb-4">
-              Faça Sua Pré-Associação
-            </h2>
-            <p className="text-text-secondary max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-              Deseja aproveitar todas as vantagens e ter o respaldo da ASSEC? Preencha o formulário abaixo e nossa equipe entrará em contato para finalizar o seu cadastro.
-            </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            {/* Coluna Esquerda: Jornada de Filiação em 3 Passos + Garantias */}
+            <div className="lg:col-span-5 space-y-8">
+              <div>
+                <span className="text-accent-dark uppercase tracking-widest text-xs font-bold font-sans">
+                  Filiação Online Simplificada
+                </span>
+                <h2 className="font-serif font-bold text-3xl sm:text-4xl text-primary mt-2 mb-4 leading-tight">
+                  Associe-se em 3 Passos Simples
+                </h2>
+                <p className="text-text-secondary text-sm sm:text-base leading-relaxed">
+                  Garanta o respaldo jurídico e todos os convênios da ASSEC para você e sua família sem precisar sair de casa.
+                </p>
+              </div>
+
+              {/* Passo a Passo */}
+              <div className="space-y-5">
+                <div className="flex items-start gap-4">
+                  <div className="h-9 w-9 rounded-full bg-primary text-accent font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                    1
+                  </div>
+                  <div>
+                    <h3 className="font-sans font-bold text-base text-primary">
+                      Envie seu Pré-Cadastro Online
+                    </h3>
+                    <p className="text-xs sm:text-sm text-text-secondary mt-1 leading-relaxed">
+                      Preencha seus dados básicos e órgão de lotação no formulário ao lado em menos de 1 minuto.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="h-9 w-9 rounded-full bg-primary text-accent font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                    2
+                  </div>
+                  <div>
+                    <h3 className="font-sans font-bold text-base text-primary">
+                      Validação Rápida pelo WhatsApp
+                    </h3>
+                    <p className="text-xs sm:text-sm text-text-secondary mt-1 leading-relaxed">
+                      Nossa equipe de atendimento entra em contato para confirmar sua documentação funcional e tirar dúvidas.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="h-9 w-9 rounded-full bg-primary text-accent font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                    3
+                  </div>
+                  <div>
+                    <h3 className="font-sans font-bold text-base text-primary">
+                      Proteção e Carteira Digital Ativas
+                    </h3>
+                    <p className="text-xs sm:text-sm text-text-secondary mt-1 leading-relaxed">
+                      Você recebe acesso ao Portal do Associado, Carteira Funcional com QR Code, Plantão Jurídico 24h e rede de descontos.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Selos de Confiança e Opção de Ficha PDF */}
+              <div className="p-5 rounded-xl bg-slate-50 border border-border space-y-3">
+                <div className="flex items-center gap-2.5 text-xs font-semibold text-primary">
+                  <Clock className="h-4 w-4 text-accent-dark shrink-0" />
+                  <span>Retorno rápido da equipe em horário comercial</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs font-semibold text-primary">
+                  <Lock className="h-4 w-4 text-accent-dark shrink-0" />
+                  <span>Dados protegidos em conformidade com a LGPD</span>
+                </div>
+                <div className="pt-2 border-t border-gray-200 flex items-center justify-between gap-2">
+                  <span className="text-xs text-text-secondary flex items-center gap-1.5">
+                    <FileCheck2 className="h-4 w-4 text-accent-dark shrink-0" />
+                    Prefere preencher a ficha em PDF?
+                  </span>
+                  <Link
+                    href="/associe-se"
+                    className="text-xs font-bold text-accent-dark hover:underline whitespace-nowrap"
+                  >
+                    Ver página completa →
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Coluna Direita: Formulário de Pré-Associação */}
+            <div className="lg:col-span-7 w-full">
+              <PreAssociateForm />
+            </div>
           </div>
-          <PreAssociateForm />
         </div>
       </section>
     </div>

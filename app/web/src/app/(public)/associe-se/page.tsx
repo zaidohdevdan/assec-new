@@ -22,6 +22,21 @@ const associeSchema = z.object({
 
 type AssocieFormData = z.infer<typeof associeSchema>;
 
+// Helper to apply phone formatting mask
+const formatPhone = (value: string) => {
+  if (!value) return value;
+  const phoneNumber = value.replace(/[^\d]/g, "");
+  const phoneNumberLength = phoneNumber.length;
+  if (phoneNumberLength < 3) return phoneNumber;
+  if (phoneNumberLength < 7) {
+    return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2)}`;
+  }
+  return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(
+    2,
+    7
+  )}-${phoneNumber.slice(7, 11)}`;
+};
+
 export default function AssociePage() {
   const [success, setSuccess] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -30,10 +45,16 @@ export default function AssociePage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<AssocieFormData>({
     resolver: zodResolver(associeSchema),
   });
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhone(e.target.value);
+    setValue("telefone", formatted, { shouldValidate: true });
+  };
 
   const onSubmit = async (data: AssocieFormData) => {
     setLoading(true);
@@ -153,6 +174,7 @@ export default function AssociePage() {
                 placeholder="(85) 99999-9999"
                 error={errors.telefone?.message}
                 {...register("telefone")}
+                onChange={handlePhoneChange}
               />
             </div>
 

@@ -2,14 +2,12 @@
 
 import * as React from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { User as UserType } from "@/lib/types";
 import { 
   Calendar, 
   Search, 
   Filter, 
-  User, 
   CheckCircle, 
   XCircle, 
   Clock 

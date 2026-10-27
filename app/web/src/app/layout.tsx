@@ -1,6 +1,19 @@
 import "@/styles/globals.css";
+import { Inter, Playfair_Display } from "next/font/google";
 import { CookieBanner } from "@/components/ui/CookieBanner";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-sans",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-serif",
+});
 
 export const metadata = {
   metadataBase: new URL("https://assecce.com.br"),
@@ -26,9 +39,6 @@ export const metadata = {
   creator: "ASSEC Ceará",
   publisher: "ASSEC - Associação dos Servidores da Segurança do Ceará",
   category: "nonprofit",
-  alternates: {
-    canonical: "https://assecce.com.br",
-  },
   robots: {
     index: true,
     follow: true,
@@ -115,14 +125,8 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={`${inter.variable} ${playfair.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700;900&display=swap"
-          rel="stylesheet"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
@@ -132,9 +136,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
-      <body className="bg-bg-page text-text-primary antialiased min-h-screen flex flex-col">
+      <body className="bg-bg-page text-text-primary antialiased min-h-screen flex flex-col font-sans">
         <AnalyticsTracker />
-        <main id="main" className="flex-1 flex flex-col w-full min-w-0">{children}</main>
+        <div className="flex-1 flex flex-col w-full min-w-0">{children}</div>
         <CookieBanner />
       </body>
     </html>

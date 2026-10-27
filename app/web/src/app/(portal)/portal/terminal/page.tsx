@@ -6,8 +6,6 @@ import { apiFetch } from "@/lib/api";
 import { Terminal as TerminalIcon, AlertCircle } from "lucide-react";
 import { User as UserType, Schedule } from "@/lib/types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-
 interface TerminalLine {
   text: string;
   type: "input" | "output" | "error" | "success" | "info";
@@ -138,8 +136,6 @@ export default function TerminalPage() {
     const logOutput = (text: string, type: "input" | "output" | "error" | "success" | "info" = "output") => {
       newHistory.push({ text, type });
     };
-
-    const token = localStorage.getItem("token");
 
     switch (command) {
       case "help":
@@ -278,7 +274,7 @@ export default function TerminalPage() {
                   const errData = await res.json();
                   logOutput(`Erro do servidor: ${errData.message || "Falha ao criar usuário."}`, "error");
                 }
-              } catch (err) {
+              } catch {
                 logOutput("Erro de conexão ao tentar criar usuário.", "error");
               }
             }
@@ -327,7 +323,7 @@ export default function TerminalPage() {
                     const errData = await res.json();
                     logOutput(`Erro do servidor: ${errData.message || "Falha ao atualizar usuário."}`, "error");
                   }
-                } catch (err) {
+                } catch {
                   logOutput("Erro de conexão ao tentar atualizar usuário.", "error");
                 }
               }
@@ -369,7 +365,7 @@ export default function TerminalPage() {
                 } else {
                   logOutput("Erro do servidor ao tentar excluir o usuário.", "error");
                 }
-              } catch (err) {
+              } catch {
                 logOutput("Erro de conexão ao tentar excluir usuário.", "error");
               }
             }

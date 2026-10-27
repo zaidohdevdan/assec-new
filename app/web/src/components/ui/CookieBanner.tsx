@@ -80,6 +80,21 @@ export const CookieBanner = () => {
     }
   }, [openBanner]);
 
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (visible) {
+      document.documentElement.setAttribute("data-cookie-banner", "open");
+      window.dispatchEvent(new CustomEvent("assec:cookie-banner", { detail: { open: true } }));
+    } else {
+      document.documentElement.removeAttribute("data-cookie-banner");
+      window.dispatchEvent(new CustomEvent("assec:cookie-banner", { detail: { open: false } }));
+    }
+    return () => {
+      document.documentElement.removeAttribute("data-cookie-banner");
+      window.dispatchEvent(new CustomEvent("assec:cookie-banner", { detail: { open: false } }));
+    };
+  }, [visible]);
+
   const handleAcceptAll = () => {
     saveConsent({
       status: "accepted",
@@ -114,7 +129,7 @@ export const CookieBanner = () => {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 left-4 md:right-8 md:left-auto md:max-w-md z-50 bg-slate-900 text-white rounded-xl shadow-2xl border border-slate-800 font-sans animate-in slide-in-from-bottom-5 duration-300">
+    <div className="fixed bottom-4 right-4 left-4 md:right-8 md:left-auto md:max-w-md z-[9995] bg-slate-900 text-white rounded-xl shadow-2xl border border-slate-800 font-sans animate-in slide-in-from-bottom-5 duration-300">
       <div className="p-5">
         <div className="flex gap-3.5 items-start">
           <div className="p-2 bg-primary text-accent rounded-lg shrink-0 mt-0.5">

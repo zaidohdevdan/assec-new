@@ -156,6 +156,7 @@ export default function ValidarCarteiraPage() {
             {/* Photo */}
             <div className="h-20 w-16 rounded border border-gray-300 bg-white overflow-hidden flex items-center justify-center shrink-0">
               {result.photoUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={result.photoUrl}
                   alt={result.name}

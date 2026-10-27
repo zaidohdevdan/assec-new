@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Printer, Download, CreditCard, ShieldCheck, HelpCircle } from "lucide-react";
+import { Printer, CreditCard, ShieldCheck, HelpCircle } from "lucide-react";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
 import { User } from "@/lib/types";
@@ -243,6 +243,7 @@ export default function CarteiraPage() {
                 {/* Photo Area */}
                 <div className="w-20 h-24 rounded-lg border-2 border-accent bg-slate-900/50 flex items-center justify-center shrink-0 overflow-hidden relative shadow-inner">
                   {user.photoUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={user.photoUrl}
                       alt={user.name}

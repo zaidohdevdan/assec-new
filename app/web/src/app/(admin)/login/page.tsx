@@ -101,7 +101,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col justify-center items-center px-4 font-sans overflow-hidden bg-primary">
+    <main id="main-content" className="min-h-screen relative flex flex-col justify-center items-center px-4 font-sans overflow-hidden bg-primary">
       {/* Background Image with Dark Blur Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-[5px] scale-105 pointer-events-none opacity-45"
@@ -188,6 +188,6 @@ export default function LoginPage() {
           </div>
         </form>
       </Card>
-    </div>
+    </main>
   );
 }

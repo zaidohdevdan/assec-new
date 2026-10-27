@@ -11,6 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { ShareButton } from "@/components/ui/ShareButton";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -45,13 +46,6 @@ function getCatStyle(cat: string) {
       border: "border-l-slate-300",
     }
   );
-}
-
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-    .replace(/\s+on\w+="[^"]*"/gi, "")
-    .replace(/\s+on\w+='[^']*'/gi, "");
 }
 
 // Server Components rodam no Node.js, não no browser.
@@ -174,7 +168,7 @@ export default async function NoticiaDetailPage({
   const style = getCatStyle(article.type);
   const canonicalUrl = `https://assecce.com.br/noticias/${id}`;
   const ogImage = article.coverImage
-    ? (article.coverImage.startsWith("http") ? article.coverImage : `https://assecce.com.br${article.coverImage}`)
+    ? `https://assecce.com.br/noticia-imagem/${id}`
     : "https://assecce.com.br/escudo-logo.webp";
 
   // ── JSON-LD: NewsArticle ───────────────────────────────────────────────────
@@ -281,7 +275,11 @@ export default async function NoticiaDetailPage({
       {article.coverImage ? (
         <div className="w-full h-64 sm:h-96 rounded-xl overflow-hidden shadow-md border border-slate-200 mb-8 relative">
           <Image
-            src={article.coverImage}
+            src={
+              article.coverImage.startsWith("data:")
+                ? `/noticia-imagem/${article.id}`
+                : article.coverImage
+            }
             alt={article.title}
             fill
             sizes="(max-width: 1024px) 100vw, 800px"

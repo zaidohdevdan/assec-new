@@ -51,7 +51,7 @@ export default function PerfilPage() {
     },
   });
 
-  const fetchUserData = async () => {
+  const fetchUserData = React.useCallback(async () => {
     try {
       const res = await apiFetch("/auth/me");
       if (res.ok) {
@@ -72,11 +72,11 @@ export default function PerfilPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [reset]);
 
   React.useEffect(() => {
     fetchUserData();
-  }, [reset]);
+  }, [fetchUserData]);
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhotoError(null);
@@ -183,6 +183,7 @@ export default function PerfilPage() {
             <div className="relative group">
               <div className="h-28 w-28 rounded-full border-2 border-accent bg-slate-100 overflow-hidden flex items-center justify-center shadow-md">
                 {photoBase64 ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={photoBase64}
                     alt={user?.name || "Foto de perfil"}

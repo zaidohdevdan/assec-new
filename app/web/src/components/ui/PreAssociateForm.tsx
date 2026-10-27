@@ -4,6 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,11 @@ const preAssociateSchema = z.object({
   }),
   organization: z.string().min(1, "Selecione o órgão de lotação"),
   message: z.string().optional(),
+  consent: z.literal(true, {
+    errorMap: () => ({
+      message: "Você deve consentir com a Política de Privacidade para prosseguir",
+    }),
+  }),
 });
 
 type PreAssociateFormData = z.infer<typeof preAssociateSchema>;
@@ -71,13 +77,23 @@ export function PreAssociateForm() {
     setLoading(true);
     setError(null);
 
+    const consentTimestamp = new Date().toISOString();
+    const userAgent = typeof navigator !== "undefined" ? navigator.userAgent : "unknown";
+
     // Format the payload to fit ContactMessage schema
     const subject = "Solicitação de Pré-Associação via Portal";
     const formattedMessage = `ÓRGÃO DE LOTAÇÃO: ${data.organization}
 CELULAR/TELEFONE: ${data.phone}
 
 MENSAGEM:
-${data.message || "Gostaria de me associar à ASSEC."}`;
+${data.message || "Gostaria de me associar à ASSEC."}
+
+---
+Consentimento LGPD: Aceito pelo titular em ${consentTimestamp}
+User-Agent: ${userAgent}
+Finalidade: Contato para credenciamento e filiação à ASSEC
+Política: v2026.06.001
+Base legal: Art. 7º, I e V da Lei 13.709/2018 (LGPD)`;
 
     try {
       const res = await apiFetch("/contact", {
@@ -217,6 +233,29 @@ ${data.message || "Gostaria de me associar à ASSEC."}`;
           error={errors.message?.message}
           {...register("message")}
         />
+
+        <div className="flex flex-col gap-2">
+          <div className="flex items-start gap-2.5 text-left">
+            <input
+              type="checkbox"
+              id="consent-preassociate"
+              className="h-4 w-4 rounded border-border text-primary focus:ring-accent mt-0.5"
+              {...register("consent")}
+            />
+            <label htmlFor="consent-preassociate" className="text-xs text-text-secondary leading-relaxed">
+              Estou ciente e concordo com a coleta e tratamento dos meus dados para fins de análise e contato de pré-associação, nos termos da Lei Geral de Proteção de Dados (LGPD) e da{" "}
+              <Link href="/politica-de-privacidade" target="_blank" className="text-accent-dark underline font-semibold hover:text-accent">
+                Política de Privacidade
+              </Link>.
+            </label>
+          </div>
+          {errors.consent?.message && (
+            <span className="flex items-center gap-1 text-xs font-medium text-red-600 mt-1" role="alert">
+              <AlertCircle className="h-3.5 w-3.5" />
+              {errors.consent.message}
+            </span>
+          )}
+        </div>
 
         <div className="pt-2 flex justify-end">
           <Button

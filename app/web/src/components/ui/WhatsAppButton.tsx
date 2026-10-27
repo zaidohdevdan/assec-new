@@ -3,11 +3,46 @@
 import * as React from "react";
 
 export function WhatsAppButton() {
+  const [cookieBannerOpen, setCookieBannerOpen] = React.useState(false);
+  const [pwaBannerOpen, setPwaBannerOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleCookieBanner = (e: Event) => {
+      const customEvent = e as CustomEvent<{ open?: boolean }>;
+      setCookieBannerOpen(!!customEvent.detail?.open);
+    };
+    const handlePwaBanner = (e: Event) => {
+      const customEvent = e as CustomEvent<{ open?: boolean }>;
+      setPwaBannerOpen(!!customEvent.detail?.open);
+    };
+
+    window.addEventListener("assec:cookie-banner", handleCookieBanner);
+    window.addEventListener("assec:pwa-banner", handlePwaBanner);
+
+    if (document.documentElement.getAttribute("data-cookie-banner") === "open") {
+      setCookieBannerOpen(true);
+    }
+    if (document.documentElement.getAttribute("data-pwa-banner") === "open") {
+      setPwaBannerOpen(true);
+    }
+
+    return () => {
+      window.removeEventListener("assec:cookie-banner", handleCookieBanner);
+      window.removeEventListener("assec:pwa-banner", handlePwaBanner);
+    };
+  }, []);
+
   const phoneNumber = "5585999411411"; // Formatted (85) 99941-1411
   const message = encodeURIComponent(
     "Olá! Gostaria de tirar dúvidas sobre a associação à ASSEC."
   );
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+
+  const bottomPositionClass = cookieBannerOpen
+    ? "bottom-52 md:bottom-[210px]"
+    : pwaBannerOpen
+    ? "bottom-44 md:bottom-44"
+    : "bottom-6";
 
   return (
     <a
@@ -15,7 +50,7 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Fale conosco no WhatsApp"
-      className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-lg hover:bg-[#20BA56] hover:scale-110 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[#25D366]/50 group"
+      className={`fixed right-6 z-40 flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-lg hover:bg-[#20BA56] hover:scale-110 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[#25D366]/50 group ${bottomPositionClass}`}
     >
       {/* Tooltip visible on hover */}
       <span className="absolute right-16 bg-slate-900 text-white text-xs font-semibold px-3 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none border border-slate-800">

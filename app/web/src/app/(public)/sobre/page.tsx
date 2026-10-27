@@ -16,11 +16,6 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
-export const metadata = {
-  title: "Sobre Nós | História, Missão e Diretoria da Associação",
-  description: "Conheça a história, missão, valores e organograma completo da Associação dos Servidores da Segurança do Ceará.",
-};
-
 export default function SobrePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-none">
@@ -51,11 +46,11 @@ export default function SobrePage() {
             </div>
 
             {/* Título */}
-            <h2 className="font-serif font-bold text-3xl sm:text-4xl leading-tight mb-2 text-primary">
+            <h2 className="font-serif font-bold text-3xl sm:text-4xl leading-tight mb-6 text-primary">
               Nasce Uma Nova Força.
-            </h2>
-            <h2 className="font-serif font-bold text-3xl sm:text-4xl leading-tight mb-6 text-accent-dark">
-              Bem-Vindo à ASSEC!
+              <span className="block text-accent-dark mt-2">
+                Bem-Vindo à ASSEC!
+              </span>
             </h2>
 
             {/* Corpo do texto */}

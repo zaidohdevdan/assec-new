@@ -13,6 +13,7 @@ import {
   Check,
 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface NoticeItem {
   id: string;
@@ -39,13 +40,6 @@ const categoryColors: Record<string, { pill: string; border: string }> = {
 
 function getCategoryStyle(type: string) {
   return categoryColors[type] ?? { pill: "bg-slate-100 text-slate-600", border: "border-l-slate-300" };
-}
-
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-    .replace(/\s+on\w+="[^"]*"/gi, "")
-    .replace(/\s+on\w+='[^']*'/gi, "");
 }
 
 function getShareUrl(id: string): string {
@@ -176,6 +170,7 @@ export default function NoticesReadOnlyPage() {
                     style={{ aspectRatio: "16/9" }}
                   >
                     {notice.coverImage ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
                       <img
                         src={notice.coverImage}
                         alt=""
@@ -298,6 +293,7 @@ export default function NoticesReadOnlyPage() {
             <div className="p-6 overflow-y-auto space-y-4 flex-1">
               {selectedNotice.coverImage && (
                 <div className="w-full max-h-64 overflow-hidden rounded-lg border border-border">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={selectedNotice.coverImage}
                     alt=""

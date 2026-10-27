@@ -27,10 +27,29 @@ export class NoticesService {
   }
 
   async findPublished() {
-    return this.prisma.notice.findMany({
+    const notices = await this.prisma.notice.findMany({
       where: { active: true },
       orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        summary: true,
+        type: true,
+        tags: true,
+        coverImage: true,
+        active: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
+
+    return notices.map((notice) => ({
+      ...notice,
+      coverImage:
+        notice.coverImage && notice.coverImage.startsWith('data:')
+          ? `/noticia-imagem/${notice.id}`
+          : (notice.coverImage ?? null),
+    }));
   }
 
   async findOne(id: string) {

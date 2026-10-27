@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Calendar, ArrowRight, ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface Article {
+export interface Article {
   id: string;
   title: string;
   summary: string | null;
@@ -67,31 +67,48 @@ const FALLBACK_NEWS: Article[] = [
   }
 ];
 
-export function NewsCarousel() {
-  const [articles, setArticles] = React.useState<Article[]>([]);
-  const [loading, setLoading] = React.useState(true);
+interface NewsCarouselProps {
+  initialArticles?: Article[];
+}
+
+export function NewsCarousel({ initialArticles }: NewsCarouselProps = {}) {
+  const [articles, setArticles] = React.useState<Article[]>(() => {
+    if (initialArticles && initialArticles.length > 0) {
+      const active = initialArticles.filter((a) => a.active);
+      return active.length > 0 ? active : FALLBACK_NEWS;
+    }
+    return [];
+  });
+  const [loading, setLoading] = React.useState(() => !initialArticles || initialArticles.length === 0);
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
   React.useEffect(() => {
+    if (initialArticles && initialArticles.length > 0) return;
+
+    let isMounted = true;
     async function load() {
       try {
         const res = await apiFetch("/notices");
-        if (res.ok) {
+        if (res.ok && isMounted) {
           const data: Article[] = await res.json();
           const activeOnes = data.filter(a => a.active);
           setArticles(activeOnes.length > 0 ? activeOnes : FALLBACK_NEWS);
-        } else {
+        } else if (isMounted) {
           setArticles(FALLBACK_NEWS);
         }
       } catch (err) {
         console.error("[NewsCarousel] Error fetching:", err);
-        setArticles(FALLBACK_NEWS);
+        if (isMounted) setArticles(FALLBACK_NEWS);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
     load();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [initialArticles]);
 
   const nextSlide = () => {
     if (articles.length <= 1) return;

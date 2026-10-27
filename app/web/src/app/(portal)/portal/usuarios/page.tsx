@@ -89,7 +89,6 @@ export default function UsuariosManagerPage() {
     handleSubmit,
     reset,
     watch,
-    setValue,
     formState: { errors },
   } = useForm<UserFormData>({
     resolver: zodResolver(userFormSchema),
@@ -387,6 +386,7 @@ export default function UsuariosManagerPage() {
                     <td className="py-4 pr-4">
                       <div className="flex items-center gap-3">
                         {user.avatarUrl ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
                           <img
                             src={user.avatarUrl}
                             alt={user.name}
@@ -524,6 +524,7 @@ export default function UsuariosManagerPage() {
                   <div className="relative group">
                     <div className="h-24 w-20 rounded border-2 border-accent bg-slate-900/50 overflow-hidden flex items-center justify-center shadow-md relative">
                       {cardPhotoBase64 ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
                         <img
                           src={cardPhotoBase64}
                           alt="Foto da carteirinha"

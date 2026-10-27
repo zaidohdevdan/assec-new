@@ -203,7 +203,7 @@ export function VideoShortsSection() {
             className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory -mx-4 px-[12vw] sm:mx-0 sm:px-0 scroll-px-[12vw] sm:scroll-px-0"
             style={{ scrollbarWidth: "none" }}
           >
-            {videos.map((video, index) => {
+            {videos.map((video) => {
               const youtubeId = getYouTubeId(video.youtubeUrl);
               if (!youtubeId) return null;
 
@@ -220,7 +220,6 @@ export function VideoShortsSection() {
                         src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
                         alt={video.title}
                         fill
-                        priority={index < 2}
                         sizes="(max-width: 640px) 76vw, 280px"
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         onError={(e) => {

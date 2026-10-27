@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Landmark, Mail, Calendar, UserCheck, X, Heart } from "lucide-react";
+import { FileText, Mail, Calendar, UserCheck, X, Heart } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { AdminAnalyticsSection } from "@/components/analytics/AdminAnalyticsSection";
 

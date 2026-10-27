@@ -139,7 +139,7 @@ export default function PortalClientLayout({
       }
     };
     void checkAuth();
-  }, [router]);
+  }, [router, initialUser]);
 
   // Sync profile photo if updated in profile page (we'll trigger a storage event)
   React.useEffect(() => {
@@ -298,6 +298,7 @@ export default function PortalClientLayout({
             {!mounted ? (
               <div className="h-10 w-10 rounded-full bg-primary-light/40 border border-primary-light animate-pulse" />
             ) : userPhoto ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={userPhoto}
                 alt={userName}
@@ -417,6 +418,7 @@ export default function PortalClientLayout({
                 {!mounted ? (
                   <div className="h-10 w-10 rounded-full bg-primary-light/40 border border-primary-light animate-pulse" />
                 ) : userPhoto ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={userPhoto}
                     alt={userName}
@@ -605,6 +607,7 @@ export default function PortalClientLayout({
               {!mounted ? (
                 <div className="h-8 w-8 rounded-full bg-primary-light/10 animate-pulse" />
               ) : userPhoto ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={userPhoto}
                   alt={userName}

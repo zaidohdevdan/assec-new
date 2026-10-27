@@ -59,28 +59,87 @@ export function PWAInstallBanner() {
     const now = Date.now();
     const dismissedRecently = dismissedTime && now - parseInt(dismissedTime) < 7 * 24 * 60 * 60 * 1000;
 
+    const isCookieBannerActive = () => {
+      if (typeof window === "undefined") return false;
+      if (document.documentElement.getAttribute("data-cookie-banner") === "open") {
+        return true;
+      }
+      try {
+        const raw = localStorage.getItem("assec-lgpd-consent");
+        if (!raw) return true;
+        const parsed = JSON.parse(raw) as { policyVersion?: string };
+        return parsed.policyVersion !== "2026.06.001";
+      } catch {
+        return true;
+      }
+    };
+
+    let promptEligible = false;
+
+    const maybeShowBanner = () => {
+      if (isStandaloneMode || dismissedRecently) return;
+      if (isCookieBannerActive()) return; // Wait until cookie banner is settled
+      setShowBanner(true);
+    };
+
     // 5. Handle prompt event for Chrome/Android
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      if (!isStandaloneMode && !dismissedRecently) {
-        setShowBanner(true);
-      }
+      promptEligible = true;
+      maybeShowBanner();
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
 
     // 6. Show iOS banner if eligible (iOS Safari, not standalone, not dismissed recently)
+    let iosTimer: NodeJS.Timeout | null = null;
     if (detectIOS && !isStandaloneMode && !dismissedRecently) {
-      // Small timeout to not clutter page load instantly
-      const timer = setTimeout(() => setShowBanner(true), 3000);
-      return () => clearTimeout(timer);
+      promptEligible = true;
+      iosTimer = setTimeout(() => {
+        maybeShowBanner();
+      }, 3500);
     }
+
+    // 7. If user resolves or closes cookie banner later, display PWA banner if eligible
+    const handleConsentResolved = () => {
+      if (promptEligible && !isStandaloneMode && !dismissedRecently) {
+        setTimeout(() => {
+          setShowBanner(true);
+        }, 1500);
+      }
+    };
+    const handleCookieBannerEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ open?: boolean }>;
+      if (customEvent.detail?.open === false) {
+        handleConsentResolved();
+      }
+    };
+    window.addEventListener("assec:consent-change", handleConsentResolved);
+    window.addEventListener("assec:cookie-banner", handleCookieBannerEvent);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+      window.removeEventListener("assec:consent-change", handleConsentResolved);
+      window.removeEventListener("assec:cookie-banner", handleCookieBannerEvent);
+      if (iosTimer) clearTimeout(iosTimer);
     };
   }, []);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (showBanner) {
+      document.documentElement.setAttribute("data-pwa-banner", "open");
+      window.dispatchEvent(new CustomEvent("assec:pwa-banner", { detail: { open: true } }));
+    } else {
+      document.documentElement.removeAttribute("data-pwa-banner");
+      window.dispatchEvent(new CustomEvent("assec:pwa-banner", { detail: { open: false } }));
+    }
+    return () => {
+      document.documentElement.removeAttribute("data-pwa-banner");
+      window.dispatchEvent(new CustomEvent("assec:pwa-banner", { detail: { open: false } }));
+    };
+  }, [showBanner]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
@@ -118,7 +177,7 @@ export function PWAInstallBanner() {
                 </div>
                 <div>
                   <h4 className="font-serif font-bold text-sm tracking-wide text-white">Instalar Portal ASSEC</h4>
-                  <p className="text-[11px] text-text-secondary">Tenha acesso rápido e offline às notícias e carteira.</p>
+                  <p className="text-[11px] text-gray-300">Tenha acesso rápido e offline às notícias e carteira.</p>
                 </div>
               </div>
               <button 

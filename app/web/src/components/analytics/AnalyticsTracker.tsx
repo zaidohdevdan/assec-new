@@ -7,7 +7,20 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 const SESSION_STORAGE_KEY = "assec_anon_sid";
 const LAST_VISIT_TIME_KEY = "assec_last_visit_time";
 const LAST_VISIT_PATH_KEY = "assec_last_visit_path";
+const LGPD_STORAGE_KEY = "assec-lgpd-consent";
 const DEBOUNCE_COOLDOWN_MS = 5000; // 5 segundos de cooldown para recarregamentos na mesma rota
+
+function hasAnalyticsConsent(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = localStorage.getItem(LGPD_STORAGE_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    return parsed?.categories?.analytics === true;
+  } catch {
+    return false;
+  }
+}
 
 function getOrCreateSessionId(): string {
   if (typeof window === "undefined") return "";
@@ -25,9 +38,24 @@ function getOrCreateSessionId(): string {
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
+  const [consentGranted, setConsentGranted] = React.useState(false);
 
   React.useEffect(() => {
-    if (!pathname || typeof window === "undefined") return;
+    setConsentGranted(hasAnalyticsConsent());
+
+    const handleConsentChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ categories?: { analytics?: boolean } }>;
+      setConsentGranted(customEvent.detail?.categories?.analytics === true);
+    };
+
+    window.addEventListener("assec:consent-change", handleConsentChange);
+    return () => {
+      window.removeEventListener("assec:consent-change", handleConsentChange);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!consentGranted || !pathname || typeof window === "undefined") return;
 
     const now = Date.now();
     try {
@@ -73,7 +101,7 @@ export function AnalyticsTracker() {
     }).catch(() => {
       // Fire-and-forget; ignore telemetry network failures silently
     });
-  }, [pathname]);
+  }, [pathname, consentGranted]);
 
   return null;
 }

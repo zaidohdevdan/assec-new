@@ -1,5 +1,6 @@
 import * as React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface PlantaoJuridicoBadgeProps {
   className?: string;
@@ -7,8 +8,10 @@ interface PlantaoJuridicoBadgeProps {
 
 export function PlantaoJuridicoBadge({ className = "" }: PlantaoJuridicoBadgeProps) {
   return (
-    <div
-      className={`relative h-16 w-16 sm:h-20 sm:w-full rounded-2xl overflow-hidden border border-white/20 bg-[#0E2B47] shadow-xl p-2 sm:p-3.5 flex items-center justify-center sm:justify-start gap-3.5 transition-all duration-300 hover:border-[#D4AF37] hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] hover:scale-105 sm:hover:scale-[1.02] shrink-0 sm:shrink group ${className}`}
+    <Link
+      href="#assessoria-juridica"
+      aria-label="Conhecer o Plantão Jurídico 24h da ASSEC"
+      className={`relative h-16 w-16 sm:h-20 sm:w-full rounded-2xl overflow-hidden border border-white/20 bg-[#0E2B47] shadow-xl p-2 sm:p-3.5 flex items-center justify-center sm:justify-start gap-3.5 transition-all duration-300 hover:border-[#D4AF37] hover:shadow-[0_0_25px_rgba(212,175,55,0.25)] hover:scale-105 sm:hover:scale-[1.02] shrink-0 sm:shrink group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] ${className}`}
     >
       {/* Escudo Oficial ASSEC */}
       <div className="relative h-full w-full sm:h-14 sm:w-14 shrink-0 flex items-center justify-center p-0.5 sm:p-1.5 rounded-xl sm:bg-[#071A2D] sm:border sm:border-[#D4AF37]/40 shadow-inner group-hover:scale-105 transition-transform">
@@ -42,6 +45,6 @@ export function PlantaoJuridicoBadge({ className = "" }: PlantaoJuridicoBadgePro
           Assessoria Jurídica
         </span>
       </div>
-    </div>
+    </Link>
   );
 }

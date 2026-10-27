@@ -70,15 +70,32 @@ describe('NoticesService', () => {
       });
     });
 
-    it('should return only published/active notices for public portal', async () => {
-      const mockPublished = [{ id: 'n1', active: true }];
+    it('should return only published/active notices for public portal and normalize Base64 coverImage', async () => {
+      const mockPublished = [
+        { id: 'n1', active: true, coverImage: 'data:image/webp;base64,AAAA' },
+        { id: 'n2', active: true, coverImage: null },
+      ];
       prisma.notice.findMany.mockResolvedValue(mockPublished);
 
       const result = await service.findPublished();
-      expect(result).toEqual(mockPublished);
+      expect(result).toEqual([
+        { id: 'n1', active: true, coverImage: '/noticia-imagem/n1' },
+        { id: 'n2', active: true, coverImage: null },
+      ]);
       expect(prisma.notice.findMany).toHaveBeenCalledWith({
         where: { active: true },
         orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          summary: true,
+          type: true,
+          tags: true,
+          coverImage: true,
+          active: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
     });
   });

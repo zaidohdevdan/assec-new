@@ -94,3 +94,19 @@ export interface Benefit {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Notice {
+  id: string;
+  title: string;
+  summary: string | null;
+  content: string;
+  type: string;
+  tags: string[];
+  coverImage: string | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export type Article = Notice;
+

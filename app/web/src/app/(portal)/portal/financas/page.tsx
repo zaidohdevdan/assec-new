@@ -4,7 +4,7 @@ import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
-import { User as UserType, FinancialStats, MonthlyStats, FinancialRecord, FinancialType } from "@/lib/types";
+import { User as UserType, FinancialStats, MonthlyStats, FinancialRecord } from "@/lib/types";
 import { 
   TrendingUp, 
   TrendingDown, 
