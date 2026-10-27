@@ -1,3 +1,4 @@
+import './dompurify-shim';
 import DOMPurify from 'isomorphic-dompurify';
 
 const ALLOWED_TAGS = [
