@@ -45,22 +45,22 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
 
     const checkSession = async () => {
+      // The HttpOnly session cookie is invisible to JS, so the display cache in
+      // localStorage is only a HINT that this browser may have a session. The
+      // session is always confirmed against the backend (/auth/me) below.
       const userStr = localStorage.getItem("user");
-      const hasProfileCookie =
-        typeof document !== "undefined" &&
-        document.cookie.split(";").some((c) => c.trim().startsWith("assec_user_profile="));
 
       if (userStr) {
         try {
           const parsedUser = JSON.parse(userStr);
           setUser(parsedUser);
-        } catch (err) {
-          console.error("Failed to parse user session", err);
+        } catch {
+          // ignore malformed cached data
         }
       }
 
-      // Se não há usuário no localStorage nem cookie de sessão, o visitante não está autenticado
-      if (!userStr && !hasProfileCookie) {
+      // No hint: visitor is not authenticated, skip the network call
+      if (!userStr) {
         setUser(null);
         return;
       }
@@ -74,7 +74,6 @@ const Header = () => {
         } else {
           setUser(null);
           localStorage.removeItem("user");
-          document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
       } catch {
         setUser(null);
@@ -90,7 +89,6 @@ const Header = () => {
     await apiFetch("/auth/logout", { method: "POST" }).catch(() => null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     setUser(null);
     window.location.href = "/login";
   };

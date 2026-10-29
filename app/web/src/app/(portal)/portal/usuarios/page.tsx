@@ -30,6 +30,18 @@ const userFormSchema = z
   .refine(
     (data) => {
       if (data.password && data.password.trim().length > 0) {
+        return data.password.length >= 10 && data.password.length <= 128;
+      }
+      return true;
+    },
+    {
+      message: "A senha deve ter entre 10 e 128 caracteres",
+      path: ["password"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.password && data.password.trim().length > 0) {
         return data.password === data.confirmPassword;
       }
       return true;
@@ -710,9 +722,9 @@ export default function UsuariosManagerPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
-                    label={editingUser ? "Nova Senha (deixe em branco para manter)" : "Senha de Acesso"}
+                    label={editingUser ? "Nova Senha (deixe em branco para manter)" : "Senha de Acesso (mín. 10 caracteres)"}
                     type="password"
-                    placeholder={editingUser ? "••••••••" : "Insira uma senha segura"}
+                    placeholder={editingUser ? "••••••••••" : "Mínimo de 10 caracteres"}
                     error={errors.password?.message}
                     {...register("password")}
                   />

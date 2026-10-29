@@ -7,6 +7,7 @@ import {
   UsePipes,
   UseGuards,
   Request,
+  Req,
   Response,
   HttpCode,
   HttpStatus,
@@ -27,29 +28,22 @@ import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import * as crypto from 'crypto';
 
 import { SkipCsrf } from './csrf.guard';
+import { LoginThrottleService } from './login-throttle.service';
+import { MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH } from './password-policy';
 
+// Login accepts any non-empty password on purpose: accounts created before the
+// stronger policy may still have shorter passwords and must be able to log in.
+// The strength policy is enforced where passwords are SET (reset / user admin).
 const loginSchema = z.object({
   email: z.email(),
-  password: z.string().min(6),
+  password: z.string().min(1).max(128),
 });
 
 type LoginDto = z.infer<typeof loginSchema>;
 
-const registerSchema = z.object({
-  email: z.email(),
-  password: z.string().min(6),
-  name: z.string().min(2),
-  cpf: z.string().min(11).optional(),
-  rg: z.string().optional(),
-  matricula: z.string().optional(),
-  org: z.string().optional(),
-});
-
-type RegisterDto = z.infer<typeof registerSchema>;
-
 const resetPasswordSchema = z.object({
   identifier: z.string(),
-  newPassword: z.string().min(6),
+  newPassword: z.string().min(MIN_PASSWORD_LENGTH).max(MAX_PASSWORD_LENGTH),
 });
 type ResetPasswordDto = z.infer<typeof resetPasswordSchema>;
 
@@ -63,31 +57,38 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
+    private loginThrottle: LoginThrottleService,
   ) {}
 
   @SkipCsrf()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ZodValidationPipe(loginSchema))
   async login(
-    @Body() loginDto: LoginDto,
+    @Body(new ZodValidationPipe(loginSchema)) loginDto: LoginDto,
     @Response({ passthrough: true }) res: ExpressResponse,
+    @Req() req?: ExpressRequest,
   ) {
+    // req.ip honours `trust proxy` (set in main.ts), so it is the real client IP
+    const clientIp = req?.ip ?? 'unknown';
+
+    // Reject early (429) when this account or IP is locked after repeated failures
+    this.loginThrottle.assertAllowed(loginDto.email, clientIp);
+
     const user = await this.authService.validateUser(
       loginDto.email,
       loginDto.password,
     );
 
     if (!user) {
-      throw new UnauthorizedException('E-mail ou senha incorretos.');
-    }
-
-    // Distinguish blocked accounts (password correct but account inactive)
-    if ((user as unknown as string) === 'BLOCKED') {
+      this.loginThrottle.recordFailure(loginDto.email, clientIp);
+      // One generic message for unknown e-mail, wrong password and suspended
+      // account: the response must not reveal which accounts exist.
       throw new UnauthorizedException(
-        'Conta suspensa ou inativa. Entre em contato com o administrador.',
+        'E-mail ou senha incorretos, ou acesso indisponível. Em caso de dúvida, entre em contato com a ASSEC.',
       );
     }
+
+    this.loginThrottle.recordSuccess(loginDto.email);
 
     const { access_token, user: userPublic } = this.authService.login(user);
 
@@ -166,12 +167,10 @@ export class AuthController {
     return { csrfToken };
   }
 
-  @SkipCsrf()
-  @Post('register')
-  @UsePipes(new ZodValidationPipe(registerSchema))
-  async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
-  }
+  // NOTE: the public POST /auth/register endpoint was removed on purpose.
+  // It created accounts already `Ativo` (a valid "associado" credential) and
+  // returned a session token. Accounts are now created only by an ADMIN
+  // (POST /users).
 
   @Post('reset-password')
   @UseGuards(AuthGuard, RolesGuard)

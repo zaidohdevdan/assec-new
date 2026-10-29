@@ -2,7 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { User, Prisma } from '@prisma/client';
+import { User } from '@prisma/client';
+
+// Hash used to burn the same CPU time when the e-mail does not exist, so the
+// response time does not reveal which accounts are registered.
+// Computed once at module load (cost factor matches UsersService).
+const TIMING_EQUALIZER_HASH = bcrypt.hashSync(
+  'timing-equalizer-not-a-password',
+  10,
+);
 
 @Injectable()
 export class AuthService {
@@ -11,21 +19,28 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  /**
+   * Validates credentials in (approximately) constant time and returns the
+   * public user, or null for ANY failure (unknown e-mail, wrong password or
+   * suspended account). Callers must not distinguish these cases to the client.
+   */
   async validateUser(
     email: string,
     pass: string,
   ): Promise<Omit<User, 'password'> | null> {
     const user = await this.usersService.findByEmail(email);
-    if (!user) return null;
 
-    const passwordMatch = await bcrypt.compare(pass, user.password);
-    if (!passwordMatch) return null;
+    // Always run bcrypt, even when the user does not exist.
+    const passwordMatch = await bcrypt.compare(
+      pass,
+      user?.password ?? TIMING_EQUALIZER_HASH,
+    );
 
-    // Feature: Block login for suspended/inactive accounts
-    if (user.status !== 'Ativo') {
-      // Return a special sentinel value to distinguish from wrong-password
-      return 'BLOCKED' as unknown as Omit<User, 'password'>;
-    }
+    if (!user || !passwordMatch) return null;
+
+    // Suspended/inactive accounts cannot log in. Same outcome as a wrong
+    // password so the response never confirms that the password was correct.
+    if (user.status !== 'Ativo') return null;
 
     const result: Partial<User> = { ...user };
     delete result.password;
@@ -38,12 +53,5 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
       user,
     };
-  }
-
-  async register(data: Prisma.UserCreateInput) {
-    const user = await this.usersService.create(data);
-    const result: Partial<User> = { ...user };
-    delete result.password;
-    return this.login(result as Omit<User, 'password'>);
   }
 }

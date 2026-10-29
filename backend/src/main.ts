@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -7,7 +8,12 @@ const cookieParser = require('cookie-parser') as typeof import('cookie-parser');
 import { json, urlencoded } from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // The backend runs behind exactly one reverse proxy (nginx). Trusting one hop
+  // makes `req.ip` the real client address (taken from X-Forwarded-For), which
+  // the login throttle and analytics rely on.
+  app.set('trust proxy', 1);
 
   app.use(json({ limit: '15mb' }));
   app.use(urlencoded({ limit: '15mb', extended: true }));
@@ -21,14 +27,17 @@ async function bootstrap() {
     'FRONTEND_URL',
     'http://localhost:3000',
   );
+  const isProduction = config.get<string>('NODE_ENV') === 'production';
 
   app.enableCors({
-    // Allow both local Next.js dev servers; restrict in production via env var
-    origin: [frontendUrl, 'http://localhost:3000', 'http://localhost:5173'],
+    // Production only accepts the configured frontend origin; the local dev
+    // servers are allowed outside production.
+    origin: isProduction
+      ? [frontendUrl]
+      : [frontendUrl, 'http://localhost:3000', 'http://localhost:5173'],
     credentials: true, // Required to send/receive cookies cross-origin
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
-    exposedHeaders: ['Authorization'],
+    allowedHeaders: ['Content-Type', 'X-CSRF-Token'],
   });
 
   await app.listen(port);

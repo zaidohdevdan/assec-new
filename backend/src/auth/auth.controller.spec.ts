@@ -6,19 +6,18 @@ import { UsersService } from '../users/users.service';
 import { type AuthenticatedRequest } from './auth.types';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
+import { LoginThrottleService } from './login-throttle.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
   let authService: {
     validateUser: jest.Mock;
     login: jest.Mock;
-    register: jest.Mock;
   };
 
   const authServiceMock = {
     validateUser: jest.fn(),
     login: jest.fn(),
-    register: jest.fn(),
   };
 
   const usersServiceMock = {
@@ -69,6 +68,7 @@ describe('AuthController', () => {
           provide: UsersService,
           useValue: usersServiceMock,
         },
+        LoginThrottleService,
       ],
     })
       .overrideGuard(AuthGuard)
@@ -83,27 +83,8 @@ describe('AuthController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('register', () => {
-    it('should create a user and return login result', async () => {
-      const registerDto = {
-        email: 'dan@gmail.com',
-        password: 'daniel@123',
-        name: 'Dan',
-      };
-
-      authService.register.mockResolvedValue({
-        access_token: 'jwt-token',
-        user: mockUserWithoutPassword,
-      });
-
-      const result = await controller.register(registerDto);
-
-      expect(authService.register).toHaveBeenCalledWith(registerDto);
-      expect(result).toEqual({
-        access_token: 'jwt-token',
-        user: mockUserWithoutPassword,
-      });
-    });
+  it('should NOT expose a public register endpoint', () => {
+    expect((controller as any).register).toBeUndefined();
   });
 
   describe('login', () => {
@@ -119,7 +100,9 @@ describe('AuthController', () => {
         user: mockUserWithoutPassword,
       });
 
-      const result = await controller.login(loginDto, mockResponse);
+      const result = await controller.login(loginDto, mockResponse, {
+        ip: '127.0.0.1',
+      } as any);
 
       expect(authService.validateUser).toHaveBeenCalledWith(
         'dan@gmail.com',
@@ -154,22 +137,52 @@ describe('AuthController', () => {
 
       authService.validateUser.mockResolvedValue(null);
 
-      await expect(controller.login(loginDto, mockResponse)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(
+        controller.login(loginDto, mockResponse, { ip: '10.0.0.1' } as any),
+      ).rejects.toThrow(UnauthorizedException);
     });
 
-    it('should throw UnauthorizedException when account is suspended/inactive', async () => {
-      const loginDto = { email: 'dan@gmail.com', password: 'daniel@123' };
-      const mockResponse = {} as any;
+    it('should return the SAME generic error for suspended accounts (no enumeration)', async () => {
+      // validateUser returns null for unknown e-mail, wrong password AND suspended accounts
+      authService.validateUser.mockResolvedValue(null);
+      const req = { ip: '10.0.0.2' } as any;
 
-      authService.validateUser.mockResolvedValue('BLOCKED');
+      const errors: string[] = [];
+      for (const email of ['unknown@test.com', 'suspended@test.com']) {
+        try {
+          await controller.login(
+            { email, password: 'whatever' },
+            {} as any,
+            req,
+          );
+        } catch (e) {
+          errors.push((e as UnauthorizedException).message);
+        }
+      }
 
-      await expect(controller.login(loginDto, mockResponse)).rejects.toThrow(
-        new UnauthorizedException(
-          'Conta suspensa ou inativa. Entre em contato com o administrador.',
-        ),
+      expect(errors).toHaveLength(2);
+      expect(errors[0]).toBe(errors[1]);
+    });
+
+    it('should lock the account with 429 after repeated failures', async () => {
+      authService.validateUser.mockResolvedValue(null);
+      const req = { ip: '10.0.0.3' } as any;
+      const dto = { email: 'victim@test.com', password: 'bad-guess' };
+
+      for (let i = 0; i < 8; i++) {
+        await expect(controller.login(dto, {} as any, req)).rejects.toThrow(
+          UnauthorizedException,
+        );
+      }
+
+      // 9th attempt is blocked BEFORE any password check
+      authService.validateUser.mockClear();
+      await expect(controller.login(dto, {} as any, req)).rejects.toMatchObject(
+        {
+          status: 429,
+        },
       );
+      expect(authService.validateUser).not.toHaveBeenCalled();
     });
   });
 

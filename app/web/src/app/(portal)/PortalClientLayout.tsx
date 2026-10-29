@@ -82,6 +82,18 @@ export default function PortalClientLayout({
     }
   };
 
+  // Seed the display cache from the server-validated user BEFORE children run
+  // their effects (layout effects run before passive effects), so pages that
+  // read `localStorage.user` always see the current, server-verified profile.
+  // Also removes the legacy `assec_user_profile` cookie (it carried PII and is
+  // no longer trusted or written).
+  React.useLayoutEffect(() => {
+    if (initialUser) {
+      localStorage.setItem("user", JSON.stringify(initialUser));
+    }
+    document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  }, [initialUser]);
+
   React.useEffect(() => {
     // Check session via HttpOnly cookie — the browser sends it automatically
     const checkAuth = async () => {
@@ -120,21 +132,17 @@ export default function PortalClientLayout({
           setUserSpecialty(user.specialty ?? null);
           // Sync localStorage display cache with fresh data
           localStorage.setItem("user", JSON.stringify(user));
-          const secureFlag = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : "";
-          document.cookie = `assec_user_profile=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
           setAuthorized(true);
           window.dispatchEvent(new Event("user-profile-updated"));
         } else {
           // Session expired or account suspended — force re-login
           localStorage.removeItem("user");
           localStorage.removeItem("token");
-          document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           router.push("/login");
         }
       } catch {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
-        document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         router.push("/login");
       }
     };
@@ -186,8 +194,6 @@ export default function PortalClientLayout({
     // Clear the non-sensitive display cache from localStorage
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    // Clear profile cookie
-    document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     // Full redirect to trigger clean browser state
     window.location.href = "/login";
   };

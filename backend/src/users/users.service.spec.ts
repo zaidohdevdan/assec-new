@@ -128,5 +128,15 @@ describe('UsersService', () => {
       });
       expect(result).toEqual(mockUser);
     });
+
+    it('should reject passwords shorter than 10 characters', async () => {
+      await expect(
+        service.create({
+          email: 'dan@gmail.com',
+          password: 'short',
+          name: 'Dan',
+        }),
+      ).rejects.toThrow('A senha deve ter entre 10 e 128 caracteres.');
+    });
   });
 });

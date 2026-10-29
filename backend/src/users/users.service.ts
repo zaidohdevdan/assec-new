@@ -1,12 +1,31 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { PrismaService, Prisma, UserStatus, Role } from '../prisma/prisma.service';
+import {
+  Injectable,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
+import {
+  PrismaService,
+  Prisma,
+  UserStatus,
+  Role,
+} from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import {
+  isAcceptablePassword,
+  MIN_PASSWORD_LENGTH,
+} from '../auth/password-policy';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async create(data: Prisma.UserCreateInput) {
+    if (!isAcceptablePassword(data.password)) {
+      throw new BadRequestException(
+        `A senha deve ter entre ${MIN_PASSWORD_LENGTH} e 128 caracteres.`,
+      );
+    }
+
     const sanitizedData = { ...data };
     if (sanitizedData.cpf === '') {
       sanitizedData.cpf = null;
@@ -86,11 +105,12 @@ export class UsersService {
 
     if (data.name !== undefined) updateData.name = data.name;
     if (data.displayName !== undefined) {
-      updateData.displayName = data.displayName === '' ? null : data.displayName;
+      updateData.displayName =
+        data.displayName === '' ? null : data.displayName;
     }
     if (data.email !== undefined) updateData.email = data.email;
-    if (data.role !== undefined) updateData.role = data.role as Role;
-    if (data.status !== undefined) updateData.status = data.status as UserStatus;
+    if (data.role !== undefined) updateData.role = data.role;
+    if (data.status !== undefined) updateData.status = data.status;
 
     if (data.cpf !== undefined) {
       updateData.cpf = data.cpf === '' ? null : data.cpf;
@@ -114,7 +134,16 @@ export class UsersService {
       updateData.avatarUrl = data.avatarUrl === '' ? null : data.avatarUrl;
     }
 
-    if (data.password && typeof data.password === 'string' && data.password.trim().length > 0) {
+    if (
+      data.password &&
+      typeof data.password === 'string' &&
+      data.password.trim().length > 0
+    ) {
+      if (!isAcceptablePassword(data.password)) {
+        throw new BadRequestException(
+          `A senha deve ter entre ${MIN_PASSWORD_LENGTH} e 128 caracteres.`,
+        );
+      }
       updateData.password = await bcrypt.hash(data.password, 10);
     }
 

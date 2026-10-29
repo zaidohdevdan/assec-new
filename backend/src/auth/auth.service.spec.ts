@@ -113,11 +113,34 @@ describe('AuthService', () => {
 
       expect(result).toBeNull();
     });
+
+    it('should still run bcrypt when the user does not exist (constant-time login)', async () => {
+      usersService.findByEmail.mockResolvedValue(null);
+      (bcrypt.compare as jest.Mock).mockClear();
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      await service.validateUser('ghost@test.com', 'any-password');
+
+      expect(bcrypt.compare).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return null (not a sentinel) for a suspended account with the correct password', async () => {
+      usersService.findByEmail.mockResolvedValue({
+        ...mockUser,
+        status: 'Suspenso',
+      });
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      const result = await service.validateUser('dan@gmail.com', 'daniel@123');
+
+      expect(result).toBeNull();
+    });
   });
 
   describe('login', () => {
     it('should return access_token and user', () => {
-      const { password, ...userWithoutPassword } = mockUser;
+      const { password: _password, ...userWithoutPassword } = mockUser;
+      void _password;
 
       jwtService.sign.mockReturnValue('jwt-token-123');
 

@@ -41,17 +41,16 @@ export class AnalyticsController {
     @Body() dto: RecordVisitDto,
     @Req() req: Request & { cookies?: Record<string, string> },
   ) {
-    // 1. Try to safely extract logged-in user from session cookie or Authorization header
+    // 1. Try to safely extract the logged-in user from the session cookie.
+    //    (No Authorization: Bearer fallback — the session lives only in the HttpOnly cookie.)
     let userId: string | null = null;
-    let token: string | undefined = req.cookies?.[SESSION_COOKIE];
-
-    if (!token && req.headers.authorization?.startsWith('Bearer ')) {
-      token = req.headers.authorization.split(' ')[1];
-    }
+    const token: string | undefined = req.cookies?.[SESSION_COOKIE];
 
     if (token) {
       try {
-        const payload = this.jwtService.verify<{ sub: string }>(token);
+        const payload = this.jwtService.verify<{ sub: string }>(token, {
+          algorithms: ['HS256'],
+        });
         if (payload && payload.sub) {
           userId = payload.sub;
         }
@@ -61,14 +60,10 @@ export class AnalyticsController {
       }
     }
 
-    // 2. Extract Client IP and User-Agent
-    const forwarded = req.headers['x-forwarded-for'];
-    const ip =
-      (typeof forwarded === 'string'
-        ? forwarded.split(',')[0].trim()
-        : Array.isArray(forwarded)
-          ? forwarded[0].trim()
-          : req.socket.remoteAddress) || '127.0.0.1';
+    // 2. Client IP and User-Agent.
+    //    req.ip honours `trust proxy` (main.ts); reading the first X-Forwarded-For
+    //    entry directly would trust a value the client can forge.
+    const ip = req.ip || req.socket.remoteAddress || '127.0.0.1';
 
     const userAgent = req.headers['user-agent'] || '';
 

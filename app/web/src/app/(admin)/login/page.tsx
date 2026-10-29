@@ -15,7 +15,7 @@ import { apiFetch } from "@/lib/api";
 
 const loginSchema = z.object({
   email: z.string().email("Endereço de e-mail inválido"),
-  password: z.string().min(6, "A senha deve conter no mínimo 6 caracteres"),
+  password: z.string().min(1, "Informe a senha"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -67,6 +67,8 @@ export default function LoginPage() {
 
       if (res.ok) {
         const body = await res.json();
+        // Only a non-sensitive display cache is kept client-side. The session
+        // itself lives in the HttpOnly cookie; the server never trusts this cache.
         const userDisplay = {
           id: body.user?.id,
           name: body.user?.name,
@@ -80,8 +82,6 @@ export default function LoginPage() {
           matricula: body.user?.matricula ?? null,
         };
         localStorage.setItem("user", JSON.stringify(userDisplay));
-        const secureFlag = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : "";
-        document.cookie = `assec_user_profile=${encodeURIComponent(JSON.stringify(userDisplay))}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
 
         const userRole = body.user?.role ?? "USER";
         if (userRole === "ADMIN") {
