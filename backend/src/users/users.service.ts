@@ -15,7 +15,7 @@ import {
   isAcceptablePassword,
   MIN_PASSWORD_LENGTH,
 } from '../auth/password-policy';
-import { AuthGuard } from '../auth/auth.guard';
+import { evictAccountCache } from '../auth/account-cache';
 
 @Injectable()
 export class UsersService {
@@ -197,7 +197,7 @@ export class UsersService {
       data: updateData,
     });
 
-    AuthGuard.evictAccountCache(id);
+    evictAccountCache(id);
 
     if (data.role !== undefined) {
       await this.recordAuthEvent({
@@ -262,7 +262,7 @@ export class UsersService {
       },
     });
 
-    AuthGuard.evictAccountCache(user.id);
+    evictAccountCache(user.id);
 
     return true;
   }
@@ -310,7 +310,7 @@ export class UsersService {
       },
     });
 
-    AuthGuard.evictAccountCache(userId);
+    evictAccountCache(userId);
 
     const { password: _password, ...publicUser } = updated;
     void _password;
@@ -326,7 +326,7 @@ export class UsersService {
     } catch {
       // Ignore if user no longer exists or update is not mocked in unit test
     } finally {
-      AuthGuard.evictAccountCache(userId);
+      evictAccountCache(userId);
     }
   }
 
@@ -379,7 +379,7 @@ export class UsersService {
   }
 
   async deleteUser(id: string) {
-    AuthGuard.evictAccountCache(id);
+    evictAccountCache(id);
     return this.prisma.user.delete({
       where: { id },
     });

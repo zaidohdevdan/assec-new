@@ -1,5 +1,8 @@
 /// <reference types="jest" />
+import 'reflect-metadata';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
 import { AuthGuard } from './auth.guard';
 
 const COOKIE =
@@ -148,5 +151,10 @@ describe('AuthGuard', () => {
     await expect(guard.canActivate(buildContext(req))).rejects.toThrow(
       UnauthorizedException,
     );
+  });
+
+  it('preserves constructor metadata (JwtService, UsersService) without circular import undefined dependency', () => {
+    const paramTypes = Reflect.getMetadata('design:paramtypes', AuthGuard);
+    expect(paramTypes).toEqual([JwtService, UsersService]);
   });
 });

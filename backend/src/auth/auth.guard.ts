@@ -7,28 +7,24 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { type AuthenticatedRequest } from './auth.types';
+import {
+  type CachedAccount,
+  accountCache,
+  evictAccountCache,
+} from './account-cache';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const SESSION_COOKIE = isProduction ? '__Host-assec_session' : 'assec_session';
 
-interface CachedAccount {
-  status: string;
-  role: string;
-  email: string;
-  tokenVersion?: number;
-  expiresAt: number;
-}
-
 @Injectable()
 export class AuthGuard implements CanActivate {
-  private static accountCache = new Map<string, CachedAccount>();
   private readonly CACHE_TTL_MS = 30_000; // 30 seconds
 
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
   ) {
-    AuthGuard.accountCache.clear();
+    evictAccountCache();
   }
 
   /**
@@ -36,11 +32,7 @@ export class AuthGuard implements CanActivate {
    * when their session, password, role, or status changes.
    */
   static evictAccountCache(userId?: string): void {
-    if (userId) {
-      AuthGuard.accountCache.delete(userId);
-    } else {
-      AuthGuard.accountCache.clear();
-    }
+    evictAccountCache(userId);
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -113,7 +105,7 @@ export class AuthGuard implements CanActivate {
     userId: string,
   ): Promise<CachedAccount | null> {
     const now = Date.now();
-    const cached = AuthGuard.accountCache.get(userId);
+    const cached = accountCache.get(userId);
 
     if (cached && cached.expiresAt > now) {
       return cached;
@@ -121,7 +113,7 @@ export class AuthGuard implements CanActivate {
 
     const dbUser = await this.usersService.findById(userId);
     if (!dbUser) {
-      AuthGuard.accountCache.delete(userId);
+      accountCache.delete(userId);
       return null;
     }
 
@@ -132,7 +124,7 @@ export class AuthGuard implements CanActivate {
       tokenVersion: (dbUser as { tokenVersion?: number }).tokenVersion,
       expiresAt: now + this.CACHE_TTL_MS,
     };
-    AuthGuard.accountCache.set(userId, entry);
+    accountCache.set(userId, entry);
 
     return entry;
   }
