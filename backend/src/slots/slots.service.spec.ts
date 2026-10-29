@@ -45,7 +45,14 @@ describe('SlotsService', () => {
 
   describe('findAll with type filter', () => {
     it('should query slots with date >= today and status Disponivel', async () => {
-      const mockSlots = [{ id: 'slot-1', date: '2026-09-10', time: '10:00', status: 'Disponível' }];
+      const mockSlots = [
+        {
+          id: 'slot-1',
+          date: '2026-09-10',
+          time: '10:00',
+          status: 'Disponível',
+        },
+      ];
       prisma.scheduleSlot.findMany.mockResolvedValue(mockSlots);
 
       const result = await service.findAll({ type: 'Assistência Jurídica' });
@@ -65,9 +72,24 @@ describe('SlotsService', () => {
   describe('findAll with professionalId filter', () => {
     it('should dynamically map past slots to Expirado or Realizado', async () => {
       const mockSlots = [
-        { id: 'past-1', date: '2020-01-01', time: '09:00', status: 'Disponível' },
-        { id: 'past-2', date: '2020-01-01', time: '10:00', status: 'Reservado' },
-        { id: 'future-1', date: '2099-01-01', time: '10:00', status: 'Disponível' },
+        {
+          id: 'past-1',
+          date: '2020-01-01',
+          time: '09:00',
+          status: 'Disponível',
+        },
+        {
+          id: 'past-2',
+          date: '2020-01-01',
+          time: '10:00',
+          status: 'Reservado',
+        },
+        {
+          id: 'future-1',
+          date: '2099-01-01',
+          time: '10:00',
+          status: 'Disponível',
+        },
       ];
       prisma.scheduleSlot.findMany.mockResolvedValue(mockSlots);
 
@@ -90,8 +112,18 @@ describe('SlotsService', () => {
 
       expect(prisma.scheduleSlot.createMany).toHaveBeenCalledWith({
         data: [
-          { professionalId: 'prof-1', date: '2026-09-10', time: '09:00', status: 'Disponível' },
-          { professionalId: 'prof-1', date: '2026-09-10', time: '10:00', status: 'Disponível' },
+          {
+            professionalId: 'prof-1',
+            date: '2026-09-10',
+            time: '09:00',
+            status: 'Disponível',
+          },
+          {
+            professionalId: 'prof-1',
+            date: '2026-09-10',
+            time: '10:00',
+            status: 'Disponível',
+          },
         ],
       });
       expect(result).toEqual({ count: 2 });
@@ -123,7 +155,9 @@ describe('SlotsService', () => {
         data: { status: 'Cancelado', slot: { disconnect: true } },
       });
       expect(notifications.create).toHaveBeenCalled();
-      expect(prisma.scheduleSlot.delete).toHaveBeenCalledWith({ where: { id: 'slot-1' } });
+      expect(prisma.scheduleSlot.delete).toHaveBeenCalledWith({
+        where: { id: 'slot-1' },
+      });
     });
   });
 });

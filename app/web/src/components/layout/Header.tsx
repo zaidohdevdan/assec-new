@@ -45,22 +45,22 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
 
     const checkSession = async () => {
-      // The HttpOnly session cookie is invisible to JS, so the display cache in
-      // localStorage is only a HINT that this browser may have a session. The
-      // session is always confirmed against the backend (/auth/me) below.
-      const userStr = localStorage.getItem("user");
-
-      if (userStr) {
-        try {
-          const parsedUser = JSON.parse(userStr);
-          setUser(parsedUser);
-        } catch {
-          // ignore malformed cached data
-        }
+      // Purge any legacy client-side PII cache
+      try {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      } catch {
+        // ignore storage errors
       }
 
-      // No hint: visitor is not authenticated, skip the network call
-      if (!userStr) {
+      // The HttpOnly session cookie is invisible to JS, so we check whether the
+      // non-HttpOnly CSRF cookie (`assec_csrf`, a random hex string with zero PII)
+      // is present as a hint before calling `/auth/me`.
+      const hasSessionHint =
+        typeof document !== "undefined" &&
+        document.cookie.split(";").some((c) => c.trim().startsWith("assec_csrf="));
+
+      if (!hasSessionHint) {
         setUser(null);
         return;
       }
@@ -70,14 +70,11 @@ const Header = () => {
         if (res.ok) {
           const parsedUser = await res.json();
           setUser(parsedUser);
-          localStorage.setItem("user", JSON.stringify(parsedUser));
         } else {
           setUser(null);
-          localStorage.removeItem("user");
         }
       } catch {
         setUser(null);
-        localStorage.removeItem("user");
       }
     };
     void checkSession();

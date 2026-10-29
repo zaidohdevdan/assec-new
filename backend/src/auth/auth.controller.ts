@@ -47,6 +47,12 @@ const resetPasswordSchema = z.object({
 });
 type ResetPasswordDto = z.infer<typeof resetPasswordSchema>;
 
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1).max(128),
+  newPassword: z.string().min(MIN_PASSWORD_LENGTH).max(MAX_PASSWORD_LENGTH),
+});
+type ChangePasswordDto = z.infer<typeof changePasswordSchema>;
+
 const isProduction = process.env.NODE_ENV === 'production';
 // Cookie name follows __Host- prefix convention for enhanced security in production.
 // During development, we drop the prefix so browsers accept it over plain HTTP (e.g. when testing on mobile devices via local IP).
@@ -70,6 +76,10 @@ export class AuthController {
   ) {
     // req.ip honours `trust proxy` (set in main.ts), so it is the real client IP
     const clientIp = req?.ip ?? 'unknown';
+    const userAgent =
+      typeof req?.headers?.['user-agent'] === 'string'
+        ? req.headers['user-agent']
+        : undefined;
 
     // Reject early (429) when this account or IP is locked after repeated failures
     this.loginThrottle.assertAllowed(loginDto.email, clientIp);
@@ -81,6 +91,12 @@ export class AuthController {
 
     if (!user) {
       this.loginThrottle.recordFailure(loginDto.email, clientIp);
+      await this.usersService.recordAuthEvent?.({
+        action: 'LOGIN_FAILED',
+        email: loginDto.email,
+        ipAddress: clientIp,
+        userAgent,
+      });
       // One generic message for unknown e-mail, wrong password and suspended
       // account: the response must not reveal which accounts exist.
       throw new UnauthorizedException(
@@ -91,6 +107,14 @@ export class AuthController {
     this.loginThrottle.recordSuccess(loginDto.email);
 
     const { access_token, user: userPublic } = this.authService.login(user);
+
+    await this.usersService.recordAuthEvent?.({
+      userId: userPublic.id,
+      email: userPublic.email,
+      action: 'LOGIN_SUCCESS',
+      ipAddress: clientIp,
+      userAgent,
+    });
 
     // Set the JWT in a secure, HttpOnly cookie (not accessible via JavaScript)
     // This is the primary defence against XSS token theft
@@ -126,6 +150,9 @@ export class AuthController {
         specialty: userPublic.specialty ?? null,
         org: userPublic.org ?? null,
         matricula: userPublic.matricula ?? null,
+        mustChangePassword:
+          (userPublic as { mustChangePassword?: boolean }).mustChangePassword ??
+          false,
         since: (userPublic.since ?? new Date()).toISOString(),
         createdAt: (userPublic.createdAt ?? new Date()).toISOString(),
         updatedAt: (userPublic.updatedAt ?? new Date()).toISOString(),
@@ -136,7 +163,28 @@ export class AuthController {
   @SkipCsrf()
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Response({ passthrough: true }) res: ExpressResponse) {
+  async logout(
+    @Response({ passthrough: true }) res: ExpressResponse,
+    @Req()
+    req?: ExpressRequest & { cookies?: Record<string, string> },
+  ) {
+    // Revoke the session server-side by incrementing tokenVersion if a valid token is present
+    const token = req?.cookies?.[SESSION_COOKIE];
+    if (token && this.authService.revokeTokenIfPresent) {
+      const revokedUserId = await this.authService.revokeTokenIfPresent(token);
+      if (revokedUserId) {
+        await this.usersService.recordAuthEvent?.({
+          userId: revokedUserId,
+          action: 'LOGOUT',
+          ipAddress: req?.ip ?? 'unknown',
+          userAgent:
+            typeof req?.headers?.['user-agent'] === 'string'
+              ? req.headers['user-agent']
+              : undefined,
+        });
+      }
+    }
+
     // Clear the session cookie — browser will delete it immediately
     res.clearCookie(SESSION_COOKIE, {
       httpOnly: true,
@@ -172,11 +220,66 @@ export class AuthController {
   // returned a session token. Accounts are now created only by an ADMIN
   // (POST /users).
 
+  @Post('change-password')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @Request()
+    req: AuthenticatedRequest & {
+      ip?: string;
+      headers?: Record<string, string>;
+    },
+    @Body(new ZodValidationPipe(changePasswordSchema))
+    changePasswordDto: ChangePasswordDto,
+    @Response({ passthrough: true }) res: ExpressResponse,
+  ) {
+    const updatedUser = await this.usersService.changeOwnPassword(
+      req.user.sub,
+      changePasswordDto.currentPassword,
+      changePasswordDto.newPassword,
+    );
+
+    // Issue a fresh JWT with the incremented tokenVersion so the current
+    // browser session remains active while all other sessions are revoked.
+    const { access_token } = this.authService.login(updatedUser);
+    res.cookie(SESSION_COOKIE, access_token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: isProduction,
+      path: '/',
+      maxAge: 60 * 60 * 1000,
+    });
+
+    await this.usersService.recordAuthEvent?.({
+      userId: req.user.sub,
+      email: req.user.email,
+      action: 'PASSWORD_CHANGED',
+      ipAddress: req.ip ?? 'unknown',
+      userAgent:
+        typeof req.headers?.['user-agent'] === 'string'
+          ? req.headers['user-agent']
+          : undefined,
+    });
+
+    return {
+      success: true,
+      message: 'Senha alterada com sucesso.',
+      mustChangePassword: false,
+    };
+  }
+
   @Post('reset-password')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(resetPasswordSchema))
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+    @Request()
+    req?: AuthenticatedRequest & {
+      ip?: string;
+      headers?: Record<string, string>;
+    },
+  ) {
     const success = await this.usersService.updatePassword(
       resetPasswordDto.identifier,
       resetPasswordDto.newPassword,
@@ -184,7 +287,23 @@ export class AuthController {
     if (!success) {
       throw new UnauthorizedException('User not found');
     }
+
+    await this.usersService.recordAuthEvent?.({
+      userId: req?.user?.sub ?? null,
+      email: req?.user?.email ?? null,
+      action: 'PASSWORD_RESET_BY_ADMIN',
+      ipAddress: req?.ip ?? 'unknown',
+      metadata: `Identificador redefinido: ${resetPasswordDto.identifier}`,
+    });
+
     return { success: true, message: 'Password updated successfully' };
+  }
+
+  @Get('audit-logs')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async getAuditLogs() {
+    return this.usersService.findRecentAuthEvents(100);
   }
 
   @Get('me')

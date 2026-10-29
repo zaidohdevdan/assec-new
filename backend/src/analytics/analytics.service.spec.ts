@@ -35,7 +35,8 @@ describe('AnalyticsService', () => {
   it('should ignore web crawlers / bots', () => {
     const result = service.recordVisit({
       path: '/noticias',
-      userAgent: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+      userAgent:
+        'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
     });
 
     expect(result).toEqual({ ok: true, ignored: true });

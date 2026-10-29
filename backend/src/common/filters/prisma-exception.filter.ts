@@ -17,15 +17,18 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const res = exception.getResponse();
-      return response.status(status).json(
-        typeof res === 'object' ? res : { statusCode: status, message: res },
-      );
+      return response
+        .status(status)
+        .json(
+          typeof res === 'object' ? res : { statusCode: status, message: res },
+        );
     }
 
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       switch (exception.code) {
         case 'P2002': {
-          const target = (exception.meta?.target as string[])?.join(', ') || 'campo';
+          const target =
+            (exception.meta?.target as string[])?.join(', ') || 'campo';
           return response.status(HttpStatus.CONFLICT).json({
             statusCode: HttpStatus.CONFLICT,
             message: `Já existe um registro cadastrado com este valor no campo (${target}).`,
@@ -50,7 +53,10 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     }
 
     console.error('Unhandled error caught by exception filter:', exception);
-    const errorMessage = exception instanceof Error ? exception.message : 'Erro interno do servidor.';
+    const errorMessage =
+      exception instanceof Error
+        ? exception.message
+        : 'Erro interno do servidor.';
     return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       message: errorMessage,

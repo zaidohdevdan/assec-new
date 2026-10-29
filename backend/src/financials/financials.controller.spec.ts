@@ -36,7 +36,11 @@ describe('FinancialsController', () => {
   });
 
   it('should create financial record converting string date', async () => {
-    const dto = { description: 'Doação', amount: 500, date: '2026-08-01' } as any;
+    const dto = {
+      description: 'Doação',
+      amount: 500,
+      date: '2026-08-01',
+    } as any;
     const mockCreated = { id: 'f1', ...dto };
     service.create.mockResolvedValue(mockCreated);
 
@@ -55,7 +59,12 @@ describe('FinancialsController', () => {
   });
 
   it('should get aggregated stats', async () => {
-    const mockStats = { totalIncome: 1000, totalExpense: 400, balance: 600, monthly: [] };
+    const mockStats = {
+      totalIncome: 1000,
+      totalExpense: 400,
+      balance: 600,
+      monthly: [],
+    };
     service.getStats.mockResolvedValue(mockStats);
 
     const result = await controller.getStats();

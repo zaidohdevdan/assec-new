@@ -36,7 +36,10 @@ describe('VideosController', () => {
   });
 
   it('should create a video', async () => {
-    const dto = { title: 'Assembleia 2026', youtubeUrl: 'https://youtube.com/watch?v=123' };
+    const dto = {
+      title: 'Assembleia 2026',
+      youtubeUrl: 'https://youtube.com/watch?v=123',
+    };
     const mockCreated = { id: 'v1', ...dto };
     service.create.mockResolvedValue(mockCreated);
 

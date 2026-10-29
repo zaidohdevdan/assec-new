@@ -37,7 +37,10 @@ describe('BenefitsService', () => {
       const mockCreated = { id: 'b1', title: 'Plano Odontológico' };
       prisma.benefit.create.mockResolvedValue(mockCreated);
 
-      const dto = { title: 'Plano Odontológico', description: 'Cobertura completa' } as any;
+      const dto = {
+        title: 'Plano Odontológico',
+        description: 'Cobertura completa',
+      } as any;
       const result = await service.create(dto);
 
       expect(result).toEqual(mockCreated);
@@ -81,7 +84,9 @@ describe('BenefitsService', () => {
 
     it('should throw NotFoundException when benefit not found', async () => {
       prisma.benefit.findUnique.mockResolvedValue(null);
-      await expect(service.findOne('invalid-id')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('invalid-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -90,7 +95,7 @@ describe('BenefitsService', () => {
       prisma.benefit.findUnique.mockResolvedValue({ id: 'b1', title: 'Old' });
       prisma.benefit.update.mockResolvedValue({ id: 'b1', title: 'New' });
 
-      const result = await service.update('b1', { title: 'New' } as any);
+      const result = await service.update('b1', { title: 'New' });
       expect(result.title).toBe('New');
       expect(prisma.benefit.update).toHaveBeenCalledWith({
         where: { id: 'b1' },
@@ -106,7 +111,9 @@ describe('BenefitsService', () => {
 
       const result = await service.remove('b1');
       expect(result).toEqual({ id: 'b1' });
-      expect(prisma.benefit.delete).toHaveBeenCalledWith({ where: { id: 'b1' } });
+      expect(prisma.benefit.delete).toHaveBeenCalledWith({
+        where: { id: 'b1' },
+      });
     });
   });
 });

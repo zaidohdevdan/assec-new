@@ -19,10 +19,7 @@ describe('VideosService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        VideosService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [VideosService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<VideosService>(VideosService);
@@ -34,10 +31,17 @@ describe('VideosService', () => {
 
   describe('create', () => {
     it('should create video with default active=true', async () => {
-      const mockCreated = { id: 'v1', title: 'Assembleia Geral', youtubeUrl: 'https://youtu.be/xyz' };
+      const mockCreated = {
+        id: 'v1',
+        title: 'Assembleia Geral',
+        youtubeUrl: 'https://youtu.be/xyz',
+      };
       prisma.video.create.mockResolvedValue(mockCreated);
 
-      const dto = { title: 'Assembleia Geral', youtubeUrl: 'https://youtu.be/xyz' };
+      const dto = {
+        title: 'Assembleia Geral',
+        youtubeUrl: 'https://youtu.be/xyz',
+      };
       const result = await service.create(dto);
 
       expect(result).toEqual(mockCreated);
@@ -87,7 +91,9 @@ describe('VideosService', () => {
 
     it('should throw NotFoundException when video not found', async () => {
       prisma.video.findUnique.mockResolvedValue(null);
-      await expect(service.findOne('v-invalid')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('v-invalid')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

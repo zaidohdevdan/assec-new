@@ -36,10 +36,21 @@ describe('FinancialsService', () => {
 
   describe('create', () => {
     it('should create a financial record', async () => {
-      const mockCreated = { id: 'f1', description: 'Mensalidade', amount: 150.0, type: 'INCOME' };
+      const mockCreated = {
+        id: 'f1',
+        description: 'Mensalidade',
+        amount: 150.0,
+        type: 'INCOME',
+      };
       prisma.financialRecord.create.mockResolvedValue(mockCreated);
 
-      const dto = { description: 'Mensalidade', amount: 150.0, type: 'INCOME', category: 'Mensalidades', date: new Date() } as any;
+      const dto = {
+        description: 'Mensalidade',
+        amount: 150.0,
+        type: 'INCOME',
+        category: 'Mensalidades',
+        date: new Date(),
+      } as any;
       const result = await service.create(dto);
 
       expect(result).toEqual(mockCreated);
@@ -71,7 +82,9 @@ describe('FinancialsService', () => {
 
     it('should throw NotFoundException when record not found', async () => {
       prisma.financialRecord.findUnique.mockResolvedValue(null);
-      await expect(service.findOne('invalid')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('invalid')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -113,10 +126,16 @@ describe('FinancialsService', () => {
 
   describe('update and remove', () => {
     it('should update record when found', async () => {
-      prisma.financialRecord.findUnique.mockResolvedValue({ id: 'f1', description: 'Old' });
-      prisma.financialRecord.update.mockResolvedValue({ id: 'f1', description: 'New' });
+      prisma.financialRecord.findUnique.mockResolvedValue({
+        id: 'f1',
+        description: 'Old',
+      });
+      prisma.financialRecord.update.mockResolvedValue({
+        id: 'f1',
+        description: 'New',
+      });
 
-      const result = await service.update('f1', { description: 'New' } as any);
+      const result = await service.update('f1', { description: 'New' });
       expect(result.description).toBe('New');
     });
 

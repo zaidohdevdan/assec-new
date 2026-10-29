@@ -7,6 +7,7 @@ import { LayoutDashboard, Calendar, CreditCard, User, Users, LogOut, ArrowLeft, 
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { User as UserType, Notification } from "@/lib/types";
+import { PortalUserContext } from "./PortalUserContext";
 
 let lastAuthCheck = 0;
 const AUTH_CHECK_COOLDOWN = 15000; // 15 segundos de cooldown para chamadas de validação de rede
@@ -25,12 +26,36 @@ export default function PortalClientLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [authorized, setAuthorized] = React.useState(initialAuthorized);
-  const [userName, setUserName] = React.useState(initialUser?.name || "");
-  const [userPhoto, setUserPhoto] = React.useState<string | null>(initialUser?.avatarUrl || null);
-  const [userRole, setUserRole] = React.useState<string>(initialUser?.role || "USER");
-  const [userSpecialty, setUserSpecialty] = React.useState<string | null>(initialUser?.specialty || null);
+  const [currentUser, setCurrentUser] = React.useState<UserType | null>(
+    initialUser ?? null
+  );
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
+
+  const userName = currentUser?.displayName || currentUser?.name || "";
+  const userPhoto = currentUser?.avatarUrl || null;
+  const userRole = currentUser?.role || "USER";
+  const userSpecialty = currentUser?.specialty || null;
+
+  const refreshUser = React.useCallback(async (): Promise<UserType | null> => {
+    try {
+      const res = await apiFetch("/auth/me");
+      if (res.ok) {
+        lastAuthCheck = Date.now();
+        const user: UserType = await res.json();
+        setCurrentUser(user);
+        setAuthorized(true);
+        return user;
+      }
+      setCurrentUser(null);
+      router.push("/login");
+      return null;
+    } catch {
+      setCurrentUser(null);
+      router.push("/login");
+      return null;
+    }
+  }, [router]);
 
   // Notifications state
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
@@ -82,77 +107,50 @@ export default function PortalClientLayout({
     }
   };
 
-  // Seed the display cache from the server-validated user BEFORE children run
-  // their effects (layout effects run before passive effects), so pages that
-  // read `localStorage.user` always see the current, server-verified profile.
-  // Also removes the legacy `assec_user_profile` cookie (it carried PII and is
-  // no longer trusted or written).
+  // Sync server-validated user into React state and purge any legacy client-side
+  // storage (`localStorage.user`, `localStorage.token`, `assec_user_profile` cookie)
+  // so no PII is ever persisted in Web Storage or JS-readable cookies.
   React.useLayoutEffect(() => {
     if (initialUser) {
-      localStorage.setItem("user", JSON.stringify(initialUser));
+      setCurrentUser(initialUser);
+    }
+    try {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    } catch {
+      // ignore storage errors
     }
     document.cookie = "assec_user_profile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   }, [initialUser]);
 
+  // Enforce mandatory password change after an administrator reset
+  React.useEffect(() => {
+    if (
+      authorized &&
+      currentUser?.mustChangePassword &&
+      pathname !== "/portal/perfil"
+    ) {
+      router.replace("/portal/perfil");
+    }
+  }, [authorized, currentUser?.mustChangePassword, pathname, router]);
+
   React.useEffect(() => {
     // Check session via HttpOnly cookie — the browser sends it automatically
     const checkAuth = async () => {
-      // If we already have initialUser from the server cookie, skip localStorage
-      // override to prevent hydration mismatch (server HTML uses cookie data,
-      // localStorage may have stale/different role).
-      const userStr = localStorage.getItem("user");
-      if (!initialUser && userStr) {
-        try {
-          const user = JSON.parse(userStr);
-          setUserName(user.name ?? "");
-          setUserPhoto(user.avatarUrl ?? null);
-          setUserRole(user.role ?? "USER");
-          setUserSpecialty(user.specialty ?? null);
-          setAuthorized(true); // Autoriza imediatamente com base no cache para evitar tela de loading Piscando
-        } catch {
-          // ignore malformed cached data
-        }
-      }
-
       // Evita chamadas de rede redundantes caso tenha sido verificado muito recentemente (cooldown)
       const now = Date.now();
-      if ((userStr || initialUser) && (now - lastAuthCheck < AUTH_CHECK_COOLDOWN)) {
+      if (initialUser && now - lastAuthCheck < AUTH_CHECK_COOLDOWN) {
         return;
       }
 
-      // Then validate the session against the backend (uses cookie automatically)
-      try {
-        const res = await apiFetch("/auth/me");
-        if (res.ok) {
-          lastAuthCheck = Date.now(); // Atualiza o timestamp de sucesso
-          const user = await res.json();
-          setUserName(user.displayName ?? user.name ?? "");
-          setUserPhoto(user.avatarUrl ?? null);
-          setUserRole(user.role ?? "USER");
-          setUserSpecialty(user.specialty ?? null);
-          // Sync localStorage display cache with fresh data
-          localStorage.setItem("user", JSON.stringify(user));
-          setAuthorized(true);
-          window.dispatchEvent(new Event("user-profile-updated"));
-        } else {
-          // Session expired or account suspended — force re-login
-          localStorage.removeItem("user");
-          localStorage.removeItem("token");
-          router.push("/login");
-        }
-      } catch {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        router.push("/login");
-      }
+      await refreshUser();
     };
     void checkAuth();
-  }, [router, initialUser]);
+  }, [initialUser, refreshUser]);
 
-  // Sync profile photo if updated in profile page (we'll trigger a storage event)
   React.useEffect(() => {
     setMounted(true);
-    
+
     // Unregister any active service worker in development mode
     if (process.env.NODE_ENV === "development" && "serviceWorker" in navigator) {
       navigator.serviceWorker.getRegistrations().then((registrations) => {
@@ -162,38 +160,19 @@ export default function PortalClientLayout({
         }
       });
     }
-
-    const handleStorageChange = () => {
-      const userStr = localStorage.getItem("user");
-      if (userStr) {
-        try {
-          const user = JSON.parse(userStr);
-          setUserName(user.displayName || user.name || "");
-          setUserPhoto(user.avatarUrl || null);
-          setUserRole(user.role || "USER");
-          setUserSpecialty(user.specialty || null);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-    // Custom event for same-window updates
-    window.addEventListener("user-profile-updated", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("user-profile-updated", handleStorageChange);
-    };
   }, []);
 
   const handleLogout = async () => {
     // Reset auth check timestamp
     lastAuthCheck = 0;
-    // Call backend to clear the HttpOnly session cookie (browser cannot clear it via JS)
+    // Call backend to revoke the session server-side and clear the HttpOnly cookie
     await apiFetch("/auth/logout", { method: "POST" }).catch(() => null);
-    // Clear the non-sensitive display cache from localStorage
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    try {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    } catch {
+      // ignore
+    }
     // Full redirect to trigger clean browser state
     window.location.href = "/login";
   };
@@ -633,7 +612,15 @@ export default function PortalClientLayout({
 
         {/* Main Content Body */}
         <main className="flex-1 p-6 lg:p-8 overflow-y-auto bg-slate-50/50">
-          {children}
+          <PortalUserContext.Provider
+            value={{
+              user: currentUser,
+              setUser: setCurrentUser,
+              refreshUser,
+            }}
+          >
+            {children}
+          </PortalUserContext.Provider>
         </main>
       </div>
     </div>

@@ -34,7 +34,12 @@ describe('NotificationsService', () => {
 
   describe('create', () => {
     it('should create notification for given user', async () => {
-      const mockCreated = { id: 'notif-1', userId: 'user-1', title: 'Aviso', content: 'Msg' };
+      const mockCreated = {
+        id: 'notif-1',
+        userId: 'user-1',
+        title: 'Aviso',
+        content: 'Msg',
+      };
       prisma.notification.create.mockResolvedValue(mockCreated);
 
       const result = await service.create('user-1', 'Aviso', 'Msg');

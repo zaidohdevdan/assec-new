@@ -48,10 +48,36 @@ export class AuthService {
   }
 
   login(user: Omit<User, 'password'>) {
-    const payload = { email: user.email, sub: user.id, role: user.role };
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+      tokenVersion: (user as { tokenVersion?: number }).tokenVersion ?? 0,
+    };
     return {
       access_token: this.jwtService.sign(payload),
       user,
     };
+  }
+
+  /**
+   * Decodes a session token on logout and increments the user's tokenVersion
+   * in the database so that the JWT is immediately revoked server-side even
+   * before its 1-hour expiry.
+   */
+  async revokeTokenIfPresent(token?: string): Promise<string | null> {
+    if (!token) return null;
+    try {
+      const payload = this.jwtService.verify<{ sub?: string }>(token, {
+        algorithms: ['HS256'],
+      });
+      if (payload?.sub) {
+        await this.usersService.incrementTokenVersion(payload.sub);
+        return payload.sub;
+      }
+    } catch {
+      // Token already expired or invalid — nothing to revoke
+    }
+    return null;
   }
 }

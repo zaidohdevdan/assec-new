@@ -31,12 +31,31 @@ model User {
   schedules  Schedule[]
   photoUrl   String?
   avatarUrl  String?
+  tokenVersion       Int         @default(0)
+  mustChangePassword Boolean     @default(false)
 
   // Professional fields
   specialty  String?
   slots      ScheduleSlot[] @relation("ProfessionalSlots")
   notifications Notification[]
   pageVisits PageVisit[]
+  authEvents AuthEvent[]
+}
+
+model AuthEvent {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  email     String?
+  ipAddress String?
+  userAgent String?
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
 }
 
 model ContactMessage {

@@ -18,11 +18,16 @@ describe('AuthController', () => {
   const authServiceMock = {
     validateUser: jest.fn(),
     login: jest.fn(),
+    revokeTokenIfPresent: jest.fn(),
   };
 
   const usersServiceMock = {
     create: jest.fn(),
     findById: jest.fn(),
+    changeOwnPassword: jest.fn(),
+    updatePassword: jest.fn(),
+    recordAuthEvent: jest.fn(),
+    findRecentAuthEvents: jest.fn(),
   };
 
   const mockUser = {
@@ -253,6 +258,46 @@ describe('AuthController', () => {
 
       expect(usersServiceMock.findById).toHaveBeenCalledWith('user-uuid-1');
       expect(result).toEqual(mockProfile);
+    });
+  });
+
+  describe('changePassword', () => {
+    it('changes the authenticated user password and rotates the session cookie', async () => {
+      const req = {
+        user: { sub: 'user-uuid-1', email: 'dan@gmail.com', role: 'USER' },
+        ip: '127.0.0.1',
+      } as any;
+      const res = { cookie: jest.fn() } as any;
+      usersServiceMock.changeOwnPassword.mockResolvedValue({
+        ...mockUserWithoutPassword,
+        tokenVersion: 1,
+        mustChangePassword: false,
+      });
+      authServiceMock.login.mockReturnValue({
+        access_token: 'rotated-jwt',
+        user: mockUserWithoutPassword,
+      });
+
+      const result = await controller.changePassword(
+        req,
+        {
+          currentPassword: 'oldPassword10',
+          newPassword: 'newStrongPassword12',
+        },
+        res,
+      );
+
+      expect(usersServiceMock.changeOwnPassword).toHaveBeenCalledWith(
+        'user-uuid-1',
+        'oldPassword10',
+        'newStrongPassword12',
+      );
+      expect(res.cookie).toHaveBeenCalled();
+      expect(result).toEqual({
+        success: true,
+        message: 'Senha alterada com sucesso.',
+        mustChangePassword: false,
+      });
     });
   });
 });

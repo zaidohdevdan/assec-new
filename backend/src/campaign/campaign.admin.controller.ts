@@ -29,7 +29,9 @@ const createCampaignSchema = z.object({
       message: 'Slug deve conter apenas letras minúsculas, números e hífens',
     }),
   description: z.string().optional(),
-  expiresAt: z.string().datetime({ message: 'Data de expiração inválida (ISO 8601)' }),
+  expiresAt: z
+    .string()
+    .datetime({ message: 'Data de expiração inválida (ISO 8601)' }),
   maxSubmissions: z.number().int().positive().optional(),
 });
 
@@ -44,7 +46,9 @@ export class CampaignAdminController {
   /** POST /campaign/admin — cria nova campanha */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body(new ZodValidationPipe(createCampaignSchema)) body: CreateCampaignDto) {
+  async create(
+    @Body(new ZodValidationPipe(createCampaignSchema)) body: CreateCampaignDto,
+  ) {
     return this.campaignService.createCampaign({
       ...body,
       expiresAt: new Date(body.expiresAt),

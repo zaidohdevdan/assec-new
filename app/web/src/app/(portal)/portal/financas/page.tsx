@@ -4,7 +4,8 @@ import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
-import { User as UserType, FinancialStats, MonthlyStats, FinancialRecord } from "@/lib/types";
+import { FinancialStats, MonthlyStats, FinancialRecord } from "@/lib/types";
+import { usePortalUser } from "../../PortalUserContext";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -20,7 +21,7 @@ import {
 } from "lucide-react";
 
 export default function FinancasPage() {
-  const [user, setUser] = React.useState<UserType | null>(null);
+  const { user } = usePortalUser();
   const [records, setRecords] = React.useState<FinancialRecord[]>([]);
   const [stats, setStats] = React.useState<FinancialStats | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -43,28 +44,10 @@ export default function FinancasPage() {
 
   React.useEffect(() => {
     setMounted(true);
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      const parsedUser = JSON.parse(userStr);
-      setUser(parsedUser);
-      loadData();
+    if (user) {
+      void loadData();
     }
-
-    const handleProfileUpdate = () => {
-      const updatedUserStr = localStorage.getItem("user");
-      if (updatedUserStr) {
-        try {
-          setUser(JSON.parse(updatedUserStr));
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    };
-    window.addEventListener("user-profile-updated", handleProfileUpdate);
-    return () => {
-      window.removeEventListener("user-profile-updated", handleProfileUpdate);
-    };
-  }, []);
+  }, [user]);
 
   const loadData = async () => {
     try {

@@ -30,6 +30,8 @@ describe('AuthService', () => {
     photoUrl: null,
     avatarUrl: null,
     specialty: null,
+    tokenVersion: 0,
+    mustChangePassword: false,
   };
 
   beforeEach(async () => {
@@ -40,6 +42,7 @@ describe('AuthService', () => {
           provide: UsersService,
           useValue: {
             findByEmail: jest.fn(),
+            incrementTokenVersion: jest.fn(),
           },
         },
         {
@@ -47,6 +50,7 @@ describe('AuthService', () => {
           useValue: {
             sign: jest.fn(),
             signAsync: jest.fn(),
+            verify: jest.fn(),
           },
         },
       ],
@@ -90,6 +94,8 @@ describe('AuthService', () => {
         photoUrl: null,
         avatarUrl: null,
         specialty: null,
+        tokenVersion: 0,
+        mustChangePassword: false,
       });
       expect(result).not.toHaveProperty('password');
     });
@@ -138,7 +144,7 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    it('should return access_token and user', () => {
+    it('should return access_token and user with tokenVersion in payload', () => {
       const { password: _password, ...userWithoutPassword } = mockUser;
       void _password;
 
@@ -150,11 +156,27 @@ describe('AuthService', () => {
         email: 'dan@gmail.com',
         sub: 'user-uuid-1',
         role: 'USER',
+        tokenVersion: 0,
       });
       expect(result).toEqual({
         access_token: 'jwt-token-123',
         user: userWithoutPassword,
       });
+    });
+  });
+
+  describe('revokeTokenIfPresent', () => {
+    it('increments tokenVersion when a valid token is passed', async () => {
+      (jwtService as unknown as { verify: jest.Mock }).verify.mockReturnValue({
+        sub: 'user-uuid-1',
+      });
+
+      const userId = await service.revokeTokenIfPresent('valid-jwt');
+
+      expect(userId).toBe('user-uuid-1');
+      expect(usersService.incrementTokenVersion).toHaveBeenCalledWith(
+        'user-uuid-1',
+      );
     });
   });
 });

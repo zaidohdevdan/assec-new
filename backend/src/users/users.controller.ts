@@ -32,9 +32,13 @@ export class UsersController {
     }>,
   ) {
     const userId = req.user.sub;
-    const updatePayload: Partial<{ displayName: string | null; avatarUrl: string | null }> = {};
+    const updatePayload: Partial<{
+      displayName: string | null;
+      avatarUrl: string | null;
+    }> = {};
     if (data.displayName !== undefined) {
-      updatePayload.displayName = data.displayName.trim() === '' ? null : data.displayName.trim();
+      updatePayload.displayName =
+        data.displayName.trim() === '' ? null : data.displayName.trim();
     }
     if (data.avatarUrl !== undefined) updatePayload.avatarUrl = data.avatarUrl;
 

@@ -124,7 +124,9 @@ export class AnalyticsService implements OnModuleInit, OnModuleDestroy {
       path,
       userId: params.userId || null,
       isLogged,
-      sessionId: params.sessionId ? String(params.sessionId).slice(0, 64) : null,
+      sessionId: params.sessionId
+        ? String(params.sessionId).slice(0, 64)
+        : null,
       ipHash,
       userAgent: ua ? ua.slice(0, 500) : null,
       createdAt: new Date(),
@@ -132,7 +134,10 @@ export class AnalyticsService implements OnModuleInit, OnModuleDestroy {
 
     if (this.visitBuffer.length >= this.BATCH_SIZE) {
       this.flushBuffer().catch((err) => {
-        this.logger.error('Failed to flush analytics buffer on batch threshold', err);
+        this.logger.error(
+          'Failed to flush analytics buffer on batch threshold',
+          err,
+        );
       });
     }
 

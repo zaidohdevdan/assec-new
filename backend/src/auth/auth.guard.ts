@@ -15,15 +15,33 @@ interface CachedAccount {
   status: string;
   role: string;
   email: string;
+  tokenVersion?: number;
   expiresAt: number;
 }
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+  private static accountCache = new Map<string, CachedAccount>();
+  private readonly CACHE_TTL_MS = 30_000; // 30 seconds
+
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
-  ) {}
+  ) {
+    AuthGuard.accountCache.clear();
+  }
+
+  /**
+   * Immediately evicts a user's cached account entry (or the entire cache)
+   * when their session, password, role, or status changes.
+   */
+  static evictAccountCache(userId?: string): void {
+    if (userId) {
+      AuthGuard.accountCache.delete(userId);
+    } else {
+      AuthGuard.accountCache.clear();
+    }
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context
@@ -44,14 +62,19 @@ export class AuthGuard implements CanActivate {
     }
 
     // 2. Verify JWT signature and expiry (algorithm pinned, never derived from the token)
-    let payload: { sub: string; email: string; role: string };
+    let payload: {
+      sub: string;
+      email: string;
+      role: string;
+      tokenVersion?: number;
+    };
     try {
       payload = this.jwtService.verify(token, { algorithms: ['HS256'] });
     } catch {
       throw new UnauthorizedException('Token de sessão inválido ou expirado.');
     }
 
-    // 3. Load the CURRENT account state (status + role) from the database.
+    // 3. Load the CURRENT account state (status + role + tokenVersion) from the database.
     //    Uses a 30s in-memory cache to avoid a query on every HTTP request.
     //    The role is NEVER trusted from the JWT: a demoted or suspended user
     //    loses access within the cache TTL instead of keeping it until the
@@ -66,7 +89,18 @@ export class AuthGuard implements CanActivate {
       );
     }
 
-    // 4. Attach the verified identity (role from the database) to the request
+    // 4. Verify server-side session version (revoked on logout or password change)
+    if (
+      payload.tokenVersion !== undefined &&
+      account.tokenVersion !== undefined &&
+      payload.tokenVersion !== account.tokenVersion
+    ) {
+      throw new UnauthorizedException(
+        'Sessão encerrada ou revogada. Faça login novamente.',
+      );
+    }
+
+    // 5. Attach the verified identity (role from the database) to the request
     request.user = {
       sub: payload.sub,
       email: account.email,
@@ -75,14 +109,11 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 
-  private accountCache = new Map<string, CachedAccount>();
-  private readonly CACHE_TTL_MS = 30_000; // 30 seconds
-
   private async getAccountCached(
     userId: string,
   ): Promise<CachedAccount | null> {
     const now = Date.now();
-    const cached = this.accountCache.get(userId);
+    const cached = AuthGuard.accountCache.get(userId);
 
     if (cached && cached.expiresAt > now) {
       return cached;
@@ -90,7 +121,7 @@ export class AuthGuard implements CanActivate {
 
     const dbUser = await this.usersService.findById(userId);
     if (!dbUser) {
-      this.accountCache.delete(userId);
+      AuthGuard.accountCache.delete(userId);
       return null;
     }
 
@@ -98,9 +129,10 @@ export class AuthGuard implements CanActivate {
       status: dbUser.status,
       role: dbUser.role,
       email: dbUser.email,
+      tokenVersion: (dbUser as { tokenVersion?: number }).tokenVersion,
       expiresAt: now + this.CACHE_TTL_MS,
     };
-    this.accountCache.set(userId, entry);
+    AuthGuard.accountCache.set(userId, entry);
 
     return entry;
   }

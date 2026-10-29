@@ -152,9 +152,8 @@ export class CampaignService {
 
   /** Gera CSV para download */
   async exportCsv(campaignId: string): Promise<string> {
-    const { registrations } = await this.getCampaignWithRegistrations(
-      campaignId,
-    );
+    const { registrations } =
+      await this.getCampaignWithRegistrations(campaignId);
 
     const header =
       'ID,Nome,CPF,Email,Telefone,Orgao,Matricula,Status,Cadastrado em\n';

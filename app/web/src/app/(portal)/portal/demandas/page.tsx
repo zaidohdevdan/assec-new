@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { apiFetch } from "@/lib/api";
-import { User as UserType } from "@/lib/types";
+import { usePortalUser } from "../../PortalUserContext";
 import { 
   Calendar, 
   Search, 
@@ -37,7 +37,7 @@ interface ScheduleItem {
 }
 
 export default function DemandasPage() {
-  const [user, setUser] = React.useState<UserType | null>(null);
+  const { user } = usePortalUser();
   const [schedules, setSchedules] = React.useState<ScheduleItem[]>([]);
   const [loading, setLoading] = React.useState(true);
 
@@ -47,13 +47,10 @@ export default function DemandasPage() {
   const [statusFilter, setStatusFilter] = React.useState("Todos");
 
   React.useEffect(() => {
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      const parsedUser = JSON.parse(userStr);
-      setUser(parsedUser);
-      loadSchedules();
+    if (user) {
+      void loadSchedules();
     }
-  }, []);
+  }, [user]);
 
   const loadSchedules = async () => {
     try {

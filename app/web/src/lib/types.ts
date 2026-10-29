@@ -15,6 +15,8 @@ export interface User {
   photoUrl: string | null;
   avatarUrl: string | null;
   specialty: string | null;
+  tokenVersion?: number;
+  mustChangePassword?: boolean;
 }
 
 export interface Notification {

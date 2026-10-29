@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchedulesService } from './schedules.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import { ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 
 describe('SchedulesService', () => {
   let service: SchedulesService;
@@ -135,9 +139,14 @@ describe('SchedulesService', () => {
       };
 
       prisma.schedule.findUnique.mockResolvedValue(mockSchedule);
-      prisma.schedule.update.mockResolvedValue({ ...mockSchedule, status: 'Cancelado' });
+      prisma.schedule.update.mockResolvedValue({
+        ...mockSchedule,
+        status: 'Cancelado',
+      });
 
-      const result = await service.update('sched-1', 'user-1', { status: 'Cancelado' });
+      const result = await service.update('sched-1', 'user-1', {
+        status: 'Cancelado',
+      });
 
       expect(result.status).toBe('Cancelado');
       expect(prisma.scheduleSlot.update).toHaveBeenCalledWith({

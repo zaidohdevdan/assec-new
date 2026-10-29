@@ -19,10 +19,7 @@ describe('NoticesService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        NoticesService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [NoticesService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<NoticesService>(NoticesService);
@@ -34,7 +31,11 @@ describe('NoticesService', () => {
 
   describe('create', () => {
     it('should create notice with default values', async () => {
-      const mockCreated = { id: 'notice-1', title: 'Aviso Importante', type: 'Institucional' };
+      const mockCreated = {
+        id: 'notice-1',
+        title: 'Aviso Importante',
+        type: 'Institucional',
+      };
       prisma.notice.create.mockResolvedValue(mockCreated);
 
       const dto = {
@@ -111,7 +112,9 @@ describe('NoticesService', () => {
 
     it('should throw NotFoundException when notice is not found', async () => {
       prisma.notice.findUnique.mockResolvedValue(null);
-      await expect(service.findOne('n-invalid')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('n-invalid')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -136,7 +139,9 @@ describe('NoticesService', () => {
 
       const result = await service.remove('n1');
       expect(result).toEqual({ id: 'n1' });
-      expect(prisma.notice.delete).toHaveBeenCalledWith({ where: { id: 'n1' } });
+      expect(prisma.notice.delete).toHaveBeenCalledWith({
+        where: { id: 'n1' },
+      });
     });
   });
 });

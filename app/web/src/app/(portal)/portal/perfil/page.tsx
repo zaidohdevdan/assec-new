@@ -7,10 +7,11 @@ import * as z from "zod";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User, Camera, ShieldCheck, AlertCircle, Save, Loader2 } from "lucide-react";
+import { User, Camera, ShieldCheck, AlertCircle, Save, Loader2, Lock } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { User as UserType } from "@/lib/types";
 import { compressImage } from "@/lib/image";
+import { usePortalUser } from "../../PortalUserContext";
 
 const profileSchema = z.object({
   name: z.string().optional(),
@@ -24,13 +25,22 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function PerfilPage() {
-  const [user, setUser] = React.useState<UserType | null>(null);
-  const [photoBase64, setPhotoBase64] = React.useState<string | null>(null);
+  const { user: contextUser, setUser: setContextUser } = usePortalUser();
+  const [user, setUser] = React.useState<UserType | null>(contextUser);
+  const [photoBase64, setPhotoBase64] = React.useState<string | null>(contextUser?.avatarUrl ?? null);
   const [photoError, setPhotoError] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(!contextUser);
   const [submitting, setSubmitting] = React.useState(false);
   const [successMsg, setSuccessMsg] = React.useState<string | null>(null);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
+
+  // Password Change State
+  const [currentPassword, setCurrentPassword] = React.useState("");
+  const [newPassword, setNewPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [pwdSubmitting, setPwdSubmitting] = React.useState(false);
+  const [pwdSuccessMsg, setPwdSuccessMsg] = React.useState<string | null>(null);
+  const [pwdErrorMsg, setPwdErrorMsg] = React.useState<string | null>(null);
   
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -57,6 +67,7 @@ export default function PerfilPage() {
       if (res.ok) {
         const userData = await res.json();
         setUser(userData);
+        setContextUser(userData);
         setPhotoBase64(userData.avatarUrl ?? null);
         reset({
           name: userData.name || "",
@@ -72,7 +83,7 @@ export default function PerfilPage() {
     } finally {
       setLoading(false);
     }
-  }, [reset]);
+  }, [reset, setContextUser]);
 
   React.useEffect(() => {
     fetchUserData();
@@ -120,12 +131,9 @@ export default function PerfilPage() {
       if (res.ok) {
         const updatedUser = await res.json();
         
-        // Update user state and local storage display cache
+        // Update user state and shared PortalUserContext (no localStorage PII)
         setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-        
-        // Dispatch custom event to notify PortalClientLayout
-        window.dispatchEvent(new Event("user-profile-updated"));
+        setContextUser(updatedUser);
         
         setSuccessMsg("Perfil atualizado com sucesso!");
         setTimeout(() => setSuccessMsg(null), 3000);
@@ -138,6 +146,57 @@ export default function PerfilPage() {
       setSubmitError("Erro ao conectar ao servidor.");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwdSuccessMsg(null);
+    setPwdErrorMsg(null);
+
+    if (!currentPassword) {
+      setPwdErrorMsg("Informe sua senha atual.");
+      return;
+    }
+    if (newPassword.length < 10 || newPassword.length > 128) {
+      setPwdErrorMsg("A nova senha deve ter entre 10 e 128 caracteres.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPwdErrorMsg("A confirmação da nova senha não confere.");
+      return;
+    }
+
+    setPwdSubmitting(true);
+    try {
+      const res = await apiFetch("/auth/change-password", {
+        method: "POST",
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      if (res.ok) {
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setUser((prev) => (prev ? { ...prev, mustChangePassword: false } : prev));
+        setContextUser((prev) =>
+          prev ? { ...prev, mustChangePassword: false } : prev
+        );
+        setPwdSuccessMsg("Senha alterada com sucesso!");
+        setTimeout(() => setPwdSuccessMsg(null), 4000);
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        setPwdErrorMsg(
+          errData?.message ?? "Não foi possível alterar a senha."
+        );
+      }
+    } catch {
+      setPwdErrorMsg("Erro de conexão ao tentar alterar a senha.");
+    } finally {
+      setPwdSubmitting(false);
     }
   };
 
@@ -161,6 +220,21 @@ export default function PerfilPage() {
           Gerencie seus dados pessoais, informações de afiliação e altere sua foto de perfil.
         </p>
       </div>
+
+      {user?.mustChangePassword && (
+        <div
+          className="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r text-sm text-amber-900 flex items-start gap-3 shadow-sm"
+          role="alert"
+        >
+          <AlertCircle className="h-5 w-5 shrink-0 text-amber-600 mt-0.5" />
+          <div>
+            <p className="font-bold">Troca de senha obrigatória</p>
+            <p className="text-xs mt-0.5">
+              Sua senha foi redefinida pela administração da ASSEC. Por segurança, defina uma nova senha pessoal na seção <strong>Segurança e Senha</strong> abaixo para continuar navegando no portal.
+            </p>
+          </div>
+        </div>
+      )}
 
       <Card className="p-6 sm:p-8">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -304,6 +378,73 @@ export default function PerfilPage() {
             >
               <Save className="h-4 w-4 mr-2" />
               Salvar Alterações
+            </Button>
+          </div>
+        </form>
+      </Card>
+
+      {/* Password Change Section */}
+      <Card className="p-6 sm:p-8">
+        <div className="border-b border-gray-100 pb-4 mb-6">
+          <h2 className="font-serif font-bold text-lg text-primary flex items-center gap-2">
+            <Lock className="h-5 w-5 text-accent-dark" />
+            <span>Segurança e Senha</span>
+          </h2>
+          <p className="text-xs text-text-secondary mt-1">
+            Altere sua senha de acesso ao portal. A nova senha deve possuir no mínimo 10 caracteres.
+          </p>
+        </div>
+
+        <form onSubmit={handlePasswordChange} className="space-y-4">
+          {pwdSuccessMsg && (
+            <div className="p-4 bg-emerald-50 border border-emerald-200 rounded text-sm text-emerald-700 flex items-center gap-2" role="alert">
+              <ShieldCheck className="h-5 w-5 shrink-0 text-emerald-600" />
+              <span>{pwdSuccessMsg}</span>
+            </div>
+          )}
+
+          {pwdErrorMsg && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded text-sm text-red-700 flex items-center gap-2" role="alert">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <span>{pwdErrorMsg}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 gap-4">
+            <Input
+              label="Senha Atual"
+              type="password"
+              placeholder="Informe sua senha atual"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              label="Nova Senha (mín. 10 caracteres)"
+              type="password"
+              placeholder="Nova senha forte"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <Input
+              label="Confirmar Nova Senha"
+              type="password"
+              placeholder="Repita a nova senha"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="border-t border-gray-100 pt-6 flex justify-end">
+            <Button
+              type="submit"
+              loading={pwdSubmitting}
+              className="bg-primary text-white hover:bg-primary-light font-bold text-xs uppercase tracking-widest px-6 py-3 shadow border-none"
+            >
+              <Lock className="h-4 w-4 mr-2" />
+              Alterar Minha Senha
             </Button>
           </div>
         </form>

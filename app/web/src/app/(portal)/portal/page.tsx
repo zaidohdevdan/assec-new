@@ -8,6 +8,7 @@ import { Calendar, CreditCard, User, ShieldCheck, Clock, PlusCircle, Plus, Newsp
 import { apiFetch } from "@/lib/api";
 import { User as UserType, ScheduleSlot, FinancialStats } from "@/lib/types";
 import { AdminAnalyticsSection } from "@/components/analytics/AdminAnalyticsSection";
+import { usePortalUser } from "../PortalUserContext";
 
 interface ScheduleItem {
   id: string;
@@ -21,7 +22,7 @@ interface ScheduleItem {
 }
 
 export default function PortalPage() {
-  const [user, setUser] = React.useState<UserType | null>(null);
+  const { user } = usePortalUser();
   const [schedules, setSchedules] = React.useState<ScheduleItem[]>([]);
   const [slots, setSlots] = React.useState<ScheduleSlot[]>([]);
   const [users, setUsers] = React.useState<UserType[]>([]);
@@ -36,90 +37,68 @@ export default function PortalPage() {
   }, []);
 
   React.useEffect(() => {
-    const userStr = localStorage.getItem("user");
-
-    if (userStr) {
-      const parsedUser = JSON.parse(userStr);
-      setUser(parsedUser);
-
-      const fetchData = async () => {
-        try {
-          if (parsedUser.role === "ADMIN") {
-            const res = await apiFetch("/users");
-            if (res.ok) {
-              const data = await res.json();
-              setUsers(data);
-            }
-          } else if (parsedUser.role === "PRESIDENT" || parsedUser.role === "CONTABILIDADE") {
-            const resUsers = await apiFetch("/users");
-            if (resUsers.ok) {
-              const uData = await resUsers.json();
-              setUsers(uData);
-            }
-            const resScheds = await apiFetch("/schedules/admin/list");
-            if (resScheds.ok) {
-              const sData = await resScheds.json();
-              setSchedules(sData);
-            }
-            const resFin = await apiFetch("/financials/stats");
-            if (resFin.ok) {
-              const fData = await resFin.json();
-              setFinStats(fData);
-            }
-          } else if (parsedUser.role === "EDITOR") {
-            const resNotices = await apiFetch("/notices");
-            if (resNotices.ok) {
-              const nData = await resNotices.json();
-              setNoticesCount(nData.length);
-            }
-            const resBenefits = await apiFetch("/benefits");
-            if (resBenefits.ok) {
-              const bData = await resBenefits.json();
-              setBenefitsCount(bData.length);
-            }
-          } else if (parsedUser.role === "PROFESSIONAL") {
-            const res = await apiFetch("/slots");
-            if (res.ok) {
-              const data = await res.json();
-              setSlots(data);
-            }
-          } else {
-            const res = await apiFetch("/schedules");
-            if (res.ok) {
-              const data = await res.json();
-              setSchedules(data);
-            }
-          }
-        } catch (err) {
-          console.error("Error fetching portal data:", err);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
-    } else {
+    if (!user) {
       setLoading(false);
+      return;
     }
-  }, []);
 
-  React.useEffect(() => {
-    const handleProfileUpdate = () => {
-      const userStr = localStorage.getItem("user");
-      if (userStr) {
-        try {
-          setUser(JSON.parse(userStr));
-        } catch (e) {
-          console.error("Failed to parse user profile update:", e);
+    const fetchData = async () => {
+      try {
+        if (user.role === "ADMIN") {
+          const res = await apiFetch("/users");
+          if (res.ok) {
+            const data = await res.json();
+            setUsers(data);
+          }
+        } else if (user.role === "PRESIDENT" || user.role === "CONTABILIDADE") {
+          const resUsers = await apiFetch("/users");
+          if (resUsers.ok) {
+            const uData = await resUsers.json();
+            setUsers(uData);
+          }
+          const resScheds = await apiFetch("/schedules/admin/list");
+          if (resScheds.ok) {
+            const sData = await resScheds.json();
+            setSchedules(sData);
+          }
+          const resFin = await apiFetch("/financials/stats");
+          if (resFin.ok) {
+            const fData = await resFin.json();
+            setFinStats(fData);
+          }
+        } else if (user.role === "EDITOR") {
+          const resNotices = await apiFetch("/notices");
+          if (resNotices.ok) {
+            const nData = await resNotices.json();
+            setNoticesCount(nData.length);
+          }
+          const resBenefits = await apiFetch("/benefits");
+          if (resBenefits.ok) {
+            const bData = await resBenefits.json();
+            setBenefitsCount(bData.length);
+          }
+        } else if (user.role === "PROFESSIONAL") {
+          const res = await apiFetch("/slots");
+          if (res.ok) {
+            const data = await res.json();
+            setSlots(data);
+          }
+        } else {
+          const res = await apiFetch("/schedules");
+          if (res.ok) {
+            const data = await res.json();
+            setSchedules(data);
+          }
         }
+      } catch (err) {
+        console.error("Error fetching portal data:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    window.addEventListener("user-profile-updated", handleProfileUpdate);
-    return () => {
-      window.removeEventListener("user-profile-updated", handleProfileUpdate);
-    };
-  }, []);
+    void fetchData();
+  }, [user]);
 
   if (!mounted || !user) {
     return (

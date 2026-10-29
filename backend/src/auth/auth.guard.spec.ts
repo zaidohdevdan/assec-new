@@ -129,4 +129,24 @@ describe('AuthGuard', () => {
       UnauthorizedException,
     );
   });
+
+  it('rejects a token whose tokenVersion no longer matches the database (session revoked)', async () => {
+    jwtService.verify.mockReturnValue({
+      sub: 'u1',
+      email: 'a@a.com',
+      role: 'USER',
+      tokenVersion: 1,
+    });
+    usersService.findById.mockResolvedValue({
+      status: 'Ativo',
+      role: 'USER',
+      email: 'a@a.com',
+      tokenVersion: 2,
+    });
+    const req = { cookies: { [COOKIE]: 'tok' }, headers: {} };
+
+    await expect(guard.canActivate(buildContext(req))).rejects.toThrow(
+      UnauthorizedException,
+    );
+  });
 });

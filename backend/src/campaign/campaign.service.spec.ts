@@ -222,7 +222,9 @@ describe('CampaignService', () => {
       ]);
 
       const csv = await service.exportCsv('camp-1');
-      expect(csv).toContain('ID,Nome,CPF,Email,Telefone,Orgao,Matricula,Status,Cadastrado em');
+      expect(csv).toContain(
+        'ID,Nome,CPF,Email,Telefone,Orgao,Matricula,Status,Cadastrado em',
+      );
       expect(csv).toContain('"João"');
       expect(csv).toContain('12345678900');
     });

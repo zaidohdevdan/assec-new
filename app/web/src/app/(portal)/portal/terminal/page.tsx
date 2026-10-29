@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { apiFetch } from "@/lib/api";
 import { Terminal as TerminalIcon, AlertCircle } from "lucide-react";
 import { User as UserType, Schedule } from "@/lib/types";
+import { usePortalUser } from "../../PortalUserContext";
 
 interface TerminalLine {
   text: string;
@@ -45,17 +46,15 @@ export default function TerminalPage() {
   const [commandHistory, setCommandHistory] = React.useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = React.useState(-1);
 
+  const { user: currentUser } = usePortalUser();
   const [users, setUsers] = React.useState<UserType[]>([]);
   const [schedules, setSchedules] = React.useState<Schedule[]>([]);
-  const [currentUser, setCurrentUser] = React.useState<UserType | null>(null);
 
   const terminalEndRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Fetch all necessary data for the terminal commands
   const fetchAllData = React.useCallback(async () => {
-    // Token is no longer stored in localStorage; auth uses HttpOnly cookies.
-
     try {
       // Fetch users via apiFetch (credentials include cookie auth)
       const usersRes = await apiFetch(`/users`);
@@ -76,10 +75,6 @@ export default function TerminalPage() {
   }, []);
 
   React.useEffect(() => {
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      setCurrentUser(JSON.parse(userStr));
-    }
     fetchAllData();
   }, [fetchAllData]);
 
@@ -213,6 +208,30 @@ export default function TerminalPage() {
           }
         } else if (subCommand === "logs" || subCommand === "audit") {
           const events: { date: Date; text: string }[] = [];
+          try {
+            const auditRes = await apiFetch("/auth/audit-logs");
+            if (auditRes.ok) {
+              const authEvents = (await auditRes.json()) as {
+                createdAt: string;
+                action: string;
+                email?: string | null;
+                ipAddress?: string | null;
+                metadata?: string | null;
+              }[];
+              authEvents.forEach((ev) => {
+                const ts = new Date(ev.createdAt);
+                const who = ev.email ? ` (${ev.email})` : "";
+                const ip = ev.ipAddress ? ` [IP: ${ev.ipAddress}]` : "";
+                const meta = ev.metadata ? ` - ${ev.metadata}` : "";
+                events.push({
+                  date: ts,
+                  text: `[${ts.toLocaleString("pt-BR")}] AUTH_${ev.action}${who}${ip}${meta}`,
+                });
+              });
+            }
+          } catch {
+            // fallback to local entities if audit endpoint fails
+          }
           users.forEach((u) => {
             events.push({
               date: new Date(u.createdAt || u.since),

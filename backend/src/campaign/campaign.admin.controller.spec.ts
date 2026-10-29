@@ -67,7 +67,10 @@ describe('CampaignAdminController', () => {
     const mockData = { campaign: { id: 'camp-1' }, registrations: [] };
     service.getCampaignWithRegistrations.mockResolvedValue(mockData);
 
-    const result = await controller.getRegistrations('camp-1', PreRegistrationStatus.PENDENTE);
+    const result = await controller.getRegistrations(
+      'camp-1',
+      PreRegistrationStatus.PENDENTE,
+    );
     expect(result).toEqual(mockData);
     expect(service.getCampaignWithRegistrations).toHaveBeenCalledWith(
       'camp-1',
@@ -89,7 +92,10 @@ describe('CampaignAdminController', () => {
       status: PreRegistrationStatus.CONTATADO,
     });
 
-    const result = await controller.updateStatus('reg-1', PreRegistrationStatus.CONTATADO);
+    const result = await controller.updateStatus(
+      'reg-1',
+      PreRegistrationStatus.CONTATADO,
+    );
     expect(result.status).toBe(PreRegistrationStatus.CONTATADO);
     expect(service.updateRegistrationStatus).toHaveBeenCalledWith(
       'reg-1',
@@ -107,7 +113,10 @@ describe('CampaignAdminController', () => {
 
     await controller.exportCsv('camp-1', res);
 
-    expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/csv; charset=utf-8');
+    expect(res.setHeader).toHaveBeenCalledWith(
+      'Content-Type',
+      'text/csv; charset=utf-8',
+    );
     expect(res.setHeader).toHaveBeenCalledWith(
       'Content-Disposition',
       expect.stringContaining('attachment; filename='),

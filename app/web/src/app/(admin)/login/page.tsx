@@ -67,21 +67,19 @@ export default function LoginPage() {
 
       if (res.ok) {
         const body = await res.json();
-        // Only a non-sensitive display cache is kept client-side. The session
-        // itself lives in the HttpOnly cookie; the server never trusts this cache.
-        const userDisplay = {
-          id: body.user?.id,
-          name: body.user?.name,
-          email: body.user?.email ?? data.email,
-          role: body.user?.role ?? "USER",
-          status: body.user?.status,
-          photoUrl: body.user?.photoUrl ?? null,
-          avatarUrl: body.user?.avatarUrl ?? null,
-          specialty: body.user?.specialty ?? null,
-          org: body.user?.org ?? null,
-          matricula: body.user?.matricula ?? null,
-        };
-        localStorage.setItem("user", JSON.stringify(userDisplay));
+        // Clean up any legacy client-side storage; the session lives in the
+        // HttpOnly cookie and user state is loaded server-side via /auth/me.
+        try {
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+        } catch {
+          // ignore storage errors
+        }
+
+        if (body.user?.mustChangePassword) {
+          router.push("/portal/perfil");
+          return;
+        }
 
         const userRole = body.user?.role ?? "USER";
         if (userRole === "ADMIN") {

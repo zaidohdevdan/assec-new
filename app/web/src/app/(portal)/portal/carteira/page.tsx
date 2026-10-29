@@ -6,35 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Printer, CreditCard, ShieldCheck, HelpCircle } from "lucide-react";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
-import { User } from "@/lib/types";
+import { usePortalUser } from "../../PortalUserContext";
 
 export default function CarteiraPage() {
-  const [user, setUser] = React.useState<User | null>(null);
+  const { user } = usePortalUser();
   const [validationUrl, setValidationUrl] = React.useState("");
 
   React.useEffect(() => {
-    const loadUser = () => {
-      const userStr = localStorage.getItem("user");
-      if (userStr) {
-        try {
-          const parsedUser = JSON.parse(userStr);
-          setUser(parsedUser);
-          if (typeof window !== "undefined" && parsedUser?.id) {
-            setValidationUrl(`${window.location.origin}/validar-carteira?id=${parsedUser.id}`);
-          }
-        } catch (e) {
-          console.error("Failed to parse user profile in carteira:", e);
-        }
-      }
-    };
-
-    loadUser();
-
-    window.addEventListener("user-profile-updated", loadUser);
-    return () => {
-      window.removeEventListener("user-profile-updated", loadUser);
-    };
-  }, []);
+    if (typeof window !== "undefined" && user?.id) {
+      setValidationUrl(`${window.location.origin}/validar-carteira?id=${user.id}`);
+    }
+  }, [user?.id]);
 
   if (!user) {
     return null;
