@@ -86,8 +86,22 @@ export default function PerfilPage() {
   }, [reset, setContextUser]);
 
   React.useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
+    if (contextUser) {
+      setUser(contextUser);
+      setPhotoBase64(contextUser.avatarUrl ?? null);
+      reset({
+        name: contextUser.name || "",
+        displayName: contextUser.displayName || "",
+        cpf: contextUser.cpf || "",
+        rg: contextUser.rg || "",
+        matricula: contextUser.matricula || "",
+        org: contextUser.org || "",
+      });
+      setLoading(false);
+      return;
+    }
+    void fetchUserData();
+  }, [contextUser, fetchUserData, reset]);
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhotoError(null);

@@ -5,6 +5,9 @@ const isProd = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion"],
+  },
   // Define a raiz do Turbopack para evitar que lockfiles fora do repositório
   // (como em /home/zaidoh) façam o Next.js buscar páginas no diretório incorreto.
   turbopack: {
@@ -103,16 +106,20 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      {
-        // Long cache for static assets (immutable, 1 year)
-        source: "/_next/static/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
+      ...(isProd
+        ? [
+            {
+              // Long cache for static assets in production only (immutable, 1 year)
+              source: "/_next/static/(.*)",
+              headers: [
+                {
+                  key: "Cache-Control",
+                  value: "public, max-age=31536000, immutable",
+                },
+              ],
+            },
+          ]
+        : []),
       {
         // Medium cache for optimized images (1 day + stale-while-revalidate 1 week)
         source: "/_next/image(.*)",

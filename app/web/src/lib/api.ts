@@ -6,10 +6,14 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
  */
 export function getServerApiBase(): string {
   const internal = process.env.INTERNAL_API_URL;
-  if (internal && internal.startsWith('http')) return internal;
+  if (internal && internal.startsWith('http')) {
+    return internal.replace('://localhost:', '://127.0.0.1:');
+  }
   const pub = process.env.NEXT_PUBLIC_API_URL;
-  if (pub && pub.startsWith('http')) return pub;
-  return 'http://localhost:3001';
+  if (pub && pub.startsWith('http')) {
+    return pub.replace('://localhost:', '://127.0.0.1:');
+  }
+  return 'http://127.0.0.1:3001';
 }
 
 /**

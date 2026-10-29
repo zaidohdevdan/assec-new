@@ -51,28 +51,29 @@ export default function PortalPage() {
             setUsers(data);
           }
         } else if (user.role === "PRESIDENT" || user.role === "CONTABILIDADE") {
-          const resUsers = await apiFetch("/users");
+          const [resUsers, resScheds, resFin] = await Promise.all([
+            apiFetch("/users"),
+            apiFetch("/schedules/admin/list"),
+            apiFetch("/financials/stats"),
+          ]);
           if (resUsers.ok) {
-            const uData = await resUsers.json();
-            setUsers(uData);
+            setUsers(await resUsers.json());
           }
-          const resScheds = await apiFetch("/schedules/admin/list");
           if (resScheds.ok) {
-            const sData = await resScheds.json();
-            setSchedules(sData);
+            setSchedules(await resScheds.json());
           }
-          const resFin = await apiFetch("/financials/stats");
           if (resFin.ok) {
-            const fData = await resFin.json();
-            setFinStats(fData);
+            setFinStats(await resFin.json());
           }
         } else if (user.role === "EDITOR") {
-          const resNotices = await apiFetch("/notices");
+          const [resNotices, resBenefits] = await Promise.all([
+            apiFetch("/notices"),
+            apiFetch("/benefits"),
+          ]);
           if (resNotices.ok) {
             const nData = await resNotices.json();
             setNoticesCount(nData.length);
           }
-          const resBenefits = await apiFetch("/benefits");
           if (resBenefits.ok) {
             const bData = await resBenefits.json();
             setBenefitsCount(bData.length);

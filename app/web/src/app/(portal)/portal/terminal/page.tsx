@@ -56,15 +56,14 @@ export default function TerminalPage() {
   // Fetch all necessary data for the terminal commands
   const fetchAllData = React.useCallback(async () => {
     try {
-      // Fetch users via apiFetch (credentials include cookie auth)
-      const usersRes = await apiFetch(`/users`);
+      const [usersRes, schedulesRes] = await Promise.all([
+        apiFetch(`/users`),
+        apiFetch(`/schedules/admin/list`),
+      ]);
       if (usersRes.ok) {
         const usersData = await usersRes.json();
         setUsers(usersData);
       }
-
-      // Fetch schedules via apiFetch
-      const schedulesRes = await apiFetch(`/schedules/admin/list`);
       if (schedulesRes.ok) {
         const schedulesData = await schedulesRes.json();
         setSchedules(schedulesData);

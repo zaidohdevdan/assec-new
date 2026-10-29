@@ -43,8 +43,18 @@ export default function LoginPage() {
     }
 
     const checkSession = async () => {
+      // Skip the network call on /login when there is no CSRF session hint cookie
+      const hasSessionHint =
+        typeof document !== "undefined" &&
+        document.cookie.split(";").some((c) => c.trim().startsWith("assec_csrf="));
+      if (!hasSessionHint) {
+        return;
+      }
+
       try {
-        const res = await apiFetch("/auth/me");
+        const res = await apiFetch("/auth/me", {
+          signal: AbortSignal.timeout(3000),
+        });
         if (res.ok) {
           const user = await res.json();
           if (user?.role === "ADMIN") {

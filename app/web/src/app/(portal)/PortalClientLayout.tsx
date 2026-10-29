@@ -135,11 +135,17 @@ export default function PortalClientLayout({
   }, [authorized, currentUser?.mustChangePassword, pathname, router]);
 
   React.useEffect(() => {
-    // Check session via HttpOnly cookie — the browser sends it automatically
+    // If the Server Component ((portal)/layout.tsx) already validated the
+    // session via /auth/me on this render, record the timestamp and skip a
+    // duplicate client-side /auth/me fetch on initial load/reload.
+    if (initialUser) {
+      lastAuthCheck = Date.now();
+      return;
+    }
+
     const checkAuth = async () => {
-      // Evita chamadas de rede redundantes caso tenha sido verificado muito recentemente (cooldown)
       const now = Date.now();
-      if (initialUser && now - lastAuthCheck < AUTH_CHECK_COOLDOWN) {
+      if (now - lastAuthCheck < AUTH_CHECK_COOLDOWN) {
         return;
       }
 

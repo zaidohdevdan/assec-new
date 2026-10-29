@@ -44,20 +44,22 @@ export default function FinancasPage() {
 
   React.useEffect(() => {
     setMounted(true);
-    if (user) {
+    if (user?.id) {
       void loadData();
     }
-  }, [user]);
+  }, [user?.id]);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const resList = await apiFetch("/financials");
+      const [resList, resStats] = await Promise.all([
+        apiFetch("/financials"),
+        apiFetch("/financials/stats"),
+      ]);
       if (resList.ok) {
         const data = await resList.json();
         setRecords(data);
       }
-      const resStats = await apiFetch("/financials/stats");
       if (resStats.ok) {
         const data = await resStats.json();
         setStats(data);

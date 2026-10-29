@@ -38,6 +38,7 @@ export default async function SharedPortalLayout({
     const res = await fetch(`${getServerApiBase()}/auth/me`, {
       headers: { Cookie: `${SESSION_COOKIE}=${session.value}` },
       cache: "no-store",
+      signal: AbortSignal.timeout(4000),
     });
     if (res.ok) {
       initialUser = await res.json();

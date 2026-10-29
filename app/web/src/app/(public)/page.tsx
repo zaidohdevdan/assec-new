@@ -22,6 +22,7 @@ async function getRecentNotices() {
   try {
     const res = await fetch(`${getServerApiBase()}/notices`, {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(3000),
     });
     if (res.ok) {
       const data = await res.json();
