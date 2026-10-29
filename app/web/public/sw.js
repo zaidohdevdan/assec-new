@@ -1,4 +1,4 @@
-const CACHE_NAME = "assec-pwa-cache-v3";
+const CACHE_NAME = "assec-pwa-cache-v4";
 const OFFLINE_URL = "/offline.html";
 
 // Assets to pre-cache during install
@@ -58,6 +58,11 @@ async function staleWhileRevalidate(request) {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
+
+  // Never serve cached JS/CSS chunks on localhost / development
+  if (url.hostname === "localhost" || url.hostname === "127.0.0.1") {
+    return;
+  }
 
   // 1. Navigation requests — network-first, fallback to offline page
   if (request.mode === "navigate") {

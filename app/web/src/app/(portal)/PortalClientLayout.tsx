@@ -152,13 +152,20 @@ export default function PortalClientLayout({
     setMounted(true);
 
     // Unregister any active service worker in development mode
-    if (process.env.NODE_ENV === "development" && "serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        for (const registration of registrations) {
-          registration.unregister();
-          console.log("PortalLayout: Service Worker unregistered in development mode");
-        }
-      });
+    if (process.env.NODE_ENV === "development") {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const registration of registrations) {
+            registration.unregister();
+            console.log("PortalLayout: Service Worker unregistered in development mode");
+          }
+        });
+      }
+      if ("caches" in window) {
+        caches.keys().then((keys) => {
+          keys.forEach((k) => caches.delete(k));
+        });
+      }
     }
   }, []);
 

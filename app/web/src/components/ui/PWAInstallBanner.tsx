@@ -34,6 +34,11 @@ export function PWAInstallBanner() {
             });
           }
         });
+        if ("caches" in window) {
+          caches.keys().then((keys) => {
+            keys.forEach((k) => caches.delete(k));
+          });
+        }
       } else {
         navigator.serviceWorker
           .register("/sw.js")

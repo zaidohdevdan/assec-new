@@ -27,6 +27,21 @@ export default function LoginPage() {
 
   // Check for an existing session by calling /auth/me (uses the HttpOnly cookie)
   React.useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const registration of registrations) {
+            registration.unregister();
+          }
+        });
+      }
+      if ("caches" in window) {
+        caches.keys().then((keys) => {
+          keys.forEach((k) => caches.delete(k));
+        });
+      }
+    }
+
     const checkSession = async () => {
       try {
         const res = await apiFetch("/auth/me");
