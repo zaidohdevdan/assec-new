@@ -4,6 +4,7 @@ import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   Youtube,
   Trash2,
@@ -38,6 +39,7 @@ function getYouTubeId(url: string): string | null {
 }
 
 export default function VideosManagementPage() {
+  const { confirm, ConfirmDialogModal } = useConfirmDialog();
   const [videos, setVideos] = React.useState<VideoItem[]>([]);
   const [listLoading, setListLoading] = React.useState(true);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -145,7 +147,12 @@ export default function VideosManagementPage() {
   };
 
   const onDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este vídeo?")) return;
+    const ok = await confirm({
+      title: "Excluir Vídeo?",
+      description: "Tem certeza que deseja excluir permanentemente este vídeo?",
+      confirmLabel: "Excluir Vídeo",
+    });
+    if (!ok) return;
     setListLoading(true);
     try {
       const res = await apiFetch(`/videos/${id}`, { method: "DELETE" });
@@ -421,6 +428,7 @@ export default function VideosManagementPage() {
           </div>
         )}
       </div>
+      {ConfirmDialogModal}
     </div>
   );
 }

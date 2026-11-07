@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 import path from "path";
 
+process.env.BROWSERSLIST_IGNORE_OLD_DATA = "true";
+
 const isProd = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {

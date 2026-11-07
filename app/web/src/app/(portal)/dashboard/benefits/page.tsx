@@ -7,6 +7,7 @@ import * as z from "zod";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Trash2, Plus, X, MapPin, Edit3, Heart, Shield, Key, ShieldCheck, Landmark, Info } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { compressImage } from "@/lib/image";
@@ -57,6 +58,7 @@ const tagColors: Record<string, string> = {
 };
 
 export default function BenefitsManagementPage() {
+  const { confirm, ConfirmDialogModal } = useConfirmDialog();
   const [benefits, setBenefits] = React.useState<BenefitItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
@@ -249,7 +251,13 @@ export default function BenefitsManagementPage() {
   };
 
   const onDeleteBenefit = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este benefício?")) return;
+    const ok = await confirm({
+      title: "Excluir Benefício?",
+      description:
+        "Tem certeza que deseja excluir permanentemente este benefício?",
+      confirmLabel: "Excluir Benefício",
+    });
+    if (!ok) return;
     setLoading(true);
     try {
       const res = await apiFetch(`/benefits/${id}`, { method: "DELETE" });
@@ -611,6 +619,7 @@ export default function BenefitsManagementPage() {
           </div>
         )}
       </Card>
+      {ConfirmDialogModal}
     </div>
   );
 }

@@ -3,6 +3,9 @@ import {
   Post,
   Body,
   Get,
+  Patch,
+  Delete,
+  Param,
   UsePipes,
   UseGuards,
 } from '@nestjs/common';
@@ -41,5 +44,24 @@ export class ContactController {
   @Roles(Role.ADMIN, Role.PRESIDENT)
   async findAll() {
     return this.contactService.getMessages();
+  }
+
+  @Patch(':id/read')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.PRESIDENT)
+  async updateReadStatus(
+    @Param('id') id: string,
+    @Body() body?: { read?: boolean },
+  ) {
+    const read = typeof body?.read === 'boolean' ? body.read : true;
+    return this.contactService.updateReadStatus(id, read);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async remove(@Param('id') id: string) {
+    await this.contactService.deleteMessage(id);
+    return { success: true };
   }
 }

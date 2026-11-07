@@ -7,6 +7,7 @@ import * as z from "zod";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Calendar, PlusCircle, Clock, Trash2, AlertCircle, CheckCircle2, User } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { ScheduleSlot } from "@/lib/types";
@@ -30,6 +31,7 @@ const slotBatchSchema = z.object({
 type SlotBatchFormData = z.infer<typeof slotBatchSchema>;
 
 export default function ProfessionalAgendaPage() {
+  const { confirm, ConfirmDialogModal } = useConfirmDialog();
   const [slots, setSlots] = React.useState<ScheduleSlot[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
@@ -135,7 +137,12 @@ export default function ProfessionalAgendaPage() {
       ? `Atenção: Esta vaga está reservada pelo associado "${slot.schedule?.user?.name}". Ao revogá-la, o agendamento dele será cancelado permanentemente e ele será notificado. Deseja continuar?`
       : "Tem certeza que deseja revogar esta vaga?";
 
-    if (!window.confirm(confirmMessage)) return;
+    const ok = await confirm({
+      title: "Revogar Vaga de Atendimento?",
+      description: confirmMessage,
+      confirmLabel: "Revogar Vaga",
+    });
+    if (!ok) return;
 
     setActionLoading(slot.id);
     try {
@@ -394,6 +401,7 @@ export default function ProfessionalAgendaPage() {
           )}
         </Card>
       </div>
+      {ConfirmDialogModal}
     </div>
   );
 }

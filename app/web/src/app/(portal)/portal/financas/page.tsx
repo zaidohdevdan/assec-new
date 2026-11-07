@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { apiFetch } from "@/lib/api";
 import { FinancialStats, MonthlyStats, FinancialRecord } from "@/lib/types";
 import { usePortalUser } from "../../PortalUserContext";
@@ -22,6 +23,7 @@ import {
 
 export default function FinancasPage() {
   const { user } = usePortalUser();
+  const { confirm, ConfirmDialogModal } = useConfirmDialog();
   const [records, setRecords] = React.useState<FinancialRecord[]>([]);
   const [stats, setStats] = React.useState<FinancialStats | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -120,7 +122,13 @@ export default function FinancasPage() {
   };
 
   const handleDeleteRecord = async (id: string) => {
-    if (!window.confirm("Deseja realmente excluir este lançamento financeiro?")) return;
+    const ok = await confirm({
+      title: "Excluir Lançamento Financeiro?",
+      description:
+        "Deseja realmente excluir permanentemente este lançamento financeiro?",
+      confirmLabel: "Excluir Lançamento",
+    });
+    if (!ok) return;
 
     try {
       const res = await apiFetch(`/financials/${id}`, { method: "DELETE" });
@@ -522,6 +530,7 @@ export default function FinancasPage() {
           </div>
         </div>
       )}
+      {ConfirmDialogModal}
     </div>
   );
 }

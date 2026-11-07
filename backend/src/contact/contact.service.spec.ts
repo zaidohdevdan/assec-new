@@ -15,6 +15,8 @@ describe('ContactService', () => {
             contactMessage: {
               create: jest.fn(),
               findMany: jest.fn(),
+              update: jest.fn(),
+              delete: jest.fn(),
             },
           },
         },

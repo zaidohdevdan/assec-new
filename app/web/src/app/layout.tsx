@@ -124,9 +124,49 @@ export default function RootLayout({
     "inLanguage": "pt-BR"
   };
 
+  const isDev = process.env.NODE_ENV !== "production";
+  const devChunkRecoveryScript = `
+    (function() {
+      try {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var i = 0; i < regs.length; i++) { regs[i].unregister(); }
+          });
+        }
+        if ("caches" in window) {
+          caches.keys().then(function(keys) {
+            for (var j = 0; j < keys.length; j++) { caches.delete(keys[j]); }
+          });
+        }
+        function handleChunkError(msg) {
+          if (!msg || msg.indexOf("Failed to load chunk") === -1) return;
+          var key = "__assec_chunk_reload_ts";
+          var last = Number(sessionStorage.getItem(key) || "0");
+          var now = Date.now();
+          if (now - last > 5000) {
+            sessionStorage.setItem(key, String(now));
+            window.location.reload();
+          }
+        }
+        window.addEventListener("error", function(e) {
+          handleChunkError(e && e.message ? String(e.message) : "");
+        });
+        window.addEventListener("unhandledrejection", function(e) {
+          var reason = e && e.reason ? (e.reason.message || String(e.reason)) : "";
+          handleChunkError(String(reason));
+        });
+      } catch (_) {}
+    })();
+  `;
+
   return (
     <html lang="pt-BR" className={`${inter.variable} ${playfair.variable}`}>
       <head>
+        {isDev && (
+          <script
+            dangerouslySetInnerHTML={{ __html: devChunkRecoveryScript }}
+          />
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}

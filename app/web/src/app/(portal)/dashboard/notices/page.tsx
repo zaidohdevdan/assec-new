@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RichTextEditor } from "@/components/ui/RichTextEditor";
+import { useConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   Calendar,
   Trash2,
@@ -74,6 +75,7 @@ function getShareUrl(id: string): string {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function NoticesManagementPage() {
+  const { confirm, ConfirmDialogModal } = useConfirmDialog();
   // ── List state ──────────────────────────────────────────────────────────────
   const [notices, setNotices] = React.useState<NoticeItem[]>([]);
   const [listLoading, setListLoading] = React.useState(true);
@@ -293,7 +295,13 @@ export default function NoticesManagementPage() {
   };
 
   const onDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este comunicado?")) return;
+    const ok = await confirm({
+      title: "Excluir Comunicado?",
+      description:
+        "Tem certeza que deseja excluir permanentemente este comunicado?",
+      confirmLabel: "Excluir Comunicado",
+    });
+    if (!ok) return;
     setListLoading(true);
     try {
       await apiFetch(`/notices/${id}`, { method: "DELETE" });
@@ -808,6 +816,7 @@ export default function NoticesManagementPage() {
           </div>
         )}
       </Card>
+      {ConfirmDialogModal}
     </div>
   );
 }

@@ -10,6 +10,8 @@ describe('ContactController', () => {
   const contactServiceMock = {
     createMessage: jest.fn(),
     getMessages: jest.fn(),
+    updateReadStatus: jest.fn(),
+    deleteMessage: jest.fn(),
   };
 
   beforeEach(async () => {

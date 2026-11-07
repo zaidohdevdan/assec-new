@@ -7,6 +7,7 @@ import * as z from "zod";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Calendar, PlusCircle, Clock, CheckCircle2, AlertCircle, X, Trash2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { ScheduleSlot } from "@/lib/types";
@@ -50,6 +51,7 @@ interface ScheduleItem {
 }
 
 export default function AgendamentosPage() {
+  const { confirm, ConfirmDialogModal } = useConfirmDialog();
   const [schedules, setSchedules] = React.useState<ScheduleItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -174,7 +176,13 @@ export default function AgendamentosPage() {
   };
 
   const handleCancelSchedule = async (id: string) => {
-    if (!window.confirm("Tem certeza que deseja cancelar este agendamento?")) return;
+    const ok = await confirm({
+      title: "Cancelar Agendamento?",
+      subtitle: "A vaga voltará a ficar disponível na agenda.",
+      description: "Tem certeza que deseja cancelar este agendamento?",
+      confirmLabel: "Confirmar Cancelamento",
+    });
+    if (!ok) return;
 
     setActionLoading(id);
     try {
@@ -513,6 +521,7 @@ export default function AgendamentosPage() {
           </div>
         </div>
       )}
+      {ConfirmDialogModal}
     </div>
   );
 }
